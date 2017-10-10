@@ -113,7 +113,7 @@ class ControlSystemsThread(Thread):
                                 variables.app_flags["spab_index"] += 1
                     ctrl_id = variables.app_flags['controller_id']
 
-                    if variables.app_flags['multi']:
+                    if variables.app_flags['supervisor'] == 1:
                         # multi model
                         Ts = variables.app_config['ts_control']
 

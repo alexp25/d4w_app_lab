@@ -15,6 +15,6 @@ class Constants:
 
     NODE_PUMP = 101
     NODE_FLOW_SENSOR = 1
-    
+
 
 

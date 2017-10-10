@@ -81,79 +81,7 @@
         <!-- 'multi' -->
       </div>
 
-      <div flex layout="row">
-        <div flex>
-          <label class="raspi-label-s">Models</label>
-          <div ng-if="jsondata!==undefined">
-            <table style="width:100%;">
-              <tr layout="row">
-                <th flex>n</th>
-                <th flex>y</th>
-                <th flex>e</th>
-              </tr>
-              <tr layout="row" ng-repeat="(key, value) in jsondata.info.models">
-                <td flex>
-                  {{key}}
-                </td>
-                <td flex>
-                  {{value.yk | number:0}}
-                </td>
-                <td flex>
-                  {{value.ek | number:0}}
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-        <div flex>
-          <label class="raspi-label-s">Controllers</label>
-          <div ng-if="jsondata!==undefined">
-            <table style="width:100%;">
-              <tr layout="row">
-                <th flex>n</th>
-                <th flex>u</th>
-                <th flex>a</th>
-              </tr>
-              <tr layout="row" ng-repeat="(key, value) in jsondata.info.controllers">
-                <td flex>
-                  {{key}}
-                </td>
-                <td flex>
-                  {{value.uk | number:0}}
-                </td>
-                <td flex>
-                  {{value.a | number:2}}
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
     </div>
-
-    <label class="raspi-label-s">Info</label>
-    <div layout="column" ng-if="jsondata===undefined">
-      <span>No data</span>
-    </div>
-    <div ng-if="jsondata!==undefined">
-      <table style="width:100%;">
-        <tr layout="row">
-          <th flex>name</th>
-          <th flex>value</th>
-        </tr>
-        <tr layout="row" ng-if="!(['models','controllers'].includes(key))" ng-repeat="(key, value) in jsondata.info">
-          <td flex>
-            {{key}}
-          </td>
-          <td flex>
-            {{value}}
-          </td>
-        </tr>
-      </table>
-    </div>
-
-
   </div>
 
 </div>

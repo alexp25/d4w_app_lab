@@ -124,7 +124,11 @@ def handle_post_data(jsondata):
 
         elif jsondata['id'] == 20:
             # change control mode
-            variables.app_flags['mode'] = jsondata['value']
+            try:
+                mode = int(jsondata['value'])
+            except:
+                mode = jsondata['value']
+            variables.app_flags['mode'] = mode
             variables.app_aux_flags['spab_index'] = 0
             if variables.app_flags['mode'] not in [1, 5]:
                 variables.app_flags['integral'] = 0
@@ -132,8 +136,14 @@ def handle_post_data(jsondata):
             # change controller model
             variables.app_flags['controller_id'] = jsondata['value']
         elif jsondata['id'] == 30:
-            # use multi-model controller
-            variables.app_flags['multi'] = jsondata['value']
+            # supervisor
+            try:
+                mode = int(jsondata['value'])
+            except:
+                mode = jsondata['value']
+
+            variables.app_flags['supervisor'] = mode
+
 
 @socketio.on('disconnect_request')
 def handle_disconnect_request(jsondata):

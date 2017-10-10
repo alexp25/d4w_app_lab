@@ -5,6 +5,7 @@ import time
 import datetime
 import copy
 import traceback
+from modules.data.constants import Constants
 
 
 def print_exception(msg):
@@ -65,8 +66,8 @@ def log2(source, message):
 def log_sensor_data():
     line=''
     for s in sensor_data:
-        if s['type'] == 1:
-            line+=str(s['id'])+','+str(s['tim'])+','+str(s['value2'])+','
+        if s['type'] == Constants.NODE_FLOW_SENSOR:
+            line += str(s['id'])+','+str(s['tim'])+','+str(s['value2'])+','
     line += '100' + ',' + str(app_flags['pump_cmd_time']) + ',' + str(app_flags['pump']) + ','
     line += '101' + ',' + str(app_flags['control_time']) + ',' + str(app_flags['ref']) + ','
     line += '102' + ',' + str(app_flags['control_time']) + ',' + str(app_flags['yk']) + ','
@@ -131,7 +132,7 @@ app_flags = {
     "yk": 0,
     "ts_sensor": 0,
     "ts_sensor_avg": 0,
-    "multi": False,
+    "supervisor": 0,
     "integral": 0,
     "spab_index": 0,
     "pump_cmd_time": 0,

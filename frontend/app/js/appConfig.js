@@ -19,13 +19,31 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
 
 
     // $mdThemingProvider.setDefaultTheme('teal');
-    $mdThemingProvider
-      .theme('default')
-      .primaryPalette('blue')
-      .accentPalette('teal')
-      .warnPalette('red')
-      .backgroundPalette('grey');
+    // $mdThemingProvider
+    //   .theme('default')
+    //   .primaryPalette('blue')
+    //   .accentPalette('teal')
+    //   .warnPalette('red')
+    //   .backgroundPalette('grey');
     // https://material.angularjs.org/1.1.0/demo/colors
+
+
+    $mdThemingProvider.theme('default')
+      .primaryPalette('blue-grey', {
+        'default': '600', // by default use shade 400 from the pink palette for primary intentions
+        'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+        'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+        'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+      })
+      .accentPalette('blue-grey', {
+        'default': '400' // use shade 200 for default, and keep all other shades the same
+      })
+
+      // .backgroundPalette('grey', {
+      //   'default': 'A100'
+      // })
+
+      .warnPalette('blue-grey');
 
     $stateProvider
       .state('root', {
@@ -119,15 +137,27 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
           }
         }
       })
-      .state('control', {
-        url: '/control',
+      .state('control-main', {
+        url: '/control/main',
         access: {
           restricted: true
         },
         views: {
           'content': {
-            templateUrl: 'templates/control.html',
-            controller: 'controlCtrl'
+            templateUrl: 'templates/control/main.html',
+            controller: 'controlMainCtrl'
+          }
+        }
+      })
+      .state('control-details', {
+        url: '/control/details',
+        access: {
+          restricted: true
+        },
+        views: {
+          'content': {
+            templateUrl: 'templates/control/details.html',
+            controller: 'controlDetailsCtrl'
           }
         }
       });

@@ -112,6 +112,7 @@ class TestRunnerManager(Thread):
             try:
                 if self.t - self.t0 >= self.TS:
                     self.t0 = self.t
+
                     if variables.app_flags['log'] == True:
                         variables.log_sensor_data()
 

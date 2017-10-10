@@ -1,4 +1,4 @@
-angular.module('app').controller('controlCtrl', ['$scope', 'socket', '$timeout', '$http',
+angular.module('app').controller('controlDetailsCtrl', ['$scope', 'socket', '$timeout', '$http',
   function($scope, socket, $timeout, $http) {
 
     $scope.timer = [];
@@ -37,29 +37,6 @@ angular.module('app').controller('controlCtrl', ['$scope', 'socket', '$timeout',
     $scope.send = function(data) {
       socket.emit('post_data', data);
       console.log(data);
-    };
-
-    $scope.downloadServerLog = function(url) {
-      var config = {
-        method: 'GET',
-        url: url
-      };
-      $http(config).
-
-      success(function(res) {
-          //console.log(res);
-          var blob = new Blob([res], {
-            type: 'text/plain'
-          });
-          var url = (window.URL || window.webkitURL).createObjectURL(blob);
-          var downloadLink = angular.element('<a></a>');
-          downloadLink.attr('href', url);
-          downloadLink.attr('download', 'log.csv');
-          downloadLink[0].click();
-        })
-        .error(function(res) {
-
-        });
     };
 
 
