@@ -26,8 +26,8 @@
 
 </head>
 
-<body ng-controller="navigationCtrl" ng-init="init();">
-  <md-content class="esri-view-container" layout="column">
+<body ng-controller="navigationCtrl" ng-init="init();" class="my-scrollbar my-texture-bg">
+  <md-content class="my-scrollbar" layout="column">
     <div id="nav">
       <md-tabs flex class="md-primary" id="tab-lvl1" md-autoselect="false" md-border-bottom md-center-tabs="false" md-dynamic-height md-selected="tabSelection.lvl1">
         <md-tab ng-repeat="section in menuList">
@@ -47,9 +47,7 @@
         </md-tabs>
       </div>
     </div>
-
-    <div class="esri-view-container" ui-view="content"></div>
-
+    <div ui-view="content" class="my-texture-bg"></div>
   </md-content>
 
 </body>

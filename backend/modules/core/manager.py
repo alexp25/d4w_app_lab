@@ -52,6 +52,8 @@ class TestRunnerManager(Thread):
         self.hil = HIL_socket(ip, port)
 
         new_device_data = copy.deepcopy(Constants.hil_object_data_model)
+        new_device_data["id"] = dev["info"]["id"]
+        new_device_data["type"] = dev["info"]["type"]
 
         new_hil_object = {
             "function": {

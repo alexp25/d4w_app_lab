@@ -62,12 +62,12 @@ class TestRunner(Thread):
 
         self.t_string = "%.4f" % (time.time() - self.t_start)
 
-    def update_sensor_data(self, id, value):
+    def update_sensor_data(self, id, value, type):
         tm = datetime.datetime.now()
         tim = time.time()
-        # print("update ", id)
+
         for s in variables.sensor_data:
-            if s['id'] == id:
+            if s['id'] == id and s['type'] == type:
                 s['value'] = value
                 s['value1'] = value
                 s['value2'] = value
@@ -79,16 +79,17 @@ class TestRunner(Thread):
     def get_response_data(self, resp):
         if resp[0] == 100:
             # device data
-            device_data = variables.device_data[self.hil_def["data"]["index"]]
+            # device_data = variables.device_data[self.hil_def["data"]["index"]]
+            device_data = self.hil_def["data"]
             device_data["in"] = str(resp)
             device_data["rx_counter"] += 1
 
             for sensor_def in variables.sensor_model:
                 if self.hil_def["data"]["info"] is not None:
-                    if self.hil_def["data"]["info"]["type"] == Constants.NODE_FLOW_SENSOR:
+                    if self.hil_def["data"]["info"]["type"] == Constants.NODE_FLOW_SENSOR and self.hil_def["data"]["info"]["id"] == sensor_def["id"]:
                         for e in sensor_def['data']:
                             try:
-                                self.update_sensor_data(e["node_id"], resp[e['pos']])
+                                self.update_sensor_data(e["node_id"], resp[e['pos']], e['type'])
                             except:
                                 pass
 

@@ -91,7 +91,7 @@ def load_app_data():
 
 
 def load_app_config():
-    global app_config, sensor_model, model_data, controller_data, app_flags
+    global app_config, sensor_model, model_data, controller_data, app_flags, sensor_data
     try:
         with open('config/config.json') as f:
             file_contents = f.read()
@@ -102,6 +102,18 @@ def load_app_config():
             for m in app_config['models']:
                 app_flags['models'].append(copy.deepcopy(model_data))
                 app_flags['controllers'].append(copy.deepcopy(controller_data))
+
+            # initialize sensor_data array
+            sensor_data = []
+            for sm in app_config["sensor_model"]:
+                for sd in sm["data"]:
+                    new_sensor = {
+                        "id": sd["node_id"],
+                        "type": sd["type"],
+                        "value": 0
+                    }
+                    sensor_data.append(new_sensor)
+            # print(json.dumps(sensor_data, indent=2))
         # print(json.dumps(app_config, indent=2))
     except:
         print_exception_now(load_app_config.__name__)
@@ -157,26 +169,12 @@ return_values_def = {
     "RESULT_FAIL": 1
 }
 
-sensor_data = [
-    {'id': 1, 'type': 1, 'value': 10},
-    {'id': 2, 'type': 1, 'value': 20},
-    {'id': 3, 'type': 1, 'value': 30},
-    {'id': 5, 'type': 1, 'value': 50},
-    {'id': 6, 'type': 1, 'value': 60},
-    {'id': 7, 'type': 1, 'value': 70},
-    {'id': 8, 'type': 1, 'value': 80},
-    {'id': 9, 'type': 1, 'value': 90},
-    {'id': 10, 'type': 1, 'value': 100},
-    {'id': 11, 'type': 1, 'value': 110},
-
-    {'id': 1, 'type': 2, 'value': 10},
-    {'id': 2, 'type': 2, 'value': 20}
-]
-
 qLog = Queue(maxsize=10)
 
 device_data = []
+sensor_data = []
 sensor_model = {}
+
 
 cnxn = None
 
