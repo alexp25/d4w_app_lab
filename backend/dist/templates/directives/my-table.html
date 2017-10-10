@@ -1,0 +1,22 @@
+<label class="raspi-label-m" style="text-align:start;" ng-if="caption!==undefined;">{{caption}}</label>
+<div class="animate-element-if webhil-frame" >
+  <span class="raspi-label-m">{{caption}}</span>
+  <div>
+    <table class="mytable">
+      <tr class="mytable-elem" layout="row">
+        <th flex ng-repeat="key in header">
+          {{key}}
+        </th>
+      </tr>
+    </table>
+  </div>
+  <div class="my-scrollable-3 my-scrollbar fade-element-in">
+    <table class="mytable">
+      <tr class="mytable-tr" class="mytable-elem" ng-repeat="data1 in data track by $index" layout="row">
+        <td flex ng-repeat="key in keys">
+          {{data1[key]}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

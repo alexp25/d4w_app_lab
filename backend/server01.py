@@ -27,7 +27,7 @@ from geventwebsocket.handler import WebSocketHandler
 from flask_socketio import SocketIO
 from flask_socketio import send, emit, disconnect
 
-import pyodbc
+
 
 # app modules
 from modules.data import variables
@@ -181,7 +181,7 @@ def apiDatabaseSensors():
         # param['sid']
         # params['n']
         # print(param)
-        if param['id'] != 0:
+        if param['id'] != 0 and variables.app_config["db_logging"]:
             cursor = variables.cnxn.cursor()
             cursor.execute("SELECT * FROM (SELECT TOP " + str(param['n']) + " * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC) a ORDER BY Timestamp ASC",param['id'])
             # cursor.execute("SELECT TOP 100 * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC",param['id'])
@@ -232,13 +232,15 @@ if __name__ == '__main__':
     time.sleep(1)
     print(variables.app_config["db_selection"])
     db_info = variables.app_config[variables.app_config["db_selection"]]
-    try:
-        variables.cnxn = pyodbc.connect(
-            'DRIVER=' + db_info["driver"] + ';SERVER=' + db_info["server"] + ';DATABASE=' +
-            db_info["database"] + ';UID=' + db_info["username"] + ';PWD=' + db_info[
-                "password"])
-    except:
-        variables.print_exception("server")
+    if variables.app_config["db_logging"]:
+        import pyodbc
+        try:
+            variables.cnxn = pyodbc.connect(
+                'DRIVER=' + db_info["driver"] + ';SERVER=' + db_info["server"] + ';DATABASE=' +
+                db_info["database"] + ';UID=' + db_info["username"] + ';PWD=' + db_info[
+                    "password"])
+        except:
+            variables.print_exception("server")
 
     variables.test_manager = TestRunnerManager()
     variables.test_manager.start()

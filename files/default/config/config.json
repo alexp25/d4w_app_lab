@@ -34,7 +34,7 @@
 			"port": 9001,
 			"info": {
 				"id":0,
-				"type":1
+				"type":0
 			},
 			"enable": true
 		},
@@ -45,7 +45,7 @@
 				"id": 1,
 				"type": 1
 			},
-			"enable": true
+			"enable": false
 		},
 		{
 			"ip": "192.168.64.11",
@@ -54,7 +54,7 @@
 				"id": 2,
 				"type": 101
 			},
-			"enable": true
+			"enable": false
 		}
 	],
 	"sensor_model": [{
@@ -62,43 +62,53 @@
 		"data":[
 		{
 			"pos":1,
-			"node_id":1
+			"node_id":1,
+			"type":1
 		},
 		{
 			"pos":2,
-			"node_id":2
+			"node_id":2,
+			"type":1
 		},
 		{
 			"pos":3,
-			"node_id":3
+			"node_id":3,
+			"type":1
 		},
 		{
 			"pos":4,
-			"node_id":5
+			"node_id":5,
+			"type":1
 		},
 		{
 			"pos":5,
-			"node_id":6
+			"node_id":6,
+			"type":1
 		},
 		{
 			"pos":6,
-			"node_id":7
+			"node_id":7,
+			"type":1
 		},
 		{
 			"pos":7,
-			"node_id":8
+			"node_id":8,
+			"type":1
 		},
 		{
 			"pos":8,
-			"node_id":9
+			"node_id":9,
+			"type":1
 		},
 		{
 			"pos":9,
-			"node_id":10
+			"node_id":10,
+			"type":2
 		},
 		{
 			"pos":10,
-			"node_id":11
+			"node_id":11,
+			"type":2
 		}]
 	}],
 	"models":[
