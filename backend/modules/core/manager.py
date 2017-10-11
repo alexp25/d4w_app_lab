@@ -48,7 +48,7 @@ class TestRunnerManager(Thread):
         :param ip: ip
         """
 
-        variables.log2("[add_new_hil_device]", ip + ":" + str(port))
+        variables.log2("[add_new_hil_device]", str(self.hil_device_index) + ", " + ip + ":" + str(port))
         self.hil = HIL_socket(ip, port)
 
         new_device_data = copy.deepcopy(Constants.hil_object_data_model)
@@ -95,9 +95,14 @@ class TestRunnerManager(Thread):
         self.hil_device_index = 0
 
     def set_pump(self, value):
+        j = 0
         for (i, dev) in enumerate(variables.app_config["devices"]):
-            if dev["info"]["type"] == Constants.NODE_PUMP:
-                self.tr[i].send_data("1," + str(value))
+            if dev["enable"]:
+                if dev["info"]["type"] == Constants.NODE_PUMP:
+                    variables.log2("set_pump", "dev: " + str(j))
+                    self.tr[j].send_data("1," + str(value))
+                    # variables.app_flags["pump"] = value
+                j += 1
 
     def run(self):
         """
@@ -107,7 +112,7 @@ class TestRunnerManager(Thread):
         variables.log2(self.__class__.__name__, "started")
 
         while True:
-            time.sleep(variables.LOOP_DELAY)
+            time.sleep(Constants.LOOP_DELAY)
             self.t = time.time()
             try:
                 if self.t - self.t0 >= self.TS:

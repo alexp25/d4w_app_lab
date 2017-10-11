@@ -12,7 +12,7 @@ class Constants:
         "in": "",
         "rx_counter": 0
     }
-
+    LOOP_DELAY = 0.001
     NODE_PUMP = 101
     NODE_FLOW_SENSOR = 1
 

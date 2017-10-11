@@ -4,7 +4,7 @@ import time
 from threading import Thread
 
 from modules.data import variables
-
+from modules.data.constants import Constants
 
 class ControlSystemsThread(Thread):
     def run(self):
@@ -31,7 +31,7 @@ class ControlSystemsThread(Thread):
         ek=0
 
         while True:
-            time.sleep(0.01)
+            time.sleep(Constants.LOOP_DELAY)
             t1=time.time()
             if 'value2' in variables.sensor_data[variables.app_config['y_index']]:
                 variables.app_flags['yk'] = variables.sensor_data[variables.app_config['y_index']]['value2']

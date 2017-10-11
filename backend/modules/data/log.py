@@ -4,6 +4,7 @@ from datetime import datetime
 from threading import Thread
 
 from modules.data import variables
+from modules.data.constants import Constants
 
 
 class Log(Thread):
@@ -32,7 +33,7 @@ class Log(Thread):
         print(self.__class__.__name__ + " started")
         self.init()
         while True:
-            time.sleep(variables.LOOP_DELAY)
+            time.sleep(Constants.LOOP_DELAY)
             data = variables.getFromQueue(variables.qLog)
             if data is not None:
                 # put data into the destination queue

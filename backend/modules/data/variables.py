@@ -121,7 +121,7 @@ def load_app_config():
 
 app_config = None
 test_manager = None
-LOOP_DELAY = 0.001
+
 app_flags = {
     "log": False,
     "pump": 0,

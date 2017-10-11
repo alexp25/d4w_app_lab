@@ -84,6 +84,11 @@ class TestRunner(Thread):
             device_data["in"] = str(resp)
             device_data["rx_counter"] += 1
 
+            # get current pump pwm (sync)
+            if self.hil_def["data"]["info"]["type"] == Constants.NODE_PUMP:
+                variables.app_flags["pump"] = resp[1]
+
+            # get data from sensors
             for sensor_def in variables.sensor_model:
                 if self.hil_def["data"]["info"] is not None:
                     if self.hil_def["data"]["info"]["type"] == Constants.NODE_FLOW_SENSOR and self.hil_def["data"]["info"]["id"] == sensor_def["id"]:
@@ -136,7 +141,7 @@ class TestRunner(Thread):
     def run(self):
         variables.log2("[TestRunner]", "started")
         while True:
-            time.sleep(variables.LOOP_DELAY)
+            time.sleep(Constants.LOOP_DELAY)
             self.run_async()
             if self.stop_request():
                 break
