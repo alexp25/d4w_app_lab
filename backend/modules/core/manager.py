@@ -34,13 +34,48 @@ class TestRunnerManager(Thread):
         self.TS_DB = variables.app_config["t_log"]
         self.t0_db = self.t0
 
+        self.tr = []
+        self.hil_object_array = []
+        self.hil_device_index = 0
 
+        self.load_hil_devices()
+        self.current_device_config = copy.deepcopy(variables.app_config["devices"])
+
+    def update_hil_devices(self):
+        """
+        check if device list changed and reload devices
+        """
+        if self.current_device_config != variables.app_config["devices"]:
+            self.clear_hil_devices()
+            self.load_hil_devices()
+            self.current_device_config = copy.deepcopy(variables.app_config["devices"])
+
+    def load_hil_devices(self):
+        """
+        load hil devices
+        """
         self.tr = []
         self.hil_object_array = []
         self.hil_device_index = 0
         for dev in variables.app_config["devices"]:
             if dev["enable"]:
                 self.add_new_hil_device(dev["ip"], dev["port"], dev)
+
+    def clear_hil_devices(self):
+        """
+        clear hil devices and close test runner threads
+        """
+        for i in range(len(self.hil_object_array)):
+            try:
+                self.tr[i].stop()
+                self.tr[i].join()
+            except:
+                pass
+        self.tr = []
+        print('hil device clear: stopped threads')
+        self.hil_object_array = []
+        variables.device_data = []
+        self.hil_device_index = 0
 
     def add_new_hil_device(self, ip, port=9001, dev = None):
         """
@@ -77,22 +112,6 @@ class TestRunnerManager(Thread):
             self.tr[self.hil_device_index].start()
         self.hil_device_index += 1
 
-
-    def clear_hil_devices(self):
-        """
-        clear hil devices and close test runner threads
-        """
-        for i in range(len(self.hil_object_array)):
-            try:
-                self.tr[i].stop()
-                self.tr[i].join()
-            except:
-                pass
-        self.tr = []
-        print('hil device clear: stopped threads')
-        self.hil_object_array = []
-        variables.deviceList = []
-        self.hil_device_index = 0
 
     def set_pump(self, value):
         j = 0

@@ -1,9 +1,27 @@
 <div class="raspi-frame md-primary" ng-init="init();" layout="column">
-  <div layout-gt-md="row" layout="column" layout-align="space-between center" layout-align-gt-md="space-between start">
+  <div layout="column">
+    <md-button aria-label="" class="md-primary" ng-click="reloadConfig()">Reload configuration</md-button>
+    <md-button aria-label="" class="md-primary" ng-href="api/file/settings" download>Download configuration file</md-button>
+    <ng-dropzone class="dropzone my-color-element my-scrollable-2 my-scrollbar" options="dzOptions" callbacks="dzCallbacks" methods="dzMethods">
+    </ng-dropzone>
+  </div>
 
-    <div layout="column" class="raspi-button-holder">
-      <md-button aria-label="" class="md-primary" ng-click="reloadConfig();">Reload config</md-button>
-    </div>
+  <label class="raspi-label-s">Configuration</label>
+  <div flex>
+    <table class="mytable">
+      <tr layout="row">
+        <th flex>property</th>
+        <th flex>value</th>
+      </tr>
+      <tr layout="row" ng-repeat="(key, value) in settings">
+        <td flex class="span">
+          {{key}}
+        </td>
+        <td flex class="span">
+          {{value}}
+        </td>
+      </tr>
+    </table>
 
   </div>
 </div>

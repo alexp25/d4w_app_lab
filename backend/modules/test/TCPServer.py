@@ -7,6 +7,8 @@ from threading import Thread
 import time
 import traceback
 
+from modules.data.constants import Constants
+
 
 class TCPServer(Thread):
     def __init__(self, host, port):
@@ -15,7 +17,13 @@ class TCPServer(Thread):
         self.port = port
         self._stopEvent = threading.Event()
 
-        self.debug_log = True
+        self.debug_log = False
+
+        self.function = 0
+        self.test_value = 0
+
+    def set_function(self, function):
+        self.function = function
 
     def stop(self):
         print("stop event")
@@ -80,7 +88,24 @@ class TCPServer(Thread):
 
                         data_array = [int(d) for d in data.decode().split(",")]
                         if data_array[0] == 100:
-                            send_data = "100,1,2,3,4,5,6,7,8\n".encode()
+                            if self.function == Constants.NODE_FLOW_SENSOR:
+                                send_data_values = [str(self.test_value)+","] * 10
+                                send_data_values_str = "".join(send_data_values)
+                                send_data = "100," + send_data_values_str + "1\n".encode()
+                                self.test_value += 1
+                                if self.test_value > 200:
+                                    self.test_value = 0
+                            elif self.function == Constants.NODE_PUMP:
+                                send_data = "100," + str(self.test_value) + "\n".encode()
+                                self.test_value += 1
+                                if self.test_value > 200:
+                                    self.test_value = 0
+                            else:
+                                send_data = "100," + str(self.test_value) + "\n".encode()
+                                self.test_value += 1
+                                if self.test_value > 200:
+                                    self.test_value = 0
+
                         else:
                             send_data = data
 

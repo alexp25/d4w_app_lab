@@ -125,15 +125,15 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
         }
       })
 
-      .state('detail-view', {
-        url: '/detail-view',
+      .state('monitor-overview', {
+        url: '/monitor/overview',
         access: {
           restricted: true
         },
         views: {
           'content': {
-            templateUrl: 'templates/detail-view.html',
-            controller: 'detailViewCtrl'
+            templateUrl: 'templates/monitor/overview.html',
+            controller: 'monitorOverviewCtrl'
           }
         }
       })

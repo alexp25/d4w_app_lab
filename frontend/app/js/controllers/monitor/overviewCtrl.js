@@ -1,4 +1,4 @@
-angular.module('app').controller('detailViewCtrl', ['$scope', 'socket', '$timeout', '$http',
+angular.module('app').controller('monitorOverviewCtrl', ['$scope', 'socket', '$timeout', '$http',
   function($scope, socket, $timeout, $http) {
 
     $scope.timer = [];

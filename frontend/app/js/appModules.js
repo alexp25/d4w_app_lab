@@ -3,6 +3,7 @@ angular.module('app', [
   // 'ui.bootstrap',
   'ui.router',
   'ngMaterial',
+  'thatisuday.dropzone'
   // 'socket.io',
   // 'ngWebSocket',
   // 'esri.map'

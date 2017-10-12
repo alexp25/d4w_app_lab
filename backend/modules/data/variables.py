@@ -165,11 +165,6 @@ app_aux_flags = {
     "dir_pump": 1
 }
 
-return_values_def = {
-    "RESULT_OK": 0,
-    "RESULT_FAIL": 1
-}
-
 qLog = Queue(maxsize=10)
 
 device_data = []

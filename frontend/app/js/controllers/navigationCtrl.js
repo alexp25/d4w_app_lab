@@ -43,9 +43,17 @@ angular.module('app').controller('navigationCtrl', ['$scope',
         url: '#/home',
         icon: 'fa fa-home fa-2x'
       }, {
-        name: 'Detail view',
-        url: '#/detail-view',
-        icon: ''
+        name: 'Monitor',
+        icon: '',
+        subSections: [{
+          name: 'overview',
+          url: '#/monitor/overview',
+          icon: 'fa fa-play'
+        }, {
+          name: 'details',
+          url: '#/monitor/details',
+          icon: 'fa fa-play'
+        }]
       }, {
         name: 'Control',
         icon: '',

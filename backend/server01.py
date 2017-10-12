@@ -31,6 +31,7 @@ from flask_socketio import send, emit, disconnect
 
 # app modules
 from modules.data import variables
+from modules.data.constants import Constants
 
 # only the main modules calls init
 # the other modules using the global variables just import "appVariables"
@@ -194,11 +195,11 @@ def apiDatabaseSensors():
 
             return json.dumps(results, default=default_json)
         else:
-            result = variables.return_values_def["RESULT_FAIL"]
+            result = Constants.RESULT_FAIL
             return json.dumps({"result": result})
     except:
         variables.print_exception("[routes][/api/database/sensors]")
-        result = variables.return_values_def["RESULT_FAIL"]
+        result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
 
 @app.route('/api/download/log', methods=['GET'])
@@ -212,8 +213,68 @@ def apiDownloadLog():
 @app.route('/api/reload', methods=['GET'])
 def apiReload():
     variables.load_app_config()
-    result = variables.return_values_def["RESULT_OK"]
+    variables.test_manager.update_hil_devices()
+
+    result = Constants.RESULT_OK
     return json.dumps({"result": result})
+
+@app.route('/api/settings', methods=['GET', 'POST'])
+def apiSettings():
+    if request.method == "GET":
+        result = Constants.RESULT_OK
+        return json.dumps({"result": result, "data": variables.app_config})
+    else:
+        print (request.json)
+        result = Constants.RESULT_OK
+        return json.dumps({"result": result})
+
+@app.route('/api/file/settings', methods=['GET', 'POST'])
+def apiFileSettings():
+    filename = "config.json"
+    filename_full = 'config/' + filename
+
+    if request.method == "GET":
+        return send_file(filename_full,
+                         mimetype='text/plain',
+                         attachment_filename="config.json",
+                         as_attachment=True)
+    else:
+        file = request.files["file"]
+        print(file)
+        file_extension = file.filename.rsplit('.', 1)
+        print(file_extension)
+        dev = int(request.form.getlist('id')[0])
+        print(dev)
+        try:
+            if len(file_extension) > 0:
+                file_extension = file_extension[1]
+            else:
+                raise Exception("no file extension")
+            if not file_extension == "json":
+                raise Exception("file extension mismatch")
+
+            file_contents = file.read()
+            file_contents_json = json.loads(file_contents)
+            file_contents_new = json.dumps(file_contents_json, indent=2)
+            # file.save(os.path.join("config/", filename))
+            with open(filename_full, 'w') as f:
+                f.write(file_contents_new)
+
+            variables.load_app_config()
+
+            variables.test_manager.update_hil_devices()
+
+        except Exception as inst:
+            result = {
+                "result": Constants.RESULT_FAIL,
+                "msg": "file upload failed. " + inst.__str__(),
+            }
+            return json.dumps(result)
+
+        # print(file_contents)
+        result = Constants.RESULT_OK
+        return json.dumps({"result": result})
+
 
 @app.route('/api/download/log-dbg', methods=['GET'])
 def apiDownloadLogDbg():
@@ -250,6 +311,22 @@ if __name__ == '__main__':
 
     thread8 = ControlSystemsThread()
     thread8.start()
+
+
+    # test server
+    from modules.test.TCPServer import TCPServer
+
+    t = TCPServer("127.0.0.1", 9001)
+    t.set_function(0)
+    t.start()
+
+    t = TCPServer("127.0.0.1", 9002)
+    t.set_function(101)
+    t.start()
+
+    t = TCPServer("127.0.0.1", 9003)
+    t.set_function(1)
+    t.start()
 
     variables.log2("main", " server started")
 
