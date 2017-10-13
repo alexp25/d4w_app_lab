@@ -1,7 +1,7 @@
 <div class="raspi-frame md-primary" ng-init="init();" layout="column">
   <div layout="column">
     <md-button aria-label="" class="md-primary" ng-click="reloadConfig()">Reload configuration</md-button>
-    <md-button aria-label="" class="md-primary" ng-href="api/file/settings" download>Download configuration file</md-button>
+    <md-button aria-label="" class="md-primary" ng-href="/api/file/settings" download>Download configuration file</md-button>
     <ng-dropzone class="dropzone my-color-element my-scrollable-2 my-scrollbar" options="dzOptions" callbacks="dzCallbacks" methods="dzMethods">
     </ng-dropzone>
   </div>

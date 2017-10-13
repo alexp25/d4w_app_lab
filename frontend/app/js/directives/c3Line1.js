@@ -4,6 +4,7 @@ angular.module('app').directive('c3Line1', function() {
     templateUrl: 'templates/directives/c3-line-1.html',
     scope: {
       data: '=',
+      timestamp: '=',
       options: '=?',
       cid: '=?'
     },
@@ -40,8 +41,6 @@ angular.module('app').directive('c3Line1', function() {
       $("#chart").prop('id', chartid);
       var height = $("#" + containerid).height();
       var width = $("#" + containerid).width();
-
-      var timeCrt = new Date();
 
       function pad(str, max) {
         return str.length < max ? pad("0" + str, max) : str;
@@ -173,10 +172,9 @@ angular.module('app').directive('c3Line1', function() {
 
 
       function addToChart(value, rows, n, caption) {
-        timeCrt = new Date();
         var i;
         var seriesDef = ['x'];
-        var values = [timeCrt];
+        var values = [scope.timestamp];
 
         if (rows.length === 0) {
           if (value.length > 0) {
@@ -219,7 +217,7 @@ angular.module('app').directive('c3Line1', function() {
 
 
 
-      scope.$watch('data', function() {
+      scope.$watch('timestamp', function() {
         if (chartdata !== undefined && scope.data !== undefined) {
           updateChart(scope.data);
         }

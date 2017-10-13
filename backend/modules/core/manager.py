@@ -118,7 +118,7 @@ class TestRunnerManager(Thread):
         for (i, dev) in enumerate(variables.app_config["devices"]):
             if dev["enable"]:
                 if dev["info"]["type"] == Constants.NODE_PUMP:
-                    variables.log2("set_pump", "dev: " + str(j))
+                    # variables.log2("set_pump", "dev: " + str(j))
                     self.tr[j].send_data("1," + str(value))
                     # variables.app_flags["pump"] = value
                 j += 1

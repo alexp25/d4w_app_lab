@@ -13,8 +13,10 @@ angular.module('app').controller('controlMainCtrl', ['$scope', 'socket', '$timeo
       ref: 0,
       mode: 0,
       supervisor: 0,
+      log: 0,
       controller_selection: 0,
-      controller_selection_id: 1
+      controller_selection_id: 1,
+      timestamp: new Date()
     };
 
     $scope.test = function() {
@@ -62,6 +64,7 @@ angular.module('app').controller('controlMainCtrl', ['$scope', 'socket', '$timeo
             $scope.control.ref = $scope.jsondata.info.ref;
             $scope.control.mode = $scope.jsondata.info.mode.toString();
             $scope.control.supervisor = $scope.jsondata.info.supervisor.toString();
+            $scope.control.log = $scope.jsondata.info.log;
           }
 
           if ($scope.jsondata.info.mode >= 1) {
@@ -70,6 +73,8 @@ angular.module('app').controller('controlMainCtrl', ['$scope', 'socket', '$timeo
           if ($scope.jsondata.info.mode === 5) {
             $scope.control.ref = $scope.jsondata.info.ref;
           }
+
+          $scope.control.timestamp = new Date();
         });
         startPolling(100);
 

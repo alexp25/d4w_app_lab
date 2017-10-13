@@ -116,11 +116,18 @@ def handle_post_data(jsondata):
             variables.app_flags['ref'] = jsondata['value']
         elif jsondata['id'] == 10:
             # set log flag
-            if jsondata['value'] == True:
+            try:
+                mode = int(jsondata['value'])
+            except:
+                mode = jsondata['value']
+
+            if mode == 1:
                 if not variables.app_flags['log']:
+                    variables.log2("socketio - post data", "start log")
                     variables.new_log()
                     variables.app_flags['log'] = True
             else:
+                variables.log2("socketio - post data", "stop log")
                 variables.app_flags['log'] = False
 
         elif jsondata['id'] == 20:

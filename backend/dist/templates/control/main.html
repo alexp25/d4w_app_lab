@@ -17,7 +17,7 @@
           <label class="raspi-label-s">Flow setpoint</label>
           <input class="raspi-padding" min="0" ng-change="" ng-model="control.ref" type="number">
         </md-input-container>
-        <md-slider aria-label="a" flex ng-model="control.ref" step="1" min="0" max="700" ng-change="send({'type': 'app', 'id': 1, 'value': control.ref});"></md-slider>
+        <md-slider aria-label="a" flex ng-model="control.ref" step="1" min="0" max="1000" ng-change="send({'type': 'app', 'id': 1, 'value': control.ref});"></md-slider>
 
         <!-- <md-input-container>
           <label class="raspi-label-s">Sensor output</label>
@@ -26,16 +26,20 @@
         <md-slider aria-label="a" flex ng-model="jsondata.info.yk" step="1" min="0" max="700"></md-slider> -->
       </div>
       <div layout="column" flex>
-        <c3-gauge cid="1" data="jsondata.info.yk" options="{caption:'Sensor output',unit:'L/min',height:200,width:200,ymin:0,ymax:700}"></c3-gauge>
-        <c3-line-1 class="chart-style" cid="2" data="[control.pump, control.ref, jsondata.info.yk]" options="{caption: ['Pump command','Flow setpoint','Sensor output'], ymin:0,ymax:700,width:600,height:200,xtype:'timeseries',type:'line'}"></c3-line-1>
+        <c3-gauge cid="1" data="jsondata.info.yk" options="{caption:'Sensor output',unit:'L/min',height:200,width:200,ymin:0,ymax:1000}"></c3-gauge>
+        <c3-line-1 class="chart-style" cid="2" timestamp="control.timestamp" data="[control.pump, control.ref, jsondata.info.yk]" options="{caption: ['Pump command','Flow setpoint','Sensor output'], ymin:0,ymax:1000,width:600,height:200,xtype:'timeseries',type:'line'}"></c3-line-1>
       </div>
     </div>
     <md-divider class="raspi-margin"></md-divider>
     <div layout="row">
       <div flex layout="column">
         <label class="raspi-label-s">Log</label>
-        <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': true});">Start log</md-button>
-        <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': false});">Stop log</md-button>
+        <md-radio-group ng-model="control.log" ng-change="send({'type': 'app', 'id': 10, 'value': control.log});">
+          <md-radio-button value="1">enabled</md-radio-button>
+          <md-radio-button value="0">disabled</md-radio-button>
+        </md-radio-group>
+        <!-- <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': true});">Start log</md-button>
+        <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': false});">Stop log</md-button> -->
         <!-- ng-click="downloadServerLog('/api/download/log');" -->
         <md-button class="md-primary" href="/api/download/log" download>Download log</md-button>
       </div>
