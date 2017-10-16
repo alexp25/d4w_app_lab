@@ -335,6 +335,11 @@ if __name__ == '__main__':
     t.set_function(1)
     t.start()
 
+    if variables.app_config["use_mqtt"]:
+        from modules.test.mqtt_client import MQTTClient
+        m = MQTTClient()
+        m.start()
+
     variables.log2("main", " server started")
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)

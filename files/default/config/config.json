@@ -2,6 +2,7 @@
   "log_file_stdout": "stdout_log.txt", 
   "ts_ramp": 5, 
   "ts_step": 10, 
+  "use_mqtt": true,
   "db_for_upb": {
     "username": "alex", 
     "database": "WaterNetworkTest", 
