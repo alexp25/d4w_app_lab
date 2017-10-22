@@ -38,7 +38,8 @@ class MQTTClient(Thread):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        self.client.connect("127.0.0.1", 1883, 60)
+        # self.client.connect("127.0.0.1", 1883, 60)
+        self.client.connect("192.168.1.150", 1883, 60)
 
         # Blocking call that processes network traffic, dispatches callbacks and
         # handles reconnecting.

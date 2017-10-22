@@ -78,7 +78,7 @@ def handle_my_event(jsondata):
 
 @socketio.on('get_data')
 def handle_get_data(jsondata):
-    time.sleep(variables.app_config['ts_disp'])
+    time.sleep(variables.app_config["params"]["ts_disp"])
     if jsondata['reqtype']=='sensors':
         jsondata['value']=None
         if jsondata['type'] in [1, 2]:
@@ -189,7 +189,7 @@ def apiDatabaseSensors():
         # param['sid']
         # params['n']
         # print(param)
-        if param['id'] != 0 and variables.app_config["db_logging"]:
+        if param['id'] != 0 and variables.app_config["app"]["db_logging"]:
             cursor = variables.cnxn.cursor()
             cursor.execute("SELECT * FROM (SELECT TOP " + str(param['n']) + " * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC) a ORDER BY Timestamp ASC",param['id'])
             # cursor.execute("SELECT TOP 100 * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC",param['id'])
@@ -285,7 +285,7 @@ def apiFileSettings():
 
 @app.route('/api/download/log-dbg', methods=['GET'])
 def apiDownloadLogDbg():
-    filename = variables.app_config["log_file_stdout"]
+    filename = variables.app_config["app"]["log_file_stdout"]
     return send_file(filename,
                      mimetype='text/plain',
                      attachment_filename="log_file_stdout",
@@ -298,9 +298,9 @@ if __name__ == '__main__':
     q_read_tcp = Queue(maxsize=10)
     q_write_tcp = Queue(maxsize=10)
     time.sleep(1)
-    print(variables.app_config["db_selection"])
-    db_info = variables.app_config[variables.app_config["db_selection"]]
-    if variables.app_config["db_logging"]:
+    print(variables.app_config["app"]["db_selection"])
+    db_info = variables.app_config["db_info"][variables.app_config["app"]["db_selection"]]
+    if variables.app_config["app"]["db_logging"]:
         import pyodbc
         try:
             variables.cnxn = pyodbc.connect(
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     t.set_function(1)
     t.start()
 
-    if variables.app_config["use_mqtt"]:
+    if variables.app_config["app"]["use_mqtt"]:
         from modules.test.mqtt_client import MQTTClient
         m = MQTTClient()
         m.start()

@@ -30,8 +30,8 @@ class TestRunnerManager(Thread):
         self.mode = 'multi'
         self.t0 = time.time()
         self.t = self.t0
-        self.TS = variables.app_config["ts"]
-        self.TS_DB = variables.app_config["t_log"]
+        self.TS = variables.app_config["params"]["ts"]
+        self.TS_DB = variables.app_config["params"]["t_log"]
         self.t0_db = self.t0
 
         self.tr = []
@@ -140,7 +140,7 @@ class TestRunnerManager(Thread):
                     if variables.app_flags['log'] == True:
                         variables.log_sensor_data()
 
-                if variables.app_config['db_logging']:
+                if variables.app_config["app"]["db_logging"]:
                     # database log
                     # logging is done synchronously with latest data
                     # even if data from sensors are slightly delayed

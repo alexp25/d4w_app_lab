@@ -22,7 +22,7 @@ class DataBucketThread(Thread):
         t0_slow = tstart
         t0_data = tstart
 
-        db_logging = variables.app_config['db_logging']
+        db_logging = variables.app_config["app"]["db_logging"]
         # appVariables.clientListFcn[i]['t0_polling'] = tstart
         while True:
             try:
