@@ -25,7 +25,7 @@
   },
   
   "app":{
-	"db_selection": "db_for_home", 
+	"db_selection": "db_for_upb_server", 
   	"db_logging": false, 
   	"use_mqtt": true,
   	"log_file_stdout": "stdout_log.txt" 	
@@ -175,6 +175,7 @@
       }, 
       "ip": "127.0.0.1", 
       "enable": true, 
+	  "source": 0, 
       "port": 9001
     }, 
     {
@@ -184,6 +185,7 @@
       }, 
       "ip": "192.168.25.10", 
       "enable": false, 
+	  "source": 0, 
       "port": 23
     }, 
     {
@@ -192,6 +194,7 @@
         "id": 2
       }, 
       "ip": "192.168.25.11", 
+	  "source": 0, 
       "enable": false, 
       "port": 23
     }, 
@@ -201,6 +204,7 @@
         "id": 3
       }, 
       "ip": "127.0.0.1", 
+	  "source": 0, 
       "enable": true, 
       "port": 9002
     }, 
@@ -210,8 +214,19 @@
         "id": 1
       }, 
       "ip": "127.0.0.1", 
+	  "source": 0, 
       "enable": true, 
       "port": 9003
+    },
+	{
+      "info": {
+        "type": 101, 
+        "id": 4
+      }, 
+      "ip": "", 
+	  "source": 1, 
+      "enable": true, 
+      "port": 0
     }
   ], 
   "controllers": [

@@ -59,6 +59,7 @@ class TestRunnerManager(Thread):
         self.hil_device_index = 0
         for dev in variables.app_config["devices"]:
             if dev["enable"]:
+                #  add only devices connected via tcp
                 self.add_new_hil_device(dev["ip"], dev["port"], dev)
 
     def clear_hil_devices(self):
@@ -89,27 +90,27 @@ class TestRunnerManager(Thread):
         new_device_data = copy.deepcopy(Constants.hil_object_data_model)
         new_device_data["id"] = dev["info"]["id"]
         new_device_data["type"] = dev["info"]["type"]
-
-        new_hil_object = {
-            "function": {
-                "socket": self.hil,
-            },
-            "data": new_device_data
-        }
-        new_hil_object["data"]["ip"] = ip
-        new_hil_object["data"]["port"] = port
-        new_hil_object["data"]["index"] = self.hil_device_index
+        new_device_data["ip"] = ip
+        new_device_data["port"] = port
+        new_device_data["index"] = self.hil_device_index
         if dev is not None:
             if "info" in dev:
-                new_hil_object["data"]["info"] = dev["info"]
+                new_device_data["info"] = dev["info"]
 
-
-        self.hil_object_array.append(new_hil_object)
         variables.device_data.append(new_device_data)
 
-        self.tr.append(TestRunner(new_hil_object))
-        if self.mode == 'multi':
-            self.tr[self.hil_device_index].start()
+        if dev["source"] == 0:
+            new_hil_object = {
+                "function": {
+                    "socket": self.hil,
+                },
+                "data": new_device_data
+            }
+            self.hil_object_array.append(new_hil_object)
+            self.tr.append(TestRunner(new_hil_object))
+            if self.mode == 'multi':
+                self.tr[self.hil_device_index].start()
+
         self.hil_device_index += 1
 
 
