@@ -25,44 +25,10 @@
       <file leaf-file-name="server01.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server01.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="223" column="47" lean-forward="false" selection-start-line="223" selection-start-column="47" selection-end-line="223" selection-end-column="47" />
+            <state relative-caret-position="167">
+              <caret line="241" column="0" lean-forward="false" selection-start-line="241" selection-start-column="0" selection-end-line="241" selection-end-column="0" />
               <folding>
                 <element signature="e#17#28#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HIL_socket_API.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/api/HIL_socket_API.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="229">
-              <caret line="77" column="12" lean-forward="false" selection-start-line="77" selection-start-column="12" selection-end-line="77" selection-end-column="12" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/site-packages/flask/app.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="1050" column="0" lean-forward="false" selection-start-line="1050" selection-start-column="0" selection-end-line="1050" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="read_data.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read_data.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="20" column="48" lean-forward="true" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="48" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -71,11 +37,9 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="60" column="43" lean-forward="true" selection-start-line="60" selection-start-column="43" selection-end-line="60" selection-end-column="43" />
-              <folding>
-                <element signature="e#1#32#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="268">
+              <caret line="107" column="49" lean-forward="true" selection-start-line="106" selection-start-column="7" selection-end-line="107" selection-end-column="49" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -83,8 +47,8 @@
       <file leaf-file-name="machine_learning_main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/machine_learning_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="498">
-              <caret line="72" column="64" lean-forward="false" selection-start-line="72" selection-start-column="64" selection-end-line="72" selection-end-column="64" />
+            <state relative-caret-position="157">
+              <caret line="45" column="27" lean-forward="true" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -92,27 +56,77 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="manager.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/core/manager.py">
+      <file leaf-file-name="read_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2948">
-              <caret line="143" column="19" lean-forward="false" selection-start-line="143" selection-start-column="19" selection-end-line="143" selection-end-column="19" />
+            <state relative-caret-position="400">
+              <caret line="21" column="31" lean-forward="false" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="31" />
               <folding>
-                <element signature="e#0#11#0" expanded="true" />
-                <marker date="1510307916576" expanded="true" signature="909:1115" ph="..." />
-                <marker date="1510307916576" expanded="true" signature="4852:6508" ph="..." />
+                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TCPServer.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/test/TCPServer.py">
+      <file leaf-file-name="HIL_socket_API.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/api/HIL_socket_API.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="90" column="76" lean-forward="false" selection-start-line="90" selection-start-column="76" selection-end-line="90" selection-end-column="76" />
+            <state relative-caret-position="550">
+              <caret line="31" column="13" lean-forward="false" selection-start-line="31" selection-start-column="13" selection-end-line="31" selection-end-column="13" />
               <folding>
-                <element signature="e#113#134#0" expanded="true" />
+                <marker date="1510323893375" expanded="true" signature="3484:3589" ph="..." />
+                <marker date="1510323893375" expanded="true" signature="5372:5398" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/config.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="660">
+              <caret line="32" column="5" lean-forward="false" selection-start-line="32" selection-start-column="5" selection-end-line="32" selection-end-column="5" />
+              <folding>
+                <marker date="1510325133718" expanded="true" signature="685:865" ph="{&quot;db_selection&quot;: &quot;db_for_home&quot;...}" />
+                <marker date="1510325133718" expanded="true" signature="878:1104" ph="{&quot;t_log&quot;: 5...}" />
+                <marker date="1510325133718" expanded="true" signature="1125:2152" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="1131:2148" ph="{&quot;id&quot;: 1...}" />
+                <marker date="1510325133718" expanded="true" signature="1147:2126" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="1157:1234" ph="{&quot;node_id&quot;: 1...}" />
+                <marker date="1510325133718" expanded="true" signature="1245:1322" ph="{&quot;node_id&quot;: 2...}" />
+                <marker date="1510325133718" expanded="true" signature="1333:1410" ph="{&quot;node_id&quot;: 3...}" />
+                <marker date="1510325133718" expanded="true" signature="1421:1498" ph="{&quot;node_id&quot;: 5...}" />
+                <marker date="1510325133718" expanded="true" signature="1509:1586" ph="{&quot;node_id&quot;: 6...}" />
+                <marker date="1510325133718" expanded="true" signature="1597:1674" ph="{&quot;node_id&quot;: 7...}" />
+                <marker date="1510325133718" expanded="true" signature="1685:1762" ph="{&quot;node_id&quot;: 8...}" />
+                <marker date="1510325133718" expanded="true" signature="1773:1850" ph="{&quot;node_id&quot;: 9...}" />
+                <marker date="1510325133718" expanded="true" signature="1861:1939" ph="{&quot;node_id&quot;: 10...}" />
+                <marker date="1510325133718" expanded="true" signature="1950:2029" ph="{&quot;node_id&quot;: 11...}" />
+                <marker date="1510325133718" expanded="true" signature="2040:2118" ph="{&quot;node_id&quot;: 1...}" />
+                <marker date="1510325133718" expanded="true" signature="2172:2236" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2178:2232" ph="{&quot;ip&quot;: &quot;192.168.240.1&quot;...}" />
+                <marker date="1510325133718" expanded="true" signature="2252:2687" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2258:2395" ph="{&quot;u_min&quot;: 100...}" />
+                <marker date="1510325133718" expanded="true" signature="2294:2318" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2353:2389" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2402:2539" ph="{&quot;u_min&quot;: 100...}" />
+                <marker date="1510325133718" expanded="true" signature="2438:2462" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2497:2533" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2546:2683" ph="{&quot;u_min&quot;: 100...}" />
+                <marker date="1510325133718" expanded="true" signature="2582:2606" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2641:2677" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2713:2765" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2794:2817" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2839:2872" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2891:3721" ph="[...]" />
+                <marker date="1510325133718" expanded="true" signature="2897:3053" ph="{&quot;ip&quot;: &quot;127.0.0.1&quot;...}" />
+                <marker date="1510325133718" expanded="true" signature="2913:2958" ph="{&quot;id&quot;: 0...}" />
+                <marker date="1510325133718" expanded="true" signature="3060:3161" ph="{&quot;ip&quot;: &quot;192.168.25.10&quot;...}" />
+                <marker date="1510325133718" expanded="true" signature="3076:3121" ph="{&quot;id&quot;: 1...}" />
+                <marker date="1510325133718" expanded="true" signature="3689:3717" ph="{&quot;ip&quot;: &quot;127.0.0.1&quot;...}" />
+                <marker date="1510325133718" expanded="true" signature="3747:3837" ph="{&quot;id&quot;: 1...}" />
+                <marker date="1510325133718" expanded="true" signature="3844:3934" ph="{&quot;id&quot;: 2...}" />
+                <marker date="1510325133718" expanded="true" signature="3941:4031" ph="{&quot;id&quot;: 3...}" />
               </folding>
             </state>
           </provider>
@@ -121,20 +135,30 @@
       <file leaf-file-name="mqtt_client.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/modules/test/mqtt_client.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="13" column="12" lean-forward="false" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+            <state relative-caret-position="1782">
+              <caret line="86" column="61" lean-forward="false" selection-start-line="86" selection-start-column="61" selection-end-line="86" selection-end-column="61" />
               <folding>
-                <element signature="e#0#11#0" expanded="true" />
+                <marker date="1509633701363" expanded="true" signature="0:7" ph="import ..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="variables.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/data/variables.py">
+      <file leaf-file-name="control_thread.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/control_thread.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="564">
-              <caret line="190" column="0" lean-forward="false" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+            <state relative-caret-position="748">
+              <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="manager.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/core/manager.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="450">
+              <caret line="106" column="26" lean-forward="false" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -153,46 +177,65 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>log_senso</find>
-      <find>test_manager</find>
-      <find>&quot;type</find>
-      <find>variables.app_flags[&quot;pump&quot;] = uk</find>
-      <find>get_data</find>
-      <find>db_logging</find>
-      <find>variables.resu</find>
-      <find>tim</find>
-      <find>traceback</find>
-      <find>except</find>
-      <find>exce</find>
-      <find>hil_object_data_model</find>
-      <find>variables.device_data</find>
-      <find>app_flags['multi']</find>
-      <find>multi</find>
-      <find>app_flags</find>
-      <find>DELAY</find>
-      <find>time.sleep</find>
-      <find>LOOP_DELAY</find>
-      <find>return_values_def</find>
-      <find>EXIT</find>
-      <find>qos=2</find>
-      <find>aux</find>
-      <find>/delete</find>
-      <find>app_config[&quot;app&quot;][&quot;db_logging&quot;]</find>
-      <find>cnxn</find>
-      <find>RECV</find>
-      <find>send</find>
-      <find>sending</find>
-      <find>cluster</find>
+      <find>variables.app_config[&quot;ts&quot;]</find>
+      <find>variables.app_config[&quot;ts_control&quot;]</find>
+      <find>variables.app_config['ts_control']</find>
+      <find>variables.app_config['ts_ramp']</find>
+      <find>variables.app_config['ts_step']</find>
+      <find>variables.app_config['ts_disp']</find>
+      <find>variables.app_config['du_spab']</find>
+      <find>variables.app_config['um_spab']</find>
+      <find>variables.app_config['du_ramp']</find>
+      <find>variables.app_config['u_min']</find>
+      <find>variables.app_config['ts_spab']</find>
+      <find>variables.app_config['y_index']</find>
+      <find>variables.app_config['db_selection']</find>
+      <find>variables.app_config['db_logging']</find>
+      <find>variables.app_config['log_file_stdout']</find>
+      <find>variables.app_config['debug']</find>
+      <find>variables.app_config[&quot;use_mqtt&quot;]</find>
+      <find>variables.app_config[&quot;db_selection&quot;]</find>
+      <find>variables.app_config</find>
+      <find>variables.app_config[&quot;db_logging&quot;]</find>
+      <find>use_mqtt</find>
+      <find>log_file_</find>
+      <find>debug</find>
+      <find>[&quot;db_logging</find>
+      <find>variables.app_config[&quot;params&quot;][&quot;db_logging&quot;]</find>
+      <find>db_selection</find>
+      <find>log_file_stdout</find>
+      <find>read_data</find>
+      <find>machine_learning</find>
+      <find>n_series_disp</find>
     </findStrings>
     <replaceStrings>
       <replace>variables.app_flags[&quot;pump&quot;] = int(uk)</replace>
       <replace>variables.test_manager</replace>
-      <replace>qos=DEFAULT_QOS</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;t_log&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts_control&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts_ramp&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts_step&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts_disp&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;du_spab&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;um_spab&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;du_ramp&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;u_min&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;ts_spab&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;y_index&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;use_mqtt&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;db_selection&quot;]</replace>
+      <replace>variables.app_config[&quot;params&quot;][&quot;db_logging&quot;]</replace>
+      <replace>variables.app_config[&quot;app&quot;][&quot;db_logging&quot;]</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>E:\programare\webserver\d4w_app_lab\trunk\backend</dir>
+    </dirStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/server.py" />
         <option value="$PROJECT_DIR$/Modules/serial_com.py" />
         <option value="$PROJECT_DIR$/Modules/serverStat.py" />
         <option value="$PROJECT_DIR$/Modules/audio_a.py" />
@@ -231,27 +274,26 @@
         <option value="$PROJECT_DIR$/modules/database_process.py" />
         <option value="$PROJECT_DIR$/modules/api/definitions.py" />
         <option value="$PROJECT_DIR$/modules/core/manager1.py" />
+        <option value="$PROJECT_DIR$/modules/api/HIL_socket_API.py" />
         <option value="$PROJECT_DIR$/modules/data/log.py" />
         <option value="$PROJECT_DIR$/modules/core/runner.py" />
-        <option value="$PROJECT_DIR$/modules/control_thread.py" />
-        <option value="$PROJECT_DIR$/modules/test/main.py" />
-        <option value="$PROJECT_DIR$/modules/test/mqttBroker.py" />
         <option value="$PROJECT_DIR$/modules/data/constants.py" />
-        <option value="$PROJECT_DIR$/modules/test/mqtt_client.py" />
-        <option value="$PROJECT_DIR$/modules/core/manager.py" />
         <option value="$PROJECT_DIR$/modules/data/variables.py" />
-        <option value="$PROJECT_DIR$/modules/api/HIL_socket_API.py" />
+        <option value="$PROJECT_DIR$/modules/test/main.py" />
         <option value="$PROJECT_DIR$/modules/test/TCPServer.py" />
+        <option value="$PROJECT_DIR$/modules/test/mqtt_client.py" />
+        <option value="$PROJECT_DIR$/modules/control_thread.py" />
+        <option value="$PROJECT_DIR$/modules/core/manager.py" />
         <option value="$PROJECT_DIR$/server01.py" />
         <option value="$PROJECT_DIR$/machine_learning_main.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="474" />
-    <option name="y" value="23" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
     <option name="width" value="1128" />
-    <option name="height" value="904" />
+    <option name="height" value="1040" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -280,24 +322,6 @@
               <item name="backend" type="462c0819:PsiDirectoryNode" />
               <item name="modules" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="backend" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="backend" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="backend" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -307,7 +331,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/Dropbox/poli (1)/data4water/scoala de vara iunie 2017/d4w scoala de vara iunie 2017/proiect/cod/Python/clustering_3_batch" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -496,7 +520,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\L604-Precis\AppData\Local\Programs\Python\Python36-32\python.exe" />
+      <option name="SDK_HOME" value="C:\Users\alex\AppData\Local\Programs\Python\Python36-32\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -559,7 +583,7 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="SvnConfiguration" cleanupOnStartRun="true">
-    <configuration>C:\Users\L604-Precis\AppData\Roaming\Subversion</configuration>
+    <configuration>C:\Users\alex\AppData\Roaming\Subversion</configuration>
     <supportedVersion>125</supportedVersion>
   </component>
   <component name="TaskManager">
@@ -574,14 +598,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19270833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.271875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2584746" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38494167" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -592,7 +615,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32944915" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32873806" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -691,8 +714,8 @@
     <entry file="file://$PROJECT_DIR$/modules/core/manager1.py" />
     <entry file="file://$PROJECT_DIR$/modules/data/log.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="35" column="32" lean-forward="false" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
+        <state relative-caret-position="660">
+          <caret line="36" column="32" lean-forward="false" selection-start-line="36" selection-start-column="32" selection-end-line="36" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -710,130 +733,176 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/test/main.py" />
-    <entry file="file://C:/Python27/Lib/site-packages/paho/mqtt/client.py">
+    <entry file="file://$PROJECT_DIR$/modules/data/variables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="2371" column="0" lean-forward="false" selection-start-line="2371" selection-start-column="0" selection-end-line="2371" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/control_thread.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="24" column="12" lean-forward="false" selection-start-line="24" selection-start-column="12" selection-end-line="24" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modules/core/runner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="127" column="54" lean-forward="false" selection-start-line="127" selection-start-column="54" selection-end-line="127" selection-end-column="54" />
+        <state relative-caret-position="1452">
+          <caret line="73" column="16" lean-forward="false" selection-start-line="73" selection-start-column="16" selection-end-line="73" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1510323893506" expanded="true" signature="4278:4283" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/modules/data/constants.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="23" lean-forward="false" selection-start-line="12" selection-start-column="23" selection-end-line="12" selection-end-column="23" />
+        <state relative-caret-position="484">
+          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/core/runner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3080">
+          <caret line="148" column="0" lean-forward="false" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/test/main.py" />
+    <entry file="file://$PROJECT_DIR$/modules/test/TCPServer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1914">
+          <caret line="93" column="0" lean-forward="false" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
+          <folding>
+            <marker date="1510323893522" expanded="true" signature="5485:5530" ph="..." />
+            <marker date="1510323893522" expanded="true" signature="5485:5949" ph="..." />
+            <marker date="1510323893522" expanded="true" signature="5485:6019" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/modules/test/mqtt_client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="13" column="12" lean-forward="false" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+        <state relative-caret-position="1782">
+          <caret line="86" column="61" lean-forward="false" selection-start-line="86" selection-start-column="61" selection-end-line="86" selection-end-column="61" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1509633701363" expanded="true" signature="0:7" ph="import ..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/core/manager.py">
+    <entry file="file://$PROJECT_DIR$/modules/control_thread.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2948">
-          <caret line="143" column="19" lean-forward="false" selection-start-line="143" selection-start-column="19" selection-end-line="143" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1510307916576" expanded="true" signature="909:1115" ph="..." />
-            <marker date="1510307916576" expanded="true" signature="4852:6508" ph="..." />
-          </folding>
+        <state relative-caret-position="748">
+          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/data/variables.py">
+    <entry file="file://$PROJECT_DIR$/config/config.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="564">
-          <caret line="190" column="0" lean-forward="false" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+        <state relative-caret-position="660">
+          <caret line="32" column="5" lean-forward="false" selection-start-line="32" selection-start-column="5" selection-end-line="32" selection-end-column="5" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1510325133718" expanded="true" signature="685:865" ph="{&quot;db_selection&quot;: &quot;db_for_home&quot;...}" />
+            <marker date="1510325133718" expanded="true" signature="878:1104" ph="{&quot;t_log&quot;: 5...}" />
+            <marker date="1510325133718" expanded="true" signature="1125:2152" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="1131:2148" ph="{&quot;id&quot;: 1...}" />
+            <marker date="1510325133718" expanded="true" signature="1147:2126" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="1157:1234" ph="{&quot;node_id&quot;: 1...}" />
+            <marker date="1510325133718" expanded="true" signature="1245:1322" ph="{&quot;node_id&quot;: 2...}" />
+            <marker date="1510325133718" expanded="true" signature="1333:1410" ph="{&quot;node_id&quot;: 3...}" />
+            <marker date="1510325133718" expanded="true" signature="1421:1498" ph="{&quot;node_id&quot;: 5...}" />
+            <marker date="1510325133718" expanded="true" signature="1509:1586" ph="{&quot;node_id&quot;: 6...}" />
+            <marker date="1510325133718" expanded="true" signature="1597:1674" ph="{&quot;node_id&quot;: 7...}" />
+            <marker date="1510325133718" expanded="true" signature="1685:1762" ph="{&quot;node_id&quot;: 8...}" />
+            <marker date="1510325133718" expanded="true" signature="1773:1850" ph="{&quot;node_id&quot;: 9...}" />
+            <marker date="1510325133718" expanded="true" signature="1861:1939" ph="{&quot;node_id&quot;: 10...}" />
+            <marker date="1510325133718" expanded="true" signature="1950:2029" ph="{&quot;node_id&quot;: 11...}" />
+            <marker date="1510325133718" expanded="true" signature="2040:2118" ph="{&quot;node_id&quot;: 1...}" />
+            <marker date="1510325133718" expanded="true" signature="2172:2236" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2178:2232" ph="{&quot;ip&quot;: &quot;192.168.240.1&quot;...}" />
+            <marker date="1510325133718" expanded="true" signature="2252:2687" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2258:2395" ph="{&quot;u_min&quot;: 100...}" />
+            <marker date="1510325133718" expanded="true" signature="2294:2318" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2353:2389" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2402:2539" ph="{&quot;u_min&quot;: 100...}" />
+            <marker date="1510325133718" expanded="true" signature="2438:2462" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2497:2533" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2546:2683" ph="{&quot;u_min&quot;: 100...}" />
+            <marker date="1510325133718" expanded="true" signature="2582:2606" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2641:2677" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2713:2765" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2794:2817" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2839:2872" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2891:3721" ph="[...]" />
+            <marker date="1510325133718" expanded="true" signature="2897:3053" ph="{&quot;ip&quot;: &quot;127.0.0.1&quot;...}" />
+            <marker date="1510325133718" expanded="true" signature="2913:2958" ph="{&quot;id&quot;: 0...}" />
+            <marker date="1510325133718" expanded="true" signature="3060:3161" ph="{&quot;ip&quot;: &quot;192.168.25.10&quot;...}" />
+            <marker date="1510325133718" expanded="true" signature="3076:3121" ph="{&quot;id&quot;: 1...}" />
+            <marker date="1510325133718" expanded="true" signature="3689:3717" ph="{&quot;ip&quot;: &quot;127.0.0.1&quot;...}" />
+            <marker date="1510325133718" expanded="true" signature="3747:3837" ph="{&quot;id&quot;: 1...}" />
+            <marker date="1510325133718" expanded="true" signature="3844:3934" ph="{&quot;id&quot;: 2...}" />
+            <marker date="1510325133718" expanded="true" signature="3941:4031" ph="{&quot;id&quot;: 3...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/modules/api/HIL_socket_API.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="77" column="12" lean-forward="false" selection-start-line="77" selection-start-column="12" selection-end-line="77" selection-end-column="12" />
+        <state relative-caret-position="550">
+          <caret line="31" column="13" lean-forward="false" selection-start-line="31" selection-start-column="13" selection-end-line="31" selection-end-column="13" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <marker date="1510323893375" expanded="true" signature="3484:3589" ph="..." />
+            <marker date="1510323893375" expanded="true" signature="5372:5398" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modules/test/TCPServer.py">
+    <entry file="file://$PROJECT_DIR$/modules/core/manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="90" column="76" lean-forward="false" selection-start-line="90" selection-start-column="76" selection-end-line="90" selection-end-column="76" />
+        <state relative-caret-position="450">
+          <caret line="106" column="26" lean-forward="false" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
           <folding>
-            <element signature="e#113#134#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/site-packages/flask/app.py">
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/site-packages/sklearn/cluster/k_means_.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="1050" column="0" lean-forward="false" selection-start-line="1050" selection-start-column="0" selection-end-line="1050" selection-end-column="0" />
+        <state relative-caret-position="185">
+          <caret line="860" column="0" lean-forward="false" selection-start-line="860" selection-start-column="0" selection-end-line="860" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="60" column="43" lean-forward="true" selection-start-line="60" selection-start-column="43" selection-end-line="60" selection-end-column="43" />
-          <folding>
-            <element signature="e#1#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server01.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="223" column="47" lean-forward="false" selection-start-line="223" selection-start-column="47" selection-end-line="223" selection-end-column="47" />
-          <folding>
-            <element signature="e#17#28#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="268">
+          <caret line="107" column="49" lean-forward="true" selection-start-line="106" selection-start-column="7" selection-end-line="107" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="20" column="48" lean-forward="true" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="48" />
+        <state relative-caret-position="400">
+          <caret line="21" column="31" lean-forward="false" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="31" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/server01.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="241" column="0" lean-forward="false" selection-start-line="241" selection-start-column="0" selection-end-line="241" selection-end-column="0" />
+          <folding>
+            <element signature="e#17#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/machine_learning_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="72" column="64" lean-forward="false" selection-start-line="72" selection-start-column="64" selection-end-line="72" selection-end-column="64" />
+        <state relative-caret-position="157">
+          <caret line="45" column="27" lean-forward="true" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

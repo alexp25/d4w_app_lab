@@ -44,7 +44,7 @@
     "angular-local-storage": "^0.5.2",
     "ngstorage": "ng-storage#^0.4.2",
     "socket.io-client": "1.4.4",
-    "c3": "^0.4.11",
+    "c3": "^0.4.18",
     "ng-dropzone": "ngdropzone#2.0.2"
   },
   "resolutions": {

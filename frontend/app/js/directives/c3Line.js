@@ -72,6 +72,7 @@ angular.module('app').directive('c3Line', function() {
             ['data1', 30, 200, 100, 400, 150, 250],
             ['data2', 130, 340, 200, 500, 250, 350]
           ],
+        
           rows: []
         },
         axis: {

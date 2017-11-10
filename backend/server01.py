@@ -210,6 +210,25 @@ def apiDatabaseSensors():
         return json.dumps({"result": result})
 
 
+@app.route('/api/machine-learning/raw')
+def apiMachineLearningRaw():
+    try:
+        param = request.args.get('param')
+        variables.log2("routes", '/api/machine-learning/raw ' + param)
+        param = json.loads(param)
+        # param['sid']
+        # params['n']
+        # print(param)
+
+        # (data, info) = variables.machine_learning.run_clustering()
+        (data, info) = variables.machine_learning.get_raw_data(0)
+        # print(data)
+        return json.dumps({"data": data, "info": info}, default=default_json)
+    except:
+        variables.print_exception("[routes][/api/machine-learning/clusters]")
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
 @app.route('/api/machine-learning/clusters')
 def apiMachineLearningClusters():
     try:
@@ -219,7 +238,10 @@ def apiMachineLearningClusters():
         # param['sid']
         # params['n']
         # print(param)
-        (data, info) = variables.machine_learning.read_data()
+
+        (data, info) = variables.machine_learning.run_clustering(-1, param["plot"])
+
+        # (data, info) = variables.machine_learning.get_raw_data(0)
         # print(data)
         return json.dumps({"data": data, "info": info}, default=default_json)
     except:
@@ -360,6 +382,7 @@ if __name__ == '__main__':
 
     if variables.app_config["app"]["machine_learning"]:
         variables.machine_learning = MachineLearningMain()
+        variables.machine_learning.read_data()
 
     variables.log2("main", " server started")
 

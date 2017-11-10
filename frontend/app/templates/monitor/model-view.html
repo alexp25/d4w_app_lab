@@ -1,6 +1,11 @@
 <div layout="column" ng-init="init();">
   <div class="raspi-frame" layout="column">
     <!-- xtype:'timeseries' -->
-    <c3-line ng-if="displayData" cid="1" data="chartData" options="{showPoint:false,ymin:chartSettings.min,ymax:chartSettings.max,height:500,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+    <span>Raw data</span>
+    <c3-line ng-if="chartData1.disp" cid="1" data="chartData1" options="{showPoint:false,ymin:chartData1.settings.min,ymax:chartData1.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+    <span>Node based clusters</span>
+    <c3-line ng-if="chartData2.disp" cid="2" data="chartData2" options="{showPoint:false,ymin:chartData2.settings.min,ymax:chartData2.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+    <span>Consumer patterns (clusters)</span>
+    <c3-line ng-if="chartData3.disp" cid="3" data="chartData3" options="{showPoint:false,ymin:chartData3.settings.min,ymax:chartData3.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
   </div>
 </div>
