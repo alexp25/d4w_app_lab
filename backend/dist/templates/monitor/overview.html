@@ -1,0 +1,15 @@
+<div layout="column" ng-init="init();">
+  <div class="raspi-frame" layout="column">
+    <!-- <span class="raspi-label-m">{{jsondata}}</span> -->
+    <div layout="column" ng-if="jsondata===undefined">
+      <span>No data</span>
+    </div>
+    <div layout="column" ng-if="jsondata!==undefined">
+      <!-- <my-table caption="Sensor data" header="['type', 'id', 'value', 'ts']" keys="['type', 'id', 'value2', 'ts']" data="jsondata.sensors"></my-table> -->
+      <my-table caption="Sensor data" header="['type', 'id', 'value']" keys="['type', 'id', 'value2']" data="jsondata.sensors"></my-table>
+      <my-table caption="Measuring devices" header="['ip', 'port', 'info', 'in', 'rx counter']" keys="['ip', 'port', 'info', 'in', 'rx_counter']" data="jsondata.devices"></my-table>
+    </div>
+
+  </div>
+
+</div>

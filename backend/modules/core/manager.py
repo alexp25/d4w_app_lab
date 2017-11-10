@@ -141,7 +141,7 @@ class TestRunnerManager(Thread):
                     if variables.app_flags['log'] == True:
                         variables.log_sensor_data()
 
-                if variables.app_config["app"]["db_logging"]:
+                if variables.app_config["app"]["db_access"] and variables.app_config["app"]["db_logging"]:
                     # database log
                     # logging is done synchronously with latest data
                     # even if data from sensors are slightly delayed

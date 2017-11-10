@@ -50,8 +50,8 @@ angular.module('app').controller('navigationCtrl', ['$scope',
           url: '#/monitor/overview',
           icon: 'fa fa-play'
         }, {
-          name: 'details',
-          url: '#/monitor/details',
+          name: 'model view',
+          url: '#/monitor/model-view',
           icon: 'fa fa-play'
         }]
       }, {

@@ -124,10 +124,21 @@ class HIL_socket:
         # if self.debug_log:
         #     variables.log2(self.__class__.__name__, "get data")
 
-        self.send((tx_message+"\n").encode())
+        # self.send(tx_message + "\n")
+        # print(variables.python_version)
+        if variables.python_version == 2:
+            self.send((tx_message+"\n").encode())
+        elif variables.python_version == 3:
+            self.send(bytes(tx_message + "\n", "utf-8"))
         rx_message = self.receive(buffSize)
+
+        # print("RECV: " + str(rx_message))
         try:
-            rx_message = rx_message.decode()
+            if variables.python_version == 2:
+                rx_message = rx_message.decode()
+            elif variables.python_version == 3:
+                rx_message = str(rx_message, "utf-8")
+
             rx_data = [int(rm) for rm in rx_message.split(",")]
             # get error code and data
             return (0, rx_data)
@@ -136,29 +147,29 @@ class HIL_socket:
                 variables.print_exception(self.__class__.__name__)
             return (-1, None)
 
-    def request_hex(self, service_def):
-        if self.debug_log:
-            variables.log2(self.__class__.__name__, "get data")
-
-        format = "!BB"
-        tx_length = calcsize(format) - 1
-
-        try:
-            tx_message = pack(format, tx_length, self.servicesDict[service_def])
-            # tx_message = pack(self.txMsgStructuresDict['DATA'], tx_length, self.servicesDict['SERVICE_DATA'])
-        except:
-            if self.debug_log:
-                variables.print_exception(self.__class__.__name__)
-            return (-1, None)
-
-        self.send(tx_message)
-        rx_message = self.receive(buffSize)
-        try:
-            rx_data = [rm for rm in rx_message]
-            # get error code and data
-            return (rx_data[2], rx_data)
-        except:
-            if self.debug_log:
-                variables.print_exception(self.__class__.__name__)
-            return (-1, None)
+    # def request_hex(self, service_def):
+    #     if self.debug_log:
+    #         variables.log2(self.__class__.__name__, "get data")
+    #
+    #     format = "!BB"
+    #     tx_length = calcsize(format) - 1
+    #
+    #     try:
+    #         tx_message = pack(format, tx_length, self.servicesDict[service_def])
+    #         # tx_message = pack(self.txMsgStructuresDict['DATA'], tx_length, self.servicesDict['SERVICE_DATA'])
+    #     except:
+    #         if self.debug_log:
+    #             variables.print_exception(self.__class__.__name__)
+    #         return (-1, None)
+    #
+    #     self.send(tx_message)
+    #     rx_message = self.receive(buffSize)
+    #     try:
+    #         rx_data = [rm for rm in rx_message]
+    #         # get error code and data
+    #         return (rx_data[2], rx_data)
+    #     except:
+    #         if self.debug_log:
+    #             variables.print_exception(self.__class__.__name__)
+    #         return (-1, None)
 

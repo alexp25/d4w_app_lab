@@ -8,6 +8,8 @@ angular.module('app').controller('controlMainCtrl', ['$scope', 'socket', '$timeo
     };
     $scope.data_init = false;
 
+    $scope.showChart = false;
+
     $scope.control = {
       pump: 0,
       ref: 0,
@@ -21,6 +23,10 @@ angular.module('app').controller('controlMainCtrl', ['$scope', 'socket', '$timeo
 
     $scope.test = function() {
       console.log("test");
+    };
+
+    $scope.toggleChart = function() {
+      $scope.showChart = !$scope.showChart;
     };
 
 

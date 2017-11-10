@@ -1,0 +1,6 @@
+<div layout="column" ng-init="init();">
+  <div class="raspi-frame" layout="column">
+    <!-- xtype:'timeseries' -->
+    <c3-line ng-if="displayData" cid="1" data="chartData" options="{showPoint:false,ymin:chartSettings.min,ymax:chartSettings.max,height:500,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+  </div>
+</div>

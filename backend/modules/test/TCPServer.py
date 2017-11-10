@@ -8,7 +8,7 @@ import time
 import traceback
 
 from modules.data.constants import Constants
-
+from modules.data import variables
 
 class TCPServer(Thread):
     def __init__(self, host, port):
@@ -85,23 +85,44 @@ class TCPServer(Thread):
                         if len(data) == 0:
                             raise Exception("empty message")
 
+                        if variables.python_version == 2:
+                            data_array = [int(d) for d in data.decode().split(",")]
+                        elif variables.python_version == 3:
+                            data_array = [int(d) for d in str(data, "utf-8").split(",")]
 
-                        data_array = [int(d) for d in data.decode().split(",")]
                         if data_array[0] == 100:
                             if self.function == Constants.NODE_FLOW_SENSOR:
                                 send_data_values = [str(self.test_value)+","] * 10
                                 send_data_values_str = "".join(send_data_values)
-                                send_data = "100," + send_data_values_str + "1\n".encode()
+                                send_data = "100," + send_data_values_str + "1\n"
+
+                                if variables.python_version == 2:
+                                    send_data = send_data.encode()
+                                elif variables.python_version == 3:
+                                    send_data = bytes(str(send_data), 'utf-8')
+
                                 self.test_value += 1
                                 if self.test_value > 200:
                                     self.test_value = 0
                             elif self.function == Constants.NODE_PUMP:
-                                send_data = "100," + str(self.test_value) + "\n".encode()
+                                send_data = "100," + str(self.test_value) + "\n"
+
+                                if variables.python_version == 2:
+                                    send_data = send_data.encode()
+                                elif variables.python_version == 3:
+                                    send_data = bytes(str(send_data), 'utf-8')
+
                                 self.test_value += 1
                                 if self.test_value > 200:
                                     self.test_value = 0
                             else:
-                                send_data = "100," + str(self.test_value) + "\n".encode()
+                                send_data = "100," + str(self.test_value) + "\n"
+
+                                if variables.python_version == 2:
+                                    send_data = send_data.encode()
+                                elif variables.python_version == 3:
+                                    send_data = bytes(str(send_data), 'utf-8')
+
                                 self.test_value += 1
                                 if self.test_value > 200:
                                     self.test_value = 0
@@ -111,6 +132,8 @@ class TCPServer(Thread):
 
                         if self.debug_log:
                             print("TCPServer sent: ", send_data)
+
+
                         sock.send(send_data)
 
                     # client disconnected, so remove from socket list

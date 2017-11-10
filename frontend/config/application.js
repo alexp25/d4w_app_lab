@@ -30,7 +30,8 @@ module.exports = function(lineman) {
     jshint: {
       options: {
         newcap: false,
-        reporterOutput: ""
+        reporterOutput: "",
+        esversion: 6
       }
     },
 

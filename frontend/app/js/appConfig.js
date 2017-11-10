@@ -137,6 +137,18 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
           }
         }
       })
+      .state('monitor-model-view', {
+        url: '/monitor/model-view',
+        access: {
+          restricted: true
+        },
+        views: {
+          'content': {
+            templateUrl: 'templates/monitor/model-view.html',
+            controller: 'monitorModelViewCtrl'
+          }
+        }
+      })
       .state('control-main', {
         url: '/control/main',
         access: {

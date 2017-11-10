@@ -47,6 +47,8 @@ from modules.data.log import Log
 
 from modules.test.TCPServer import TCPServer
 
+from machine_learning_main import MachineLearningMain
+
 
 # app config
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dist')
@@ -178,18 +180,14 @@ def add_header(r):
 
 @app.route('/api/database/sensors')
 def apiDatabaseSensors():
-    msg = "[routes][/api/database/sensors]"
-    variables.log2("routes", '/api/database/sensors')
     try:
         param = request.args.get('param')
-
-        variables.log2("routes", '/api/database/sensors/delete ' + param)
-
+        variables.log2("routes", '/api/database/sensors ' + param)
         param = json.loads(param)
         # param['sid']
         # params['n']
         # print(param)
-        if param['id'] != 0 and variables.app_config["app"]["db_logging"]:
+        if param['id'] != 0 and variables.app_config["app"]["db_access"]:
             cursor = variables.cnxn.cursor()
             cursor.execute("SELECT * FROM (SELECT TOP " + str(param['n']) + " * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC) a ORDER BY Timestamp ASC",param['id'])
             # cursor.execute("SELECT TOP 100 * FROM SensorData_Flow WHERE Pipe_ID = ? ORDER BY Timestamp DESC",param['id'])
@@ -200,12 +198,32 @@ def apiDatabaseSensors():
             for row in rows:
                 results.append(dict(zip(columns, row)))
 
+            # print(results)
+
             return json.dumps(results, default=default_json)
         else:
             result = Constants.RESULT_FAIL
             return json.dumps({"result": result})
     except:
         variables.print_exception("[routes][/api/database/sensors]")
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
+
+@app.route('/api/machine-learning/clusters')
+def apiMachineLearningClusters():
+    try:
+        param = request.args.get('param')
+        variables.log2("routes", '/api/machine-learning/clusters ' + param)
+        param = json.loads(param)
+        # param['sid']
+        # params['n']
+        # print(param)
+        (data, info) = variables.machine_learning.read_data()
+        # print(data)
+        return json.dumps({"data": data, "info": info}, default=default_json)
+    except:
+        variables.print_exception("[routes][/api/machine-learning/clusters]")
         result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
 
@@ -300,7 +318,7 @@ if __name__ == '__main__':
     time.sleep(1)
     print(variables.app_config["app"]["db_selection"])
     db_info = variables.app_config["db_info"][variables.app_config["app"]["db_selection"]]
-    if variables.app_config["app"]["db_logging"]:
+    if variables.app_config["app"]["db_access"]:
         import pyodbc
         try:
             variables.cnxn = pyodbc.connect(
@@ -339,6 +357,9 @@ if __name__ == '__main__':
         from modules.test.mqtt_client import MQTTClient
         m = MQTTClient()
         m.start()
+
+    if variables.app_config["app"]["machine_learning"]:
+        variables.machine_learning = MachineLearningMain()
 
     variables.log2("main", " server started")
 

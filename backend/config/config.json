@@ -27,8 +27,9 @@
   "app":{
 	"db_selection": "db_for_upb_server", 
   	"db_logging": false, 
-	"db_access": true,
-  	"use_mqtt": true,
+	"db_access": false,
+	"machine_learning": true,
+  	"use_mqtt": false,
   	"log_file_stdout": "stdout_log.txt" 	
   },
   "params":{
@@ -185,7 +186,7 @@
         "id": 1
       }, 
       "ip": "192.168.25.10", 
-      "enable": true, 
+      "enable": false, 
 	  "source": 0, 
       "port": 23
     }, 
@@ -196,7 +197,7 @@
       }, 
       "ip": "192.168.25.11", 
 	  "source": 0, 
-      "enable": true, 
+      "enable": false, 
       "port": 23
     }, 
     {

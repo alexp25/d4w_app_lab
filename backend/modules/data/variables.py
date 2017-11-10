@@ -174,7 +174,21 @@ sensor_model = {}
 
 cnxn = None
 
+machine_learning = None
+python_version = sys.version_info[0]
+
 def init():
     load_app_config()
     load_app_data()
+
+    # version_info[:1]
+    # " # (2,)
+    # python - c
+    # "print __import__('sys').version_info[:2]"  # (2, 7)
+    # python - c
+    # "print __import__('sys').version_info[:3]"  # (2, 7, 6)
+
+
+    print("python version: " + str(python_version))
+
 
