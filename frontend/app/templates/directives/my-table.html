@@ -1,6 +1,6 @@
 <label class="raspi-label-m" style="text-align:start;" ng-if="caption!==undefined;">{{caption}}</label>
-<div class="animate-element-if webhil-frame" >
-  <span class="raspi-label-m">{{caption}}</span>
+<div class="animate-element-if " >
+  <!-- <span class="raspi-label-m">{{caption}}</span> -->
   <div>
     <table class="mytable">
       <tr class="mytable-elem" layout="row">
@@ -10,7 +10,7 @@
       </tr>
     </table>
   </div>
-  <div class="my-scrollable-3 my-scrollbar fade-element-in">
+  <div class="my-scrollbar fade-element-in" ng-class="{'my-scrollable-3': options.disp_mode === 1, 'my-scrollable-1': options.disp_mode === 2}">
     <table class="mytable">
       <tr class="mytable-tr" class="mytable-elem" ng-repeat="data1 in data track by $index" layout="row">
         <td flex ng-repeat="key in keys">

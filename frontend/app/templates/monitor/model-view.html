@@ -1,11 +1,25 @@
 <div layout="column" ng-init="init();">
-  <div class="raspi-frame" layout="column">
-    <!-- xtype:'timeseries' -->
-    <span>Raw data</span>
-    <c3-line ng-if="chartData1.disp" cid="1" data="chartData1" options="{showPoint:false,ymin:chartData1.settings.min,ymax:chartData1.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
-    <span>Node based clusters</span>
-    <c3-line ng-if="chartData2.disp" cid="2" data="chartData2" options="{showPoint:false,ymin:chartData2.settings.min,ymax:chartData2.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
-    <span>Consumer patterns (clusters)</span>
-    <c3-line ng-if="chartData3.disp" cid="3" data="chartData3" options="{showPoint:false,ymin:chartData3.settings.min,ymax:chartData3.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+  <div class="raspi-frame" layout="row">
+
+    <div flex layout="column">
+      <div ng-repeat="chart in chartData">
+        <div layout="row">
+          <div flex layout="column">
+            <span>{{chart.info.description}}</span>
+            <c3-line ng-if="chart.disp" cid="$index" data="chart" options="{showPoint:false,ymin:chart.settings.min,ymax:chart.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+          </div>
+          <div flex layout="column">
+            <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table>
+            <span ng-if="chart.info.details !== undefined">
+              <!-- {{chart.info.details}} -->
+                <my-table caption="info" options="{disp_mode: 2}" header="['', '']" keys="['key', 'value']" data="chart.info.details"></my-table>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
   </div>
 </div>

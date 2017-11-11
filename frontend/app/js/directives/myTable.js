@@ -6,10 +6,15 @@ angular.module('app').directive('myTable', function() {
       caption: '@',
       header: '=?',
       keys: '=',
-      data: '='
+      data: '=',
+      options: '=?'
     },
     link: function(scope) {
-
+      if (scope.options === undefined) {
+        scope.options = {
+          disp_mode: 1
+        };
+      }
     }
 
   };

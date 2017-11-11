@@ -10,7 +10,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       n: 10
     };
 
-    $scope.chartData1 = {
+    $scope.chartModel = {
       columns: ['x', 'series 1'],
       rows: [
         [1, 10],
@@ -22,57 +22,37 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         min: 0,
         max: 5000
       },
+      info: "",
       disp: false
     };
 
-    $scope.chartData2 = {
-      columns: ['x', 'series 1'],
-      rows: [
-        [1, 10],
-        [2, 20],
-        [3, 30],
-      ],
-      timestamp: new Date(),
-      settings: {
-        min: 0,
-        max: 5000
-      },
-      disp: false
-    };
+    $scope.chartData = [];
 
-    $scope.chartData3 = {
-      columns: ['x', 'series 1'],
-      rows: [
-        [1, 10],
-        [2, 20],
-        [3, 30],
-      ],
-      timestamp: new Date(),
-      settings: {
-        min: 0,
-        max: 5000
-      },
-      disp: false
-    };
+
+    function initChart() {
+      for (let i = 0; i < 3; i++) {
+        $scope.chartData[i] = angular.copy($scope.chartModel);
+      }
+    }
+
 
 
     function plotData(data, chart) {
       let info = data.info;
       let tsdata = data.data;
 
-      console.log(data);
-      console.log(info);
-
+      // console.log(data);
+      // console.log(info);
       chart.settings.min = data.info.min;
       chart.settings.max = data.info.max;
-
+      chart.info = data.info;
 
       let rows = [];
       let columns = [];
       let n_points = tsdata[0].length;
       const NMAX = 100;
-      console.log("series: " + tsdata.length);
-      console.log("n_points: " + n_points);
+      // console.log("series: " + tsdata.length);
+      // console.log("n_points: " + n_points);
       let n_series_draw = (tsdata.length < NMAX) ? (tsdata.length) : NMAX;
       columns = ['x'];
       for (let i = 0; i < n_series_draw; i++) {
@@ -97,7 +77,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         chart.disp = true;
       });
 
-      console.log('dataset updated ', chart);
+      // console.log('dataset updated ', chart);
 
     }
 
@@ -114,6 +94,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       then(function(data) {
         var jsonObj = angular.fromJson(data.data);
 
+
         if (jsonObj === false) {
           return;
         }
@@ -123,9 +104,9 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
         $scope.hasData = true;
         if (plot === 0) {
-          plotData(jsonObj, $scope.chartData2);
+          plotData(jsonObj, $scope.chartData[1]);
         } else if (plot === 1) {
-          plotData(jsonObj, $scope.chartData3);
+          plotData(jsonObj, $scope.chartData[2]);
         }
         // console.log($scope.chartData2);
       }).
@@ -156,7 +137,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         }
 
         $scope.hasData = true;
-        plotData(jsonObj, $scope.chartData1);
+        plotData(jsonObj, $scope.chartData[0]);
 
       }).
       catch(function(data) {
@@ -183,6 +164,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     }
 
     $scope.init = function() {
+      initChart();
       pollData(true);
     };
 

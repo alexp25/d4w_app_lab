@@ -20,6 +20,7 @@ class DataClass:
 
             self.data["headers"] = data_np[:, 0]
             self.data["series"] = data_np[:, 1:].astype(float)
+            # self.data["series_array"] = data
 
         return self.data
 

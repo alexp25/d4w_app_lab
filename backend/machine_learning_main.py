@@ -1,4 +1,6 @@
 import csv
+import json
+
 import numpy as np
 import time
 
@@ -38,13 +40,44 @@ class MachineLearningMain:
 
         data = self.data[node]
         imax = data["series"].shape[0]
-        print('imax: ' + str(imax))
+        imax_all = 0
 
+        for i in range(len(self.data)):
+            data_array = self.data[i]["series"]
+            imax_all += data_array.shape[0]
+
+        print('imax: ' + str(imax))
+        t_end = time.time()
+
+        dt = t_end - t_start
         info = {"min": np.min(data["series"]), "max": np.max(data["series"]),
+                "description": "Raw data",
+                "details": [
+                    {
+                        "key": "node",
+                        "value": node
+                    },
+                    {
+                        "key": "n_series",
+                        "value": imax
+                    },
+                    {
+                        "key": "n_nodes",
+                        "value": len(self.data)
+                    },
+                    {
+                        "key": "n_series_total",
+                        "value": imax_all
+                    },
+                    {
+                        "key": "dt_ms",
+                        "value": int(dt * 1000)
+                    }
+                ],
                 "headers": np.ndarray.tolist(data["headers"]), "dt": 0, "lines": data["series"].shape[0], "columns": data["series"].shape[1]}
 
-        t_end = time.time()
-        info["dt"] = t_end - t_start
+
+        info["dt"] = dt
         return (np.ndarray.tolist(self.data[node]["series"][:self.n_series_disp]), info)
 
     def run_clustering(self, node=-1, plot=1):
@@ -58,18 +91,29 @@ class MachineLearningMain:
         """
         t_start = time.time()
         nclusters = 2
-        nclusters_final = 4
+        nclusters_final = 3
         # print(data["series"])
         centroids = []
         data = []
+        desc = ""
+        assignments = []
+        data_array_for_all = []
+        n_clusters_total = 0
+
         if node == -1:
             print("consumer nodes: " + str(len(self.data)))
 
             for i in range(len(self.data)):
 
                 data_array = self.data[i]["series"]
+                # data_array_for_all.append([d.tolist() for d in data_array])
+                for data_array1 in data_array:
+                    data_array_for_all.append(data_array1)
+                # data_array has multiple time series from the same consumer
+
                 len_data = len(data_array)
-                data_array1 = data_array[0:int(len_data / 2)]
+                data_array1 = data_array
+                # data_array1 = data_array[0:int(len_data / 2)]
 
                 kmeans = KMeans(n_clusters=nclusters)
                 # print kmeans
@@ -77,10 +121,12 @@ class MachineLearningMain:
                 a = kmeans.fit(data_array1)
                 # print a.cluster_centers_
                 assignments = a.predict(data_array1)
+
                 centroid = a.cluster_centers_
                 # print(centroid)
                 centroids.append(centroid)
 
+            # data_array_for_all = np.reshape(data_array_for_all, -1)
             # print(centroids[0])
             # print(centroids)
             centroids_all = []
@@ -88,7 +134,8 @@ class MachineLearningMain:
                 for centroid in centroid_group:
                     centroids_all.append(centroid)
 
-            print(len(centroids_all))
+            n_clusters_total = len(centroids_all)
+            # print(len(centroids_all))
             # print(centroids_all[10])
             # print(centroids_all)
             # centroids_np = [centroid for centroid in centroids_all]
@@ -96,23 +143,36 @@ class MachineLearningMain:
             centroids_np = np.array(centroids_np)
             # centroids_np = centroids_np[:, 1:].astype(float)
 
-            kmeans = KMeans(n_clusters=nclusters_final)
-            # print kmeans
-            # Compute cluster centers and predict cluster index for each sample.
-            a = kmeans.fit(centroids_np)
-            # print a.cluster_centers_
-            # print a.predict(data1)
-            final_centroids = a.cluster_centers_
+
 
             # data = final_centroids
             if plot == 0:
+                desc = "Node based clusters"
+
+                # assign each time series to a cluster
+                assignments = []
                 data = centroids_np
-                # print("plot0: " + str(len(centroids_np)))
             elif plot == 1:
+                desc = "Consumer patterns (clusters)"
+
+                kmeans = KMeans(n_clusters=nclusters_final)
+                # print kmeans
+                # Compute cluster centers and predict cluster index for each sample.
+                a = kmeans.fit(centroids_np)
+                # print a.cluster_centers_
+                # assignments = a.predict(centroids_np)
+
+                # print("centroids: ")
+                # print(centroids_np)
+                # print("data arrays: ")
+                # print(data_array_for_all)
+                assignments = a.predict(data_array_for_all)
+                final_centroids = a.cluster_centers_
+
                 data = final_centroids
 
-
         else:
+            desc = "Node based clusters"
             data_array = self.data[node]["series"]
             kmeans = KMeans(n_clusters=nclusters_final)
             # print kmeans
@@ -121,19 +181,47 @@ class MachineLearningMain:
             # print a.cluster_centers_
             assignments = a.predict(data_array)
             centroids = a.cluster_centers_
+
+            n_clusters_total = len(centroids)
             data = centroids
 
         headers = []
         for i in range(len(data)):
             headers.append("cluster " + str(i))
 
-        # print("min: " + str(np.min(data)))
-        info = {"min": np.min(data), "max": np.max(data),
-                "headers": headers, "dt": 0}
-        # info = {"min": 0, "max": 10000,
-        #         "headers": headers, "dt": 0}
+        assignments_series = [None] * len(assignments)
+        for (i, a) in enumerate(assignments):
+            assignments_series[i] = {
+                "series": i,
+                "cluster": int(assignments[i])
+            }
 
         t_end = time.time()
+        dt = t_end - t_start
+        # print("min: " + str(np.min(data)))
+        info = {"min": np.min(data), "max": np.max(data), "description": desc,
+                "headers": headers, "dt": 0,
+                "details": [
+                    {
+                        "key": "node",
+                        "value": node
+                    },
+                    {
+                        "key": "n_clusters",
+                        "value": n_clusters_total
+                    },
+                    {
+                        "key": "n_nodes",
+                        "value": len(self.data)
+                    },
+                    {
+                        "key": "dt_ms",
+                        "value": int(dt * 1000)
+                    }
+                ],
+                "class": assignments_series}
+
+
         info["dt"] = t_end - t_start
 
         return (np.ndarray.tolist(data[:self.n_series_disp]), info)

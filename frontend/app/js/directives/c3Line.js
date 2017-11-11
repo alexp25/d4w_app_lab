@@ -14,19 +14,17 @@ angular.module('app').directive('c3Line', function() {
           height: 300,
           xtype: 'default',
           type: "spline",
-          ymin: undefined,
-          ymax: undefined,
+          ymin: null,
+          ymax: null,
           fullDate: false,
           showPoint: false,
-          yminspan: undefined
+          yminspan: null        
         };
       } else {
         if (scope.options.showPoint === undefined) {
           scope.options.showPoint = false;
         }
       }
-
-
 
       if (scope.cid !== undefined) {
         scope.options.cid = scope.cid;
@@ -72,7 +70,7 @@ angular.module('app').directive('c3Line', function() {
             ['data1', 30, 200, 100, 400, 150, 250],
             ['data2', 130, 340, 200, 500, 250, 350]
           ],
-        
+
           rows: []
         },
         axis: {
@@ -112,7 +110,7 @@ angular.module('app').directive('c3Line', function() {
           }
         },
         legend: {
-          show: true
+          show: false
         },
         tooltip: {
           show: true
@@ -185,10 +183,19 @@ angular.module('app').directive('c3Line', function() {
 
         }
 
+
+
         chartdata.data.rows.unshift(data.columns);
         // if (data.refresh) {
         //   chart.unload();
         // }
+
+        // if (data.rows.length > 10) {
+        //   chartdata.legend.show = false;
+        // } else {
+        //   chartdata.legend.show = true;
+        // }
+
         chart.load({
           rows: chartdata.data.rows
         });
