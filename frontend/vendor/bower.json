@@ -45,7 +45,8 @@
     "ngstorage": "ng-storage#^0.4.2",
     "socket.io-client": "1.4.4",
     "c3": "^0.4.18",
-    "ng-dropzone": "ngdropzone#2.0.2"
+    "ng-dropzone": "ngdropzone#2.0.2",
+    "vis": "^4.21.0"
   },
   "resolutions": {
     "angular-animate": "^1.6.2",

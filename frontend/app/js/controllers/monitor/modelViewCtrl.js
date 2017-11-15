@@ -35,8 +35,6 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       }
     }
 
-
-
     function plotData(data, chart) {
       let info = data.info;
       let tsdata = data.data;
@@ -149,23 +147,27 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     }
 
+    $scope.loadData = function(){
+      getRawData($scope.selected);
+      getModelData(0);
+      getModelData(1);
+    };
+
     function pollData(first) {
       let tm = 5000;
       if (first === true) {
         tm = 0;
       }
       $scope.timer[2] = $timeout(function() {
-        getRawData($scope.selected);
-        getModelData(0);
-        getModelData(1);
-
+        $scope.loadData();
         pollData(false);
       }, tm);
     }
 
     $scope.init = function() {
       initChart();
-      pollData(true);
+      // pollData(true);
+      $scope.loadData();
     };
 
     var clearTimers = function() {

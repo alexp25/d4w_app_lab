@@ -1,0 +1,16 @@
+# example.multiline-adjlist
+1 3
+2 {'flow': 500, 'weight': 500}
+8 {'flow': 600, 'weight': 600}
+11 {'flow': 100, 'weight': 100}
+2 4
+3 {'flow': 100, 'weight': 100}
+5 {'flow': 100, 'weight': 100}
+6 {'flow': 100, 'weight': 100}
+7 {'flow': 200, 'weight': 200}
+7 2
+9 {'flow': 100, 'weight': 100}
+10 {'flow': 100, 'weight': 100}
+8 2
+9 {'flow': 550, 'weight': 350}
+10 {'flow': 50, 'weight': 250}

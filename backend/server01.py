@@ -49,6 +49,8 @@ from modules.test.TCPServer import TCPServer
 
 from machine_learning_main import MachineLearningMain
 
+from modules.find_path import FindPath
+
 
 # app config
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dist')
@@ -249,6 +251,26 @@ def apiMachineLearningClusters():
         result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
 
+@app.route('/api/network/graph')
+def apiNetworkGraph():
+    try:
+        param = request.args.get('param')
+        variables.log2("routes", '/api/network/graph ' + param)
+        param = json.loads(param)
+        # param['sid']
+        # params['n']
+        # print(param)
+
+        data = json.dumps(variables.pathfinder.get_data_format())
+
+        # (data, info) = variables.machine_learning.get_raw_data(0)
+        # print(data)
+        return json.dumps({"data": data}, default=default_json)
+    except:
+        variables.print_exception("[routes][/api/network/graph]")
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
 @app.route('/api/download/log', methods=['GET'])
 def apiDownloadLog():
     filename = "log.csv"
@@ -383,6 +405,9 @@ if __name__ == '__main__':
     if variables.app_config["app"]["machine_learning"]:
         variables.machine_learning = MachineLearningMain()
         variables.machine_learning.read_data()
+
+        variables.pathfinder = FindPath()
+        variables.pathfinder.load_data()
 
     variables.log2("main", " server started")
 

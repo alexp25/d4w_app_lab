@@ -35,8 +35,12 @@ module.exports = function(lineman) {
         // 'vendor/bower_components/c3-angular/c3-angular.js',
 
 
+
+        'vendor/bower_components/vis/dist/vis.js',
+
         'vendor/bower_components/jquery-ui/jquery-ui.js',
         'vendor/bower_components/angular-7seg/ut-7seg.js',
+
       ],
       app: [
         "app/js/appModules.js",
@@ -61,7 +65,7 @@ module.exports = function(lineman) {
         // dropzone
         'vendor/bower_components/dropzone/dist/dropzone.css',
         'vendor/bower_components/ng-dropzone/dist/ng-dropzone.css',
-        
+
         "vendor/bower_components/c3/c3.css",
         // 'vendor/bower_components/angularjs-slider/dist/rzslider.css'
       ],
