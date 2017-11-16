@@ -1,9 +1,11 @@
 <div layout="column" ng-init="init();">
   <md-button ng-click="loadData()">Reload</md-button>
+  <md-button ng-click="startLoop(1000)">Reload Loop</md-button>
+  <md-button ng-click="stopLoop()">Stop</md-button>
   <div class="raspi-frame" layout="row">
 
     <div flex layout="column">
-      <div ng-repeat="chart in chartData">
+      <div ng-repeat="chart in chartData track by $index">
         <div layout="row">
           <div flex layout="column">
             <span>{{chart.info.description}}</span>

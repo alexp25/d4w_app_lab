@@ -4,7 +4,7 @@
   <div>
     <table class="mytable">
       <tr class="mytable-elem" layout="row">
-        <th flex ng-repeat="key in header">
+        <th flex ng-repeat="key in header track by $index">
           {{key}}
         </th>
       </tr>
@@ -13,7 +13,7 @@
   <div class="my-scrollbar fade-element-in" ng-class="{'my-scrollable-3': options.disp_mode === 1, 'my-scrollable-1': options.disp_mode === 2}">
     <table class="mytable">
       <tr class="mytable-tr" class="mytable-elem" ng-repeat="data1 in data track by $index" layout="row">
-        <td flex ng-repeat="key in keys">
+        <td flex ng-repeat="key in keys track by $index">
           {{data1[key]}}
         </td>
       </tr>

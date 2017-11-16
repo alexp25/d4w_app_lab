@@ -1,5 +1,5 @@
-angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$timeout', '$http',
-  function($scope, socket, $timeout, $http) {
+angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$timeout', '$http', '$q',
+  function($scope, socket, $timeout, $http, $q) {
     var numericDisplay;
     $scope.timer = [];
     $scope.viewMode = 'map';
@@ -81,6 +81,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     function getModelData(plot) {
       $scope.hasData = false;
+      var deferred = $q.defer();
+
       console.log('getModelData');
       $http.get('/api/machine-learning/clusters', {
         params: {
@@ -94,10 +96,12 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
 
         if (jsonObj === false) {
-          return;
+          deferred.resolve('error');
+          return deferred.promise;
         }
         if (jsonObj.result === 1) {
-          return;
+          deferred.resolve('error');
+          return deferred.promise;
         }
 
         $scope.hasData = true;
@@ -106,18 +110,22 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         } else if (plot === 1) {
           plotData(jsonObj, $scope.chartData[2]);
         }
+
+        deferred.resolve('done');
         // console.log($scope.chartData2);
       }).
       catch(function(data) {
         $scope.jsondata = 'error';
         $scope.hasData = true;
-        //alert('error');
+        deferred.reject('error');
       });
-
+      return deferred.promise;
     }
 
     function getRawData(params1) {
       $scope.hasData = false;
+      var deferred = $q.defer();
+
       console.log('getRawData: ', params1);
       $http.get('/api/machine-learning/raw', {
         params: {
@@ -128,41 +136,62 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         var jsonObj = angular.fromJson(data.data);
 
         if (jsonObj === false) {
-          return;
+          // deferred.reject('error');
+          deferred.resolve('error');
+          return deferred.promise;
         }
         if (jsonObj.result === 1) {
-          return;
+          deferred.resolve('error');
+          return deferred.promise;
         }
 
         $scope.hasData = true;
         plotData(jsonObj, $scope.chartData[0]);
 
+        deferred.resolve('done');
+
       }).
       catch(function(data) {
         $scope.jsondata = 'error';
         $scope.hasData = true;
-        //alert('error');
+        deferred.reject('error');
       });
 
-
+      return deferred.promise;
     }
 
-    $scope.loadData = function(){
-      getRawData($scope.selected);
-      getModelData(0);
-      getModelData(1);
+    $scope.loadData = function() {
+      var deferred = $q.defer();
+      getRawData($scope.selected).then(function() {
+        getModelData(0).then(function() {
+          getModelData(1).then(function() {
+            deferred.resolve('done');
+          });
+        });
+      });
+      return deferred.promise;
     };
 
-    function pollData(first) {
-      let tm = 5000;
+
+    function pollData(first, tm = 1000) {
+      let tm1 = tm;
       if (first === true) {
-        tm = 0;
+        tm1 = 0;
       }
       $scope.timer[2] = $timeout(function() {
-        $scope.loadData();
-        pollData(false);
-      }, tm);
+        $scope.loadData().then(function() {
+          pollData(false, tm);
+        });
+      }, tm1);
     }
+
+    $scope.startLoop = function(tm) {
+      pollData(true, tm);
+    };
+
+    $scope.stopLoop = function() {
+      $timeout.cancel($scope.timer[2]);
+    };
 
     $scope.init = function() {
       initChart();

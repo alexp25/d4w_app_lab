@@ -224,20 +224,28 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       getData(0);
     };
 
-    function pollData(first) {
-      let tm = 5000;
+    function pollData(first, tm = 1000) {
+      let tm1 = tm;
       if (first === true) {
-        tm = 0;
+        tm1 = 0;
       }
       $scope.timer[2] = $timeout(function() {
         $scope.loadData();
-        pollData(false);
-      }, tm);
+        pollData(false, tm);
+      }, tm1);
     }
 
     $scope.init = function() {
       // pollData(true);
       $scope.loadData();
+    };
+
+    $scope.startLoop = function(tm) {
+      pollData(true, tm);
+    };
+    
+    $scope.stopLoop = function() {
+      $timeout.cancel($scope.timer[2]);
     };
 
     var clearTimers = function() {

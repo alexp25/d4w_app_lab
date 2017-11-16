@@ -241,7 +241,10 @@ def apiMachineLearningClusters():
         # params['n']
         # print(param)
 
-        (data, info) = variables.machine_learning.run_clustering(-1, param["plot"])
+        if param["plot"] == 0:
+            (data, info) = variables.machine_learning.run_clustering()
+        else:
+            (data, info) = variables.machine_learning.run_clustering_twice(-1)
 
         # (data, info) = variables.machine_learning.get_raw_data(0)
         # print(data)
