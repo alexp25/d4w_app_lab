@@ -212,6 +212,17 @@ def apiDatabaseSensors():
         return json.dumps({"result": result})
 
 
+@app.route('/api/machine-learning/info')
+def apiMachineLearningInfo():
+    try:
+        variables.log2("routes", '/api/machine-learning/info')
+        info = variables.machine_learning.get_info()
+        return json.dumps({"info": info}, default=default_json)
+    except:
+        variables.print_exception("[routes][/api/machine-learning/info]")
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
 @app.route('/api/machine-learning/raw')
 def apiMachineLearningRaw():
     try:
@@ -223,11 +234,11 @@ def apiMachineLearningRaw():
         # print(param)
 
         # (data, info) = variables.machine_learning.run_clustering()
-        (data, info) = variables.machine_learning.get_raw_data(0)
+        (data, info) = variables.machine_learning.get_raw_data(param["node"])
         # print(data)
         return json.dumps({"data": data, "info": info}, default=default_json)
     except:
-        variables.print_exception("[routes][/api/machine-learning/clusters]")
+        variables.print_exception("[routes][/api/machine-learning/raw]")
         result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
 

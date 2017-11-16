@@ -149,6 +149,18 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
           }
         }
       })
+      .state('monitor-model-view-one-node', {
+        url: '/monitor/model-view-one-node',
+        access: {
+          restricted: true
+        },
+        views: {
+          'content': {
+            templateUrl: 'templates/monitor/model-view-one-node.html',
+            controller: 'monitorModelViewCtrl'
+          }
+        }
+      })
       .state('monitor-network', {
         url: '/monitor/network',
         access: {

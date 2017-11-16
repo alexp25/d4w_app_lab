@@ -42,6 +42,15 @@ class MachineLearningMain:
         self.centroids = None
         self.final_centroids = None
 
+    def get_info(self):
+
+        info = {
+            "n_nodes": len(self.data),
+            "nodes": list(range(0, len(self.data)))
+        }
+
+        return info
+
     def get_raw_data(self, node=0):
         t_start = time.time()
         # self.read_data()
@@ -129,7 +138,7 @@ class MachineLearningMain:
         centroids_np = centroids_all
         centroids_np = np.array(centroids_np)
 
-        desc = "Node based clusters"
+        desc = "Clusters from all data (single clustering)"
         # assign each time series to a cluster
         assignments = []
         data = centroids_np
@@ -230,7 +239,7 @@ class MachineLearningMain:
                 centroids_np = centroids_all
                 centroids_np = np.array(centroids_np)
 
-                desc = "Consumer patterns (clusters)"
+                desc = "Final clusters (double clustering)"
 
                 if self.final_centroids is None:
                     kmeans = KMeans(n_clusters=nclusters_final)
@@ -245,7 +254,7 @@ class MachineLearningMain:
                 data = self.final_centroids
 
             else:
-                desc = "Node based clusters"
+                desc = "Clusters from all data (single clustering)"
                 data_array = self.data[node]["series"]
                 kmeans = KMeans(n_clusters=nclusters_final)
                 # print kmeans

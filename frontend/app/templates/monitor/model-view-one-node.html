@@ -1,7 +1,15 @@
-<div layout="column" ng-init="init(1);">
-  <md-button ng-click="loadData()">Reload</md-button>
-  <md-button ng-click="startLoop(1000)">Reload Loop</md-button>
+<div layout="column" ng-init="init(2);">
+  <!-- <md-button ng-click="loadData()">Load next node</md-button> -->
+  <md-button ng-click="loadData()">Load next node</md-button>
+  <md-button ng-click="startLoop(1000)">Loop</md-button>
   <md-button ng-click="stopLoop()">Stop</md-button>
+
+  <md-input-container>
+    <md-select ng-model="request.node" placeholder="Select a node" ng-change="loadDataSelected()">
+      <md-option ng-value="opt" ng-repeat="opt in info.nodes">{{ opt }}</md-option>
+    </md-select>
+  </md-input-container>
+
   <div class="raspi-frame" layout="row">
 
     <div flex layout="column">

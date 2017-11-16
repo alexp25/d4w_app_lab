@@ -3,12 +3,12 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     var numericDisplay;
     $scope.timer = [];
     $scope.viewMode = 'map';
-    $scope.selected = {
-      reqtype: 'sensors',
-      type: 1,
-      id: 4,
-      n: 10
+    $scope.request = {
+      node: 0,
+      plot: 0
     };
+
+    $scope.info = null;
 
     $scope.chartModel = {
       columns: ['x', 'series 1'],
@@ -30,8 +30,14 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
 
     function initChart() {
-      for (let i = 0; i < 3; i++) {
-        $scope.chartData[i] = angular.copy($scope.chartModel);
+      if ($scope.mode === 1) {
+        for (let i = 0; i < 3; i++) {
+          $scope.chartData[i] = angular.copy($scope.chartModel);
+        }
+      } else if ($scope.mode === 2) {
+        for (let i = 0; i < 2; i++) {
+          $scope.chartData[i] = angular.copy($scope.chartModel);
+        }
       }
     }
 
@@ -79,16 +85,14 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     }
 
-    function getModelData(plot) {
+    function getModelData(params1) {
       $scope.hasData = false;
       var deferred = $q.defer();
 
-      console.log('getModelData');
+      console.log('getModelData: ', params1);
       $http.get('/api/machine-learning/clusters', {
         params: {
-          param: {
-            "plot": plot
-          }
+          param: params1
         }
       }).
       then(function(data) {
@@ -105,14 +109,43 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         }
 
         $scope.hasData = true;
-        if (plot === 0) {
+        if (params1.plot === 0) {
           plotData(jsonObj, $scope.chartData[1]);
-        } else if (plot === 1) {
+        } else if (params1.plot === 1) {
           plotData(jsonObj, $scope.chartData[2]);
         }
 
         deferred.resolve('done');
         // console.log($scope.chartData2);
+      }).
+      catch(function(data) {
+        $scope.jsondata = 'error';
+        $scope.hasData = true;
+        deferred.reject('error');
+      });
+      return deferred.promise;
+    }
+
+    function getInfo() {
+      $scope.hasData = false;
+      var deferred = $q.defer();
+
+      console.log('getInfo:');
+      $http.get('/api/machine-learning/info', {}).
+      then(function(data) {
+        var jsonObj = angular.fromJson(data.data);
+        if (jsonObj === false) {
+          deferred.resolve('error');
+          return deferred.promise;
+        }
+        if (jsonObj.result === 1) {
+          deferred.resolve('error');
+          return deferred.promise;
+        }
+        // console.log(jsonObj);
+        $scope.info = jsonObj.info;
+        $scope.hasData = true;
+        deferred.resolve('done');
       }).
       catch(function(data) {
         $scope.jsondata = 'error';
@@ -162,14 +195,37 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     $scope.loadData = function() {
       var deferred = $q.defer();
-      getRawData($scope.selected).then(function() {
-        getModelData(0).then(function() {
-          getModelData(1).then(function() {
+      if ($scope.mode === 1) {
+        // getRawData($scope.request).then(function() {
+        //   $scope.request.plot = 0;
+        //   getModelData($scope.request).then(function() {
+        //     $scope.request.plot = 1;
+        //     getModelData($scope.request).then(function() {
+        //       deferred.resolve('done');
+        //     });
+        //   });
+        // });
+        $scope.request.plot = 0;
+        getModelData($scope.request).then(function() {
+          $scope.request.plot = 1;
+          getModelData($scope.request).then(function() {
             deferred.resolve('done');
           });
         });
-      });
+      } else if ($scope.mode === 2) {
+        getRawData($scope.request).then(function() {
+          $scope.request.plot = 0;
+          getModelData($scope.request).then(function() {
+            deferred.resolve('done');
+          });
+        });
+      }
+
       return deferred.promise;
+    };
+
+    $scope.loadDataSelected = function() {
+      getRawData($scope.request);
     };
 
 
@@ -193,13 +249,17 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       $timeout.cancel($scope.timer[2]);
     };
 
-    $scope.init = function() {
+    $scope.init = function(mode = 1) {
+      $scope.mode = mode;
       initChart();
       // pollData(true);
-      $scope.loadData();
+      getInfo().then(function() {
+        $scope.loadData();
+      });
     };
 
     var clearTimers = function() {
+      $timeout.cancel($scope.timer[2]);
       for (var i = 0; i < $scope.timer.length; i++) {
         $timeout.cancel($scope.timer[i]);
       }

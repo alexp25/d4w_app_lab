@@ -53,7 +53,11 @@ angular.module('app').controller('navigationCtrl', ['$scope',
           name: 'model view',
           url: '#/monitor/model-view',
           icon: 'fa fa-play'
-        }, {
+        },{
+          name: 'model view 1',
+          url: '#/monitor/model-view-one-node',
+          icon: 'fa fa-play'
+        },  {
           name: 'network view',
           url: '#/monitor/network',
           icon: 'fa fa-play'
