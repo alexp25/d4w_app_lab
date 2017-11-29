@@ -93,7 +93,7 @@ class MachineLearningMain:
 
         return (np.ndarray.tolist(self.data[node]["series"][:self.n_series_disp]), info)
 
-    def run_clustering(self):
+    def run_clustering(self, node_id=None):
         """
         run clustering for all consumer nodes and get clusters
         it can run for first self.i_run consumer nodes and increment at each run so that we can see how the clusters
@@ -109,10 +109,18 @@ class MachineLearningMain:
         assignments = []
         data_array_for_all = []
 
+        start_index = 0
+        end_index = self.i_run1
+
+        if node_id is not None:
+            start_index = node_id
+            end_index = node_id + 1
+
         print("consumer nodes: " + str(len(self.data)))
 
         # for i in range(0, len(self.data)):
-        for i in range(0, self.i_run1):
+        for i in range(start_index, end_index):
+            # print("I: " + str(i))
             data_array = self.data[i]["series"]
             # data_array_for_all.append([d.tolist() for d in data_array])
             for data_array1 in data_array:
@@ -156,7 +164,7 @@ class MachineLearningMain:
 
         t_end = time.time()
         dt = t_end - t_start
-        # print("min: " + str(np.min(data)))
+        print("min: " + str(np.min(data)))
         info = {"min": np.min(data), "max": np.max(data), "description": desc, "headers": headers,
                 "dt": t_end - t_start, "details": [
                 {
@@ -177,9 +185,12 @@ class MachineLearningMain:
                 }
             ], "class": assignments_series}
 
-        self.i_run1 += 1
-        if self.i_run1 >= self.n_nodes:
-            self.i_run1 = 1
+        # info = {}
+
+        if node_id is not None:
+            self.i_run1 += 1
+            if self.i_run1 >= self.n_nodes:
+                self.i_run1 = 1
         return np.ndarray.tolist(data[:self.n_series_disp]), info
 
     def run_clustering_twice(self, node=-1):

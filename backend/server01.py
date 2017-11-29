@@ -253,7 +253,10 @@ def apiMachineLearningClusters():
         # print(param)
 
         if param["plot"] == 0:
-            (data, info) = variables.machine_learning.run_clustering()
+            if param["node"] != -1:
+                (data, info) = variables.machine_learning.run_clustering(param["node"])
+            else:
+                (data, info) = variables.machine_learning.run_clustering()
         else:
             (data, info) = variables.machine_learning.run_clustering_twice(-1)
 
@@ -424,6 +427,8 @@ if __name__ == '__main__':
         variables.pathfinder.load_data()
 
     variables.log2("main", " server started")
+
+    variables.pathfinder.get_data_format()
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)
     server.serve_forever()

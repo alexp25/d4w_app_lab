@@ -1,1 +1,1 @@
-python server01.py
+py -3 server01.py

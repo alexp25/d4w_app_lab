@@ -16,12 +16,13 @@ class FindPath:
         self.G = None
         self.nodes = []
         self.edges = []
+        self.consumer_nodes = []
         self.pos = []
 
     def load_data(self, path="modules/data/test.adjlist"):
-        fh=open(path, 'rb')
+        fh = open(path, 'rb')
         # G=nx.read_adjlist(fh, create_using=nx.DiGraph())
-        self.G=nx.read_multiline_adjlist(fh, create_using=nx.DiGraph())
+        self.G = nx.read_multiline_adjlist(fh, create_using=nx.DiGraph())
         # print(G.adjacency())
         # for g in G.adjacency():
         #     print(g)
@@ -32,6 +33,7 @@ class FindPath:
         self.nodes = self.G.nodes()
         # self.nodes = self.pos
         self.edges = self.G.edges()
+        # self.consumer_nodes = [x for x in self.G.nodes_iter() if self.G.out_degree(x) == 0 and self.G.in_degree(x) == 1]
 
         print(self.edges)
         print(self.nodes)
@@ -98,7 +100,20 @@ class FindPath:
                         edge["color"] = {"color": "red"}
                         break
 
-    def add_labels(self, edges):
+    def add_labels(self, nodes, edges):
+        i_cons = 0
+        for (i, node) in enumerate(nodes):
+            isdemand = True
+            for (i, edge) in enumerate(edges):
+                if edge["from"] == node["id"]:
+                    isdemand = False
+                    break
+            if isdemand:
+                print("cons node " + str(i_cons))
+                node["label"] += " consumer: " + str(i_cons)
+                node["id_consumer"] = i_cons
+                i_cons += 1
+
         for (i, edge) in enumerate(edges):
             edge["label"] = "label " + str(i)
             for ad in self.G.adjacency():
@@ -108,15 +123,16 @@ class FindPath:
                     break
 
     def get_data_format(self):
+        print("running pathfinder get data format")
         nodes = []
         edges = []
         for node in self.nodes:
-            # print(node)
             new_node = {
                 "id": node,
+                "id_consumer": -1,
                 "label": "node: " + str(node),
-                "x": self.pos[node][0],
-                "y": self.pos[node][1]
+                "x": int(self.pos[node][0] * 500),
+                "y": int(self.pos[node][1] * 500)
             }
             nodes.append(new_node)
         for edge in self.edges:
@@ -130,9 +146,13 @@ class FindPath:
 
         mw_path = self.get_path()
         self.draw_path(nodes, edges, mw_path)
-        self.add_labels(edges)
+        self.add_labels(nodes, edges)
         # self.get_path_from_formatted_data(edges)
-        return {"nodes": nodes, "edges": edges}
+
+        print("network data: ")
+        ret = {"nodes": nodes, "edges": edges}
+        print(ret)
+        return ret
 
     # G=nx.Graph()
     #
