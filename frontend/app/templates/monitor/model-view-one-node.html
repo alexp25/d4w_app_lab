@@ -1,8 +1,8 @@
 <div layout="column" ng-init="init(2);">
   <!-- <md-button ng-click="loadData()">Load next node</md-button> -->
-  <md-button ng-click="loadData()">Load next node</md-button>
-  <md-button ng-click="startLoop(1000)">Loop</md-button>
-  <md-button ng-click="stopLoop()">Stop</md-button>
+  <md-button ng-click="loadData()">Reload</md-button>
+  <!-- <md-button ng-click="startLoop(1000)">Loop</md-button> -->
+  <!-- <md-button ng-click="stopLoop()">Stop</md-button> -->
 
   <md-input-container>
     <md-select ng-model="request.node" placeholder="Select a node" ng-change="loadDataSelected()">
@@ -17,13 +17,14 @@
         <div layout="row">
           <div flex layout="column">
             <span>{{chart.info.description}}</span>
-            <c3-line ng-if="chart.disp" cid="$index" data="chart" options="{showPoint:false,ymin:chart.settings.min,ymax:chart.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
+            <c3-line ng-if="chart.disp" cid="$index" data="chart" options="{showPoint:false, ymin:chart.settings.min, ymax:chart.settings.max, yminspan:100, height:200, xtype:'default', type:'line', format:'%d.%m - %H:%M'}"></c3-line>
           </div>
           <div flex layout="column">
             <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table>
             <span ng-if="chart.info.details !== undefined">
               <!-- {{chart.info.details}} -->
-                <my-table caption="info" options="{disp_mode: 2}" header="['', '']" keys="['key', 'value']" data="chart.info.details"></my-table>
+              <my-object-list caption="info" data="chart.info.details"></my-object-list>
+                <!-- <my-table caption="info" options="{disp_mode: 2}" header="['', '']" keys="['key', 'value']" data="chart.info.details"></my-table> -->
             </span>
           </div>
         </div>

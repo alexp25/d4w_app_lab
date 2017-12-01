@@ -15,3 +15,5 @@ pyodbc
 
 gevent
 gevent-websocket
+
+networkx

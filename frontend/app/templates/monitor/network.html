@@ -11,7 +11,7 @@
           <div ng-if="chart.disp" flex layout="column">
             <span>{{chart.info.description}}</span>
             <c3-line cid="$index" data="chart" options="{showPoint:false, ymin:chart.settings.min, ymax:chart.settings.max, yminspan: 100, height:200, xtype:'default', type:'line', format:'%d.%m - %H:%M'}"></c3-line>
-            <span ng-if="chart.info">Consumer node id: {{chart.info.details[0].value}}</span>
+            <span ng-if="chart.info">Consumer node id: {{chart.info.details.node}}</span>
           </div>
         </div>
       </div>

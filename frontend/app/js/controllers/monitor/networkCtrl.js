@@ -180,7 +180,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
     $scope.request = {
       node: -1,
-      plot: 0
+      dual_clustering: 0
     };
 
     $scope.chartModel = {
@@ -195,6 +195,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         min: 0,
         max: 5000
       },
+      // cutn: 10,
       info: "",
       disp: false
     };
@@ -238,10 +239,10 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         }
       }
 
-      chart.disp = false; // refresh anyway
+      // chart.disp = false; // refresh anyway
 
       if (!angular.equals(columns, chart.columns)) {
-        chart.disp = false;
+        // chart.disp = false;
         chart.columns = columns;
       }
       chart.rows = rows;
@@ -249,7 +250,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
       $timeout(function() {
         chart.disp = true;
-      }, 100);
+      });
 
       // console.log('dataset updated ', chart);
 
@@ -318,9 +319,9 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         }
 
         $scope.hasData = true;
-        if (params1.plot === 0) {
+        if (params1.dual_clustering === 0) {
           plotData(jsonObj, $scope.chartData[1]);
-        } else if (params1.plot === 1) {
+        } else if (params1.dual_clustering === 1) {
           plotData(jsonObj, $scope.chartData[2]);
         }
 

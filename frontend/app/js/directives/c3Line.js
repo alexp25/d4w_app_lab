@@ -18,7 +18,7 @@ angular.module('app').directive('c3Line', function() {
           ymax: null,
           fullDate: false,
           showPoint: false,
-          yminspan: null        
+          yminspan: null
         };
       } else {
         if (scope.options.showPoint === undefined) {
@@ -160,32 +160,29 @@ angular.module('app').directive('c3Line', function() {
           chartdata.data.rows = data.rows;
         }
 
-        if (scope.options.yminspan !== undefined) {
-          var datay = data.rows.map(function(obj) {
-            return obj[1];
-          });
-
-          var min = Math.min.apply(null, datay),
-            max = Math.max.apply(null, datay);
-
-          console.log('min: ' + min + ', max: ' + max);
-          scope.options.ymin = min - scope.options.yminspan;
-          scope.options.ymax = max + scope.options.yminspan;
-          // chartdata.axis.y.min = scope.options.ymin;
-          // chartdata.axis.y.max = scope.options.ymax;
-
-          chart.axis.min({
-            y: scope.options.ymin
-          });
-          chart.axis.max({
-            y: scope.options.ymax
-          });
-
+        if (scope.options.yminspan === undefined) {
+          scope.options.yminspan = 0;
         }
 
 
 
-        chartdata.data.rows.unshift(data.columns);
+        // var datay = data.rows.map(function(obj) {
+        //   return obj[1];
+        // });
+        //
+        // var min = Math.min.apply(null, datay),
+        //   max = Math.max.apply(null, datay);
+        //
+        // console.log('min: ' + min + ', max: ' + max);
+        // scope.options.ymin = min - scope.options.yminspan;
+        // scope.options.ymax = max + scope.options.yminspan;
+
+        // chartdata.axis.y.min = scope.options.ymin;
+        // chartdata.axis.y.max = scope.options.ymax;
+
+
+
+
         // if (data.refresh) {
         //   chart.unload();
         // }
@@ -195,10 +192,32 @@ angular.module('app').directive('c3Line', function() {
         // } else {
         //   chartdata.legend.show = true;
         // }
+        // chart.unload();
 
-        chart.load({
-          rows: chartdata.data.rows
+        // if (!angular.equals(columns, chart.columns)) {
+        //   // chart.disp = false;
+        //   chart.columns = columns;
+        // }
+
+        chart.unload({
+          done: function() {
+            chart.axis.min({
+              y: scope.options.ymin - 100
+            });
+            chart.axis.max({
+              y: scope.options.ymax + 100
+            });
+            chartdata.data.rows.unshift(data.columns);
+            chart.load({
+              rows: chartdata.data.rows
+            });
+          }
         });
+
+        // chart.load({
+        //   unload: true,
+        //   rows: chartdata.data.rows
+        // });
       }
 
       scope.$watch('data.timestamp', function() {

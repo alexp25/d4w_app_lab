@@ -31,7 +31,7 @@ class MachineLearningMain:
         print(self.files)
 
         self.n_nodes = len(self.files)
-        self.n_series_disp = 20
+        self.n_series_disp = 10
         # self.i_run = int(self.n_nodes/2)
         self.i_run1 = 1
         self.i_run2 = 1
@@ -65,31 +65,21 @@ class MachineLearningMain:
 
         print('imax: ' + str(imax))
         t_end = time.time()
-
+        min = np.min(data["series"])
+        max = np.max(data["series"])
         dt = t_end - t_start
-        info = {"min": np.min(data["series"]), "max": np.max(data["series"]), "description": "Raw data", "details": [
-            {
-                "key": "node",
-                "value": node
-            },
-            {
-                "key": "n_series",
-                "value": imax
-            },
-            {
-                "key": "n_nodes",
-                "value": len(self.data)
-            },
-            {
-                "key": "n_series_total",
-                "value": imax_all
-            },
-            {
-                "key": "dt_ms",
-                "value": int(dt * 1000)
-            }
-        ], "headers": np.ndarray.tolist(data["headers"]), "dt": dt, "lines": data["series"].shape[0],
-                "columns": data["series"].shape[1]}
+        info = {"min": min, "max": max, "description": "Raw data",
+                "details": {
+                    "node": node,
+                    "n_series": imax,
+                    "n_nodes": len(self.data),
+                    "n_series_total": imax_all,
+                    "dt": int(dt*1000),
+                    "min": min,
+                    "max": max
+                },
+                "headers": np.ndarray.tolist(data["headers"]), "dt": dt, "lines": data["series"].shape[0],
+                    "columns": data["series"].shape[1]}
 
         return (np.ndarray.tolist(self.data[node]["series"][:self.n_series_disp]), info)
 
@@ -164,38 +154,33 @@ class MachineLearningMain:
 
         t_end = time.time()
         dt = t_end - t_start
-        print("min: " + str(np.min(data)))
-        info = {"min": np.min(data), "max": np.max(data), "description": desc, "headers": headers,
-                "dt": t_end - t_start, "details": [
-                {
-                    "key": "new_node",
-                    "value": self.i_run1
+        min = np.min(data)
+        max = np.max(data)
+        print("min: " + str(min))
+        info = {"min": min, "max": max, "description": desc, "headers": headers,
+                "dt": t_end - t_start,
+                "details": {
+                    "node": node_id,
+                    "new_node": self.i_run1,
+                    "n_clusters": n_clusters_total,
+                    "n_nodes": len(self.data),
+                    "dt": int(dt*1000),
+                    "min": min,
+                    "max": max
                 },
-                {
-                    "key": "n_clusters",
-                    "value": n_clusters_total
-                },
-                {
-                    "key": "n_nodes",
-                    "value": len(self.data)
-                },
-                {
-                    "key": "dt_ms",
-                    "value": int(dt * 1000)
-                }
-            ], "class": assignments_series}
+                "class": assignments_series}
 
         # info = {}
 
-        if node_id is not None:
+        if node_id is None:
             self.i_run1 += 1
             if self.i_run1 >= self.n_nodes:
                 self.i_run1 = 1
         return np.ndarray.tolist(data[:self.n_series_disp]), info
 
-    def run_clustering_twice(self, node=-1):
+    def run_clustering_twice(self, node=None):
         """
-        node == -1 => run clustering for all nodes and then run clustering again on all clusters
+        node == None => run clustering for all nodes and then run clustering again on all clusters
         node > 0 => run clustering for the selected node
         :param plot:
         :return:
@@ -211,7 +196,7 @@ class MachineLearningMain:
         assignments = []
         data_array_for_all = []
         try:
-            if node == -1:
+            if node is None:
                 print("consumer nodes: " + str(len(self.data)))
 
                 # for i in range(0, len(self.data)):
@@ -291,30 +276,21 @@ class MachineLearningMain:
 
             t_end = time.time()
             dt = t_end - t_start
+            min = np.min(data)
+            max = np.max(data)
             # print("min: " + str(np.min(data)))
-            info = {"min": np.min(data), "max": np.max(data), "description": desc, "headers": headers,
-                    "dt": t_end - t_start, "details": [
-                    {
-                        "key": "node",
-                        "value": node
+            info = {"min": min, "max": max, "description": desc, "headers": headers,
+                    "dt": t_end - t_start,
+                    "details": {
+                        "node": node,
+                        "new_node": self.i_run2,
+                        "n_clusters": n_clusters_total,
+                        "n_nodes": len(self.data),
+                        "dt": int(dt*1000),
+                        "min": min,
+                        "max": max
                     },
-                    {
-                        "key": "new_node",
-                        "value": self.i_run2
-                    },
-                    {
-                        "key": "n_clusters",
-                        "value": n_clusters_total
-                    },
-                    {
-                        "key": "n_nodes",
-                        "value": len(self.data)
-                    },
-                    {
-                        "key": "dt_ms",
-                        "value": int(dt * 1000)
-                    }
-                ], "class": assignments_series}
+                    "class": assignments_series}
         except:
             info = "failed"
 

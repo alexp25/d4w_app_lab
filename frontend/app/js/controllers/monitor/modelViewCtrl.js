@@ -5,7 +5,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     $scope.viewMode = 'map';
     $scope.request = {
       node: 0,
-      plot: 0
+      dual_clustering: 0
     };
 
     $scope.info = null;
@@ -70,10 +70,15 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         }
       }
 
+      // chart.disp = false; // refresh anyway
+
       if (!angular.equals(columns, chart.columns)) {
-        chart.disp = false;
+        // chart.disp = false;
         chart.columns = columns;
       }
+
+
+
       chart.rows = rows;
       chart.timestamp = new Date();
 
@@ -109,9 +114,9 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         }
 
         $scope.hasData = true;
-        if (params1.plot === 0) {
+        if (params1.dual_clustering === 0) {
           plotData(jsonObj, $scope.chartData[1]);
-        } else if (params1.plot === 1) {
+        } else if (params1.dual_clustering === 1) {
           plotData(jsonObj, $scope.chartData[2]);
         }
 
@@ -196,25 +201,18 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     $scope.loadData = function() {
       var deferred = $q.defer();
       if ($scope.mode === 1) {
-        // getRawData($scope.request).then(function() {
-        //   $scope.request.plot = 0;
-        //   getModelData($scope.request).then(function() {
-        //     $scope.request.plot = 1;
-        //     getModelData($scope.request).then(function() {
-        //       deferred.resolve('done');
-        //     });
-        //   });
-        // });
-        $scope.request.plot = 0;
+        $scope.request.dual_clustering = 0;
+        $scope.request.node = -1;
         getModelData($scope.request).then(function() {
-          $scope.request.plot = 1;
+          $scope.request.dual_clustering = 1;
           getModelData($scope.request).then(function() {
             deferred.resolve('done');
           });
         });
       } else if ($scope.mode === 2) {
         getRawData($scope.request).then(function() {
-          $scope.request.plot = 0;
+          $scope.request.dual_clustering = 0;
+
           getModelData($scope.request).then(function() {
             deferred.resolve('done');
           });
@@ -226,6 +224,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     $scope.loadDataSelected = function() {
       getRawData($scope.request);
+      getModelData($scope.request);
     };
 
 
@@ -251,6 +250,11 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     $scope.init = function(mode = 1) {
       $scope.mode = mode;
+      if (mode === 1) {
+        $scope.request.dual_clustering = 1;
+      } else {
+        $scope.request.dual_clustering = 0;
+      }
       initChart();
       // pollData(true);
       getInfo().then(function() {

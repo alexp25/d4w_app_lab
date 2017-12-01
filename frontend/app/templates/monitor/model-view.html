@@ -15,7 +15,8 @@
             <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table>
             <span ng-if="chart.info.details !== undefined">
               <!-- {{chart.info.details}} -->
-                <my-table caption="info" options="{disp_mode: 2}" header="['', '']" keys="['key', 'value']" data="chart.info.details"></my-table>
+                <my-object-list caption="info" data="chart.info.details"></my-object-list>
+                <!-- <my-table caption="info" options="{disp_mode: 2}" header="['', '']" keys="['key', 'value']" data="chart.info.details"></my-table> -->
             </span>
           </div>
         </div>

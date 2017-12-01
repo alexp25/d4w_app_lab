@@ -89,12 +89,12 @@
   border-collapse: collapse;
   width: 100%;
   /*border: 0px solid black;*/
-  border-bottom: 2px solid black;
+  /*border-bottom: 2px solid black;*/
   text-align: left;
 }
 
 .mytable-tr {
-  border-bottom: 1px solid black;
+  /*border-bottom: 1px solid black;*/
   padding-bottom: 5px;
 }
 

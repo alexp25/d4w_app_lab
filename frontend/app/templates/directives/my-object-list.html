@@ -1,0 +1,13 @@
+<label class="raspi-label-m" style="text-align:start;" ng-if="caption!==undefined;">{{caption}}</label>
+<div class="animate-element-if ">
+  <!-- <span class="raspi-label-m">{{caption}}</span> -->
+  <div>
+    <table class="mytable">
+      <tr class="mytable-elem" flex ng-repeat="(key, value) in data track by $index" class="row">
+        <td flex> {{key}} </td>
+        <td flex> {{value}} </td>
+      </tr>
+    </table>
+  </div>
+
+</div>

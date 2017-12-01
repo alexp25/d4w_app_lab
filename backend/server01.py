@@ -248,17 +248,15 @@ def apiMachineLearningClusters():
         param = request.args.get('param')
         variables.log2("routes", '/api/machine-learning/clusters ' + param)
         param = json.loads(param)
-        # param['sid']
-        # params['n']
-        # print(param)
 
-        if param["plot"] == 0:
+        if param["dual_clustering"] == 0:
             if param["node"] != -1:
                 (data, info) = variables.machine_learning.run_clustering(param["node"])
             else:
-                (data, info) = variables.machine_learning.run_clustering()
+                (data, info) = variables.machine_learning.run_clustering(None)
         else:
-            (data, info) = variables.machine_learning.run_clustering_twice(-1)
+            # run for range of nodes (adding a node at each iteration)
+            (data, info) = variables.machine_learning.run_clustering_twice(None)
 
         # (data, info) = variables.machine_learning.get_raw_data(0)
         # print(data)
