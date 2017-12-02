@@ -1,6 +1,7 @@
 <div layout="column" ng-init="init(1);">
-  <md-button ng-click="loadData()">Reload</md-button>
-  <md-button ng-click="startLoop(1000)">Reload Loop</md-button>
+  <md-button ng-click="resetML()">Reset ML</md-button>
+  <md-button ng-click="resetNode();loadData()">Reload</md-button>
+  <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
   <md-button ng-click="stopLoop()">Stop</md-button>
   <div class="raspi-frame" layout="row">
 

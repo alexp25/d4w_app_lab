@@ -42,14 +42,28 @@ class MachineLearningMain:
         self.centroids = None
         self.final_centroids = None
 
-    def get_info(self):
+    def init(self):
+        self.final_centroids = None
+        self.centroids = None
 
+    def get_info(self):
         info = {
             "n_nodes": len(self.data),
             "nodes": list(range(0, len(self.data)))
         }
-
         return info
+
+    def read_data(self):
+        """
+            read data from files
+            each file has the data for a measurement node
+            over a time frame of n days, for every hour
+        :return:
+        """
+        for i, f in enumerate(self.files[0:self.n_nodes]):
+            print(str(i) + ". reading: " + f)
+            fdata = self.dc.read_data(join("data/", f))
+            self.data.append(copy.copy(fdata))
 
     def get_raw_data(self, node=0):
         t_start = time.time()
@@ -83,68 +97,71 @@ class MachineLearningMain:
 
         return (np.ndarray.tolist(self.data[node]["series"][:self.n_series_disp]), info)
 
-    def run_clustering(self, node_id=None):
+    def get_array_of_arrays(self, a):
+        array = []
+        for ag in a:
+            for ag1 in ag:
+                array.append(ag1)
+        return array
+
+    def get_display_data(self, d):
+        if d is not None:
+            # centroids = d[0]
+            # info = d[1]
+            # return np.ndarray.tolist(centroids[:self.n_series_disp]), info
+
+            ddata = d[0]
+            info = d[1]
+            start = len(ddata) - self.n_series_disp - 1
+            if start < 0:
+                start = 0
+            end = len(ddata)
+            # start = 0
+            # end = len(ddata)
+            # if end > self.n_series_disp - 1:
+            #     end = self.n_series_disp - 1
+
+            print("disp start: " + str(start) + ", disp end: " + str(end))
+            return np.ndarray.tolist(ddata[start:end]), info
+        else:
+            return None
+
+    def get_centroids(self, data, nclusters, init=None):
+        if init is not None:
+            kmeans = KMeans(n_clusters=nclusters, init=init)
+        else:
+            kmeans = KMeans(n_clusters=nclusters)
+        a = kmeans.fit(data)
+        centroids = a.cluster_centers_
+        return centroids, a
+
+    def get_assignments(self, a, data):
+        return a.predict(data)
+
+    def run_clustering_on_node_id(self, node_id, nclusters):
         """
-        run clustering for all consumer nodes and get clusters
-        it can run for first self.i_run consumer nodes and increment at each run so that we can see how the clusters
-        change when adding a new consumer
+        Run clustering on specified node. The data from the node is an array of arrays
+        (for each day there is an array of 24 values)
+        The result is the consumer behaviour over the analyzed time frame
+        :param node_id:
+        :param nclusters:
         :return:
         """
         t_start = time.time()
-        nclusters = 2
-        nclusters_final = 3
-        centroids = []
-        data = []
-        desc = ""
-        assignments = []
-        data_array_for_all = []
-
-        start_index = 0
-        end_index = self.i_run1
-
-        if node_id is not None:
-            start_index = node_id
-            end_index = node_id + 1
-
-        print("consumer nodes: " + str(len(self.data)))
-
-        # for i in range(0, len(self.data)):
-        for i in range(start_index, end_index):
-            # print("I: " + str(i))
-            data_array = self.data[i]["series"]
-            # data_array_for_all.append([d.tolist() for d in data_array])
-            for data_array1 in data_array:
-                data_array_for_all.append(data_array1)
-            # data_array has multiple time series from the same consumer
-            kmeans = KMeans(n_clusters=nclusters)
-            # print kmeans
-            # Compute cluster centers and predict cluster index for each sample.
-            a = kmeans.fit(data_array)
-            # print a.cluster_centers_
-            assignments = a.predict(data_array)
-            centroid = a.cluster_centers_
-            # print(centroid)
-            centroids.append(centroid)
-
-        self.centroids = centroids
-        centroids_all = []
-        for centroid_group in centroids:
-            for centroid in centroid_group:
-                centroids_all.append(centroid)
-
-        n_clusters_total = len(centroids_all)
-        centroids_np = centroids_all
-        centroids_np = np.array(centroids_np)
-
+        data = self.data[node_id]["series"]
+        res = self.get_centroids(data, nclusters)
+        centroids = res[0]
+        nc = len(centroids)
+        centroids_np = np.array(centroids)
         desc = "Clusters from all data (single clustering)"
         # assign each time series to a cluster
         assignments = []
-        data = centroids_np
 
         headers = []
-        for i in range(len(data)):
+        for i in range(len(centroids_np)):
             headers.append("cluster " + str(i))
 
+        # the assignments of the data series to the clusters
         assignments_series = [None] * len(assignments)
         for (i, a) in enumerate(assignments):
             assignments_series[i] = {
@@ -154,32 +171,152 @@ class MachineLearningMain:
 
         t_end = time.time()
         dt = t_end - t_start
-        min = np.min(data)
-        max = np.max(data)
-        print("min: " + str(min))
+        min = int(np.min(centroids_np))
+        max = int(np.max(centroids_np))
         info = {"min": min, "max": max, "description": desc, "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
                     "node": node_id,
                     "new_node": self.i_run1,
-                    "n_clusters": n_clusters_total,
+                    "n_clusters": nc,
                     "n_nodes": len(self.data),
-                    "dt": int(dt*1000),
+                    "dt": int(dt * 1000),
                     "min": min,
                     "max": max
                 },
                 "class": assignments_series}
 
-        # info = {}
+        return centroids_np, info, data
 
-        if node_id is None:
-            self.i_run1 += 1
-            if self.i_run1 >= self.n_nodes:
-                self.i_run1 = 1
-        return np.ndarray.tolist(data[:self.n_series_disp]), info
+    def run_clustering_on_node_range(self, start, end, nclusters):
+        """
+        Run clustering on specified node range. The data from a node is an array of arrays
+        (for each day there is an array of 24 values). The clusters are calculated
+        separately for each node and added to the cluster array (various consumer
+        behaviours in the network)
+        :param start:
+        :param end:
+        :param nclusters:
+        :return:
+        """
+        t_start = time.time()
+        centroid_vect = []
+        raw_data_vect = []
+
+        if end is None:
+            end = len(self.data)
+
+        # run clustering for each node and save clusters into array
+        for node_id in range(start, end):
+            res = self.run_clustering_on_node_id(node_id, nclusters)
+            centroid_vect.append(res[0])
+            raw_data_vect.append(res[2])
+
+        centroid_vect = self.get_array_of_arrays(centroid_vect)
+        # raw_data_vect = self.get_array_of_arrays(raw_data_vect)
+        centroids_np = np.array(centroid_vect)
+
+        headers = []
+        for i in range(len(centroids_np)):
+            headers.append("cluster " + str(i))
+
+        t_end = time.time()
+        dt = t_end - t_start
+        min = int(np.min(centroids_np))
+        max = int(np.max(centroids_np))
+        info = {"min": min, "max": max, "description": "Clusters from node range (single clustering)", "headers": headers,
+                "dt": t_end - t_start,
+                "details": {
+                    "first_node": start,
+                    "last_node": end,
+                    "n_clusters": len(centroids_np),
+                    "n_nodes": len(self.data),
+                    "dt": int(dt * 1000),
+                    "min": min,
+                    "max": max
+                },
+                "class": None}
+
+        return centroids_np, info
+
+    def run_dual_clustering_on_node_range(self, start, end, nclusters, nclusters_final):
+        """
+         Run dual clustering on specified node range.
+         The data from a node is an array of arrays
+        (for each day there is an array of 24 values).
+        The clusters are calculated separately for each node and added to the cluster array.
+        Then, there is another clustering on this cluster array which returns
+        the final clusters for all the network (consumer types in the network)
+        :param start:
+        :param end:
+        :param nclusters:
+        :param nclusters_final:
+        :return:
+        """
+        t_start = time.time()
+        centroid_vect = []
+        raw_data_vect = []
+
+        if end is None:
+            end = len(self.data)
+
+        # run clustering for each node and save clusters into array
+        for node_id in range(start, end):
+            res = self.run_clustering_on_node_id(node_id, nclusters)
+            centroid_vect.append(res[0])
+            raw_data_vect.append(res[2])
+
+        centroid_vect = self.get_array_of_arrays(centroid_vect)
+        raw_data_vect = self.get_array_of_arrays(raw_data_vect)
+
+        n_clusters_total = len(centroid_vect)
+        centroids_np = np.array(centroid_vect)
+
+        # run clustering again for the previous clusters
+        res = self.get_centroids(centroids_np, nclusters_final, self.final_centroids)
+        centroids = res[0]
+        self.final_centroids = res[0]
+        nc = len(centroids)
+        centroids_np = np.array(centroids)
+
+        # get assignments of time series to the final clusters
+        assignments = self.get_assignments(res[1], raw_data_vect)
+
+        headers = []
+        for i in range(len(centroids_np)):
+            headers.append("cluster " + str(i))
+
+        # the assignments of the data series to the clusters
+        assignments_series = [None] * len(assignments)
+        for (i, a) in enumerate(assignments):
+            assignments_series[i] = {
+                "series": i,
+                "cluster": int(assignments[i])
+            }
+
+        t_end = time.time()
+        dt = t_end - t_start
+        min = int(np.min(centroids_np))
+        max = int(np.max(centroids_np))
+        info = {"min": min, "max": max, "description": "Clusters from node range (dual clustering)", "headers": headers,
+                "dt": t_end - t_start,
+                "details": {
+                    "first_node": start,
+                    "last_node": end,
+                    "n_clusters": nc,
+                    "n_nodes": len(self.data),
+                    "dt": int(dt * 1000),
+                    "min": min,
+                    "max": max
+                },
+                "class": assignments_series}
+
+        return centroids_np, info
+
 
     def run_clustering_twice(self, node=None):
         """
+        NOTE: DEPRECATED
         node == None => run clustering for all nodes and then run clustering again on all clusters
         node > 0 => run clustering for the selected node
         :param plot:
@@ -300,26 +437,9 @@ class MachineLearningMain:
         return np.ndarray.tolist(data[:self.n_series_disp]), info
 
 
-
-    def read_data(self):
-
-        """
-            read data from files
-            each file has the data for a measurement node
-            over a time frame of n days, for every hour
-        :return:
-        """
-
-        for i, f in enumerate(self.files[0:self.n_nodes]):
-            print(str(i) + ". reading: " + f)
-            fdata = self.dc.read_data(join("data/", f))
-            # print(fdata["series"])
-            self.data.append(copy.copy(fdata))
-
-        # print("TEST")
-        # print(self.data[0]["series"])
-        # print(self.data[17]["series"])
-
-
-
-
+if __name__ == "__main__":
+    print("machine learning test")
+    machine_learning = MachineLearningMain()
+    machine_learning.read_data()
+    res = machine_learning.run_clustering_on_node_id(0, 3)
+    print(res)

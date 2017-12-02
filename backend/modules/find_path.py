@@ -27,7 +27,10 @@ class FindPath:
         # for g in G.adjacency():
         #     print(g)
 
-        self.pos = nx.spring_layout(self.G) # positions for all nodes
+        # self.pos = nx.spring_layout(self.G) # positions for all nodes
+        # self.pos = nx.circular_layout(self.G)
+        # self.pos = nx.shell_layout(self.G)
+        self.pos = nx.fruchterman_reingold_layout(self.G)
         print(self.pos)
 
         self.nodes = self.G.nodes()

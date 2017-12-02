@@ -242,24 +242,40 @@ def apiMachineLearningRaw():
         result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
 
+@app.route('/api/machine-learning/init')
+def apiMachineLearningInit():
+    try:
+        # param = request.args.get('param')
+        variables.log2("routes", '/api/machine-learning/init ')
+        # param = json.loads(param)
+        variables.machine_learning.init()
+        return json.dumps({"result": Constants.RESULT_FAIL})
+    except:
+        variables.print_exception("[routes][/api/machine-learning/clusters]")
+        return json.dumps({"result": Constants.RESULT_FAIL})
+
 @app.route('/api/machine-learning/clusters')
 def apiMachineLearningClusters():
     try:
         param = request.args.get('param')
         variables.log2("routes", '/api/machine-learning/clusters ' + param)
         param = json.loads(param)
-
+        res = None
+        n_clusters = 3
+        n_clusters_final = 3
         if param["dual_clustering"] == 0:
             if param["node"] != -1:
-                (data, info) = variables.machine_learning.run_clustering(param["node"])
+                # get clusters for the specified node
+                res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
             else:
-                (data, info) = variables.machine_learning.run_clustering(None)
+                # get clusters from all nodes
+                res = variables.machine_learning.run_clustering_on_node_range(0, param["new_node"], n_clusters)
         else:
-            # run for range of nodes (adding a node at each iteration)
-            (data, info) = variables.machine_learning.run_clustering_twice(None)
+            # get clusters from clusters from all nodes
+            res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
 
-        # (data, info) = variables.machine_learning.get_raw_data(0)
-        # print(data)
+        (data, info) = variables.machine_learning.get_display_data(res)
+
         return json.dumps({"data": data, "info": info}, default=default_json)
     except:
         variables.print_exception("[routes][/api/machine-learning/clusters]")
@@ -427,6 +443,8 @@ if __name__ == '__main__':
     variables.log2("main", " server started")
 
     variables.pathfinder.get_data_format()
+
+    variables.machine_learning.run_clustering_on_node_id(0, 3)
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)
     server.serve_forever()

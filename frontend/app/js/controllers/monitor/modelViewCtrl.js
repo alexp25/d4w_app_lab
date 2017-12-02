@@ -5,7 +5,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     $scope.viewMode = 'map';
     $scope.request = {
       node: 0,
-      dual_clustering: 0
+      dual_clustering: 0,
+      new_node: null
     };
 
     $scope.info = null;
@@ -160,6 +161,21 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       return deferred.promise;
     }
 
+    $scope.resetML = function() {
+      $http.get('/api/machine-learning/init', {
+        params: {
+          param: null
+        }
+      }).
+      then(function(data) {
+        console.log("reset ML done");
+
+      }).
+      catch(function(data) {
+        console.log("reset ML error");
+      });
+    };
+
     function getRawData(params1) {
       $scope.hasData = false;
       var deferred = $q.defer();
@@ -203,38 +219,57 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       if ($scope.mode === 1) {
         $scope.request.dual_clustering = 0;
         $scope.request.node = -1;
-        getModelData($scope.request).then(function() {
-          $scope.request.dual_clustering = 1;
-          getModelData($scope.request).then(function() {
-            deferred.resolve('done');
-          });
-        });
+        getModelData(angular.copy($scope.request));
+        $scope.request.dual_clustering = 1;
+        getModelData(angular.copy($scope.request));
+        // getModelData($scope.request).then(function() {
+        //   $scope.request.dual_clustering = 1;
+        //   getModelData($scope.request).then(function() {
+        //     deferred.resolve('done');
+        //   });
+        // });
+        deferred.resolve('done');
       } else if ($scope.mode === 2) {
-        getRawData($scope.request).then(function() {
-          $scope.request.dual_clustering = 0;
-
-          getModelData($scope.request).then(function() {
-            deferred.resolve('done');
-          });
-        });
+        getRawData(angular.copy($scope.request));
+        $scope.request.dual_clustering = 0;
+        getModelData(angular.copy($scope.request));
+        // getRawData($scope.request).then(function() {
+        //   $scope.request.dual_clustering = 0;
+        //
+        //   getModelData($scope.request).then(function() {
+        //     deferred.resolve('done');
+        //   });
+        // });
+        deferred.resolve('done');
       }
 
       return deferred.promise;
     };
-
+    $scope.resetNode = function() {
+      $scope.request.new_node = null;
+    };
     $scope.loadDataSelected = function() {
+      $scope.request.new_node = null;
       getRawData($scope.request);
       getModelData($scope.request);
     };
 
 
-    function pollData(first, tm = 1000) {
+    function pollData(first, tm = 5000) {
       let tm1 = tm;
       if (first === true) {
         tm1 = 0;
+        $scope.request.new_node = 5;
       }
       $scope.timer[2] = $timeout(function() {
+        $scope.pendingRequest = $q.defer();
         $scope.loadData().then(function() {
+          $scope.request.new_node += 1;
+          if ($scope.request.new_node > 21) {
+            $scope.request.new_node = null;
+            return;
+          }
+          // console.log(tm);
           pollData(false, tm);
         });
       }, tm1);
@@ -245,7 +280,10 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     };
 
     $scope.stopLoop = function() {
+
       $timeout.cancel($scope.timer[2]);
+      $scope.pendingRequest.resolve();
+
     };
 
     $scope.init = function(mode = 1) {
