@@ -26,6 +26,11 @@ class MachineLearningMain:
     def __init__(self):
         self.dc = DataClass()
         self.data = []
+        self.node_data = []
+        self.assignments_series = []
+
+        self.min_final = None
+        self.max_final = None
 
         self.files = [f for f in listdir("data") if isfile(join("data", f))]
         print(self.files)
@@ -33,7 +38,7 @@ class MachineLearningMain:
         self.n_nodes = len(self.files)
         self.n_series_disp = 10
         # self.i_run = int(self.n_nodes/2)
-        self.i_run1 = 1
+
         self.i_run2 = 1
         # self.n_nodes = 1
 
@@ -42,16 +47,45 @@ class MachineLearningMain:
         self.centroids = None
         self.final_centroids = None
 
+        # self.nodes = [None] * len(self.data)
+        # for i in range(0, len(self.data)):
+        #     self.nodes[i] = {
+        #         "node": i,
+        #         "series": [],
+        #         "class": None
+        #     }
+
+
     def init(self):
         self.final_centroids = None
         self.centroids = None
+        self.read_data()
+        self.run_dual_clustering_on_node_range(0, None, 3, 3)
+        self.assign_class_to_nodes()
 
-    def get_info(self):
-        info = {
-            "n_nodes": len(self.data),
-            "nodes": list(range(0, len(self.data)))
-        }
+    def assign_class_to_nodes(self):
+        assignment_index = 0
+        for (i_node, node) in enumerate(self.node_data):
+            cluster = 0
+            # get average cluster index for node
+            n_series_node = len(self.data[i_node]["series"])
+            for i in range(n_series_node):
+                cluster += self.assignments_series[assignment_index]["cluster"]
+                assignment_index += 1
+            node["class"] = int(cluster/n_series_node)
+        return self.node_data
+
+    def get_info(self, node_id=None):
+        if node_id is None:
+            info = {
+                "n_nodes": len(self.node_data),
+                "nodes": self.node_data
+            }
+        else:
+            info = self.node_data[node_id]
         return info
+
+
 
     def read_data(self):
         """
@@ -60,33 +94,44 @@ class MachineLearningMain:
             over a time frame of n days, for every hour
         :return:
         """
+        self.data = []
+        self.node_data = []
         for i, f in enumerate(self.files[0:self.n_nodes]):
-            print(str(i) + ". reading: " + f)
+            # print(str(i) + ". reading: " + f)
             fdata = self.dc.read_data(join("data/", f))
-            self.data.append(copy.copy(fdata))
+
+            data = copy.copy(fdata)
+            self.data.append(data)
+            self.node_data.append(
+                {
+                    "node": i,
+                    "class": None
+                }
+            )
+
 
     def get_raw_data(self, node=0):
         t_start = time.time()
         # self.read_data()
-
         data = self.data[node]
         imax = data["series"].shape[0]
         imax_all = 0
 
-        for i in range(len(self.data)):
-            data_array = self.data[i]["series"]
+        for i in range(len(data)):
+            data_array = data["series"][i]
             imax_all += data_array.shape[0]
 
-        print('imax: ' + str(imax))
+        # print('imax: ' + str(imax))
         t_end = time.time()
-        min = np.min(data["series"])
-        max = np.max(data["series"])
+        min = int(np.min(data["series"]))
+        max = int(np.max(data["series"]))
         dt = t_end - t_start
-        info = {"min": min, "max": max, "description": "Raw data",
+        info = {
+                "description": "Raw data",
                 "details": {
                     "node": node,
                     "n_series": imax,
-                    "n_nodes": len(self.data),
+                    "n_nodes": len(data),
                     "n_series_total": imax_all,
                     "dt": int(dt*1000),
                     "min": min,
@@ -95,7 +140,7 @@ class MachineLearningMain:
                 "headers": np.ndarray.tolist(data["headers"]), "dt": dt, "lines": data["series"].shape[0],
                     "columns": data["series"].shape[1]}
 
-        return (np.ndarray.tolist(self.data[node]["series"][:self.n_series_disp]), info)
+        return (np.ndarray.tolist(data["series"][:self.n_series_disp]), info)
 
     def get_array_of_arrays(self, a):
         array = []
@@ -104,7 +149,7 @@ class MachineLearningMain:
                 array.append(ag1)
         return array
 
-    def get_display_data(self, d):
+    def get_display_data(self, d, global_scale=False):
         if d is not None:
             # centroids = d[0]
             # info = d[1]
@@ -121,8 +166,19 @@ class MachineLearningMain:
             # if end > self.n_series_disp - 1:
             #     end = self.n_series_disp - 1
 
-            print("disp start: " + str(start) + ", disp end: " + str(end))
-            return np.ndarray.tolist(ddata[start:end]), info
+            # print("disp start: " + str(start) + ", disp end: " + str(end))
+            ddata = ddata[start:end]
+            if global_scale and self.min_final is not None:
+                # print("use global scale")
+                min = self.min_final
+                max = self.max_final
+            else:
+                min = int(np.min(ddata))
+                max = int(np.max(ddata))
+
+            info["details"]["min"] = min
+            info["details"]["max"] = max
+            return np.ndarray.tolist(ddata), info
         else:
             return None
 
@@ -148,6 +204,7 @@ class MachineLearningMain:
         :return:
         """
         t_start = time.time()
+        # print(self.data)
         data = self.data[node_id]["series"]
         res = self.get_centroids(data, nclusters)
         centroids = res[0]
@@ -173,11 +230,12 @@ class MachineLearningMain:
         dt = t_end - t_start
         min = int(np.min(centroids_np))
         max = int(np.max(centroids_np))
-        info = {"min": min, "max": max, "description": desc, "headers": headers,
+        info = {
+                "description": desc, "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
                     "node": node_id,
-                    "new_node": self.i_run1,
+                    "new_node": node_id,
                     "n_clusters": nc,
                     "n_nodes": len(self.data),
                     "dt": int(dt * 1000),
@@ -224,7 +282,8 @@ class MachineLearningMain:
         dt = t_end - t_start
         min = int(np.min(centroids_np))
         max = int(np.max(centroids_np))
-        info = {"min": min, "max": max, "description": "Clusters from node range (single clustering)", "headers": headers,
+        info = {
+                "description": "Clusters from node range (single clustering)", "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
                     "first_node": start,
@@ -287,9 +346,9 @@ class MachineLearningMain:
             headers.append("cluster " + str(i))
 
         # the assignments of the data series to the clusters
-        assignments_series = [None] * len(assignments)
+        self.assignments_series = [None] * len(assignments)
         for (i, a) in enumerate(assignments):
-            assignments_series[i] = {
+            self.assignments_series[i] = {
                 "series": i,
                 "cluster": int(assignments[i])
             }
@@ -298,7 +357,12 @@ class MachineLearningMain:
         dt = t_end - t_start
         min = int(np.min(centroids_np))
         max = int(np.max(centroids_np))
-        info = {"min": min, "max": max, "description": "Clusters from node range (dual clustering)", "headers": headers,
+
+        self.min_final = min
+        self.max_final = max
+
+        info = {
+                "description": "Clusters from node range (dual clustering)", "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
                     "first_node": start,
@@ -309,7 +373,7 @@ class MachineLearningMain:
                     "min": min,
                     "max": max
                 },
-                "class": assignments_series}
+                "class": self.assignments_series}
 
         return centroids_np, info
 
@@ -334,7 +398,7 @@ class MachineLearningMain:
         data_array_for_all = []
         try:
             if node is None:
-                print("consumer nodes: " + str(len(self.data)))
+                # print("consumer nodes: " + str(len(self.data)))
 
                 # for i in range(0, len(self.data)):
                 for i in range(0, self.i_run2):
@@ -416,7 +480,8 @@ class MachineLearningMain:
             min = np.min(data)
             max = np.max(data)
             # print("min: " + str(np.min(data)))
-            info = {"min": min, "max": max, "description": desc, "headers": headers,
+            info = {
+                    "description": desc, "headers": headers,
                     "dt": t_end - t_start,
                     "details": {
                         "node": node,
@@ -441,5 +506,5 @@ if __name__ == "__main__":
     print("machine learning test")
     machine_learning = MachineLearningMain()
     machine_learning.read_data()
-    res = machine_learning.run_clustering_on_node_id(0, 3)
-    print(res)
+    res = machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
+    print(machine_learning.assign_class_to_nodes())

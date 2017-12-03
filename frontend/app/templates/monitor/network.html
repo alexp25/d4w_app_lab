@@ -1,17 +1,20 @@
 <div layout="column" ng-init="init();">
-  <div layout="row" layout-align="space-between center">
 
-    <div id="mynetwork" flex style="width: auto;
-      height: 720px;
-      border: 1px solid lightgray;"></div>
 
-    <div flex layout="column">
+  <div layout-gt-md="row" layout="row" layout-align="space-between start">
+    <div flex layout="column" class="raspi-frame">
+      <md-button ng-click="loadData()">Reload</md-button>
+      <div id="mynetwork" flex style="width: auto;
+        height: 500px;"></div>
+    </div>
+
+    <div flex layout="column" class="raspi-frame">
       <div ng-repeat="chart in chartData track by $index">
         <div layout="column">
           <div ng-if="chart.disp" flex layout="column">
             <span>{{chart.info.description}}</span>
-            <c3-line cid="$index" data="chart" options="{showPoint:false, ymin:chart.settings.min, ymax:chart.settings.max, yminspan: 100, height:200, xtype:'default', type:'line', format:'%d.%m - %H:%M'}"></c3-line>
-            <span ng-if="chart.info">Consumer node id: {{chart.info.details.node}}</span>
+            <span ng-if="chart.info">Consumer node id: {{chart.info.details.node}}, Class: {{chart.extra.class}}</span>
+            <c3-line cid="$index" data="chart" options="{showPoint:false, ymin:chart.settings.min, ymax:chart.settings.max, yminspan: 100, height:150, xtype:'default', type:'line', format:'%d.%m - %H:%M'}"></c3-line>
           </div>
         </div>
       </div>

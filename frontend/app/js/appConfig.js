@@ -157,7 +157,7 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
         views: {
           'content': {
             templateUrl: 'templates/monitor/model-view-one-node.html',
-            controller: 'monitorModelViewCtrl'
+            controller: 'monitorModelViewOneNodeCtrl'
           }
         }
       })

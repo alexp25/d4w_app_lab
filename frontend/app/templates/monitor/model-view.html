@@ -1,19 +1,21 @@
 <div layout="column" ng-init="init(1);">
-  <md-button ng-click="resetML()">Reset ML</md-button>
-  <md-button ng-click="resetNode();loadData()">Reload</md-button>
-  <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
-  <md-button ng-click="stopLoop()">Stop</md-button>
-  <div class="raspi-frame" layout="row">
+  <div class="raspi-frame" layout="column">
+    <md-button ng-click="resetML()">Reset ML</md-button>
+    <md-button ng-click="resetNode();loadData()">Reload</md-button>
+    <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
+    <md-button ng-click="stopLoop()">Stop</md-button>
+  </div>
+  <div  layout="row">
 
     <div flex layout="column">
       <div ng-repeat="chart in chartData track by $index">
         <div layout="row">
-          <div flex layout="column">
+          <div flex layout="column" class="raspi-frame">
             <span>{{chart.info.description}}</span>
             <c3-line ng-if="chart.disp" cid="$index" data="chart" options="{showPoint:false,ymin:chart.settings.min,ymax:chart.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
           </div>
-          <div flex layout="column">
-            <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table>
+          <div flex layout="column" class="raspi-frame">
+            <!-- <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table> -->
             <span ng-if="chart.info.details !== undefined">
               <!-- {{chart.info.details}} -->
                 <my-object-list caption="info" data="chart.info.details"></my-object-list>

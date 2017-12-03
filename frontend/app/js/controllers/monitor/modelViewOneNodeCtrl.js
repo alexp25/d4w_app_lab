@@ -1,52 +1,44 @@
-angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$timeout', '$http', '$q', 'globalApi', 'httpModule','definitions',
+angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'socket', '$timeout', '$http', '$q', 'globalApi', 'httpModule', 'definitions',
   function($scope, socket, $timeout, $http, $q, globalApi, httpModule, definitions) {
     var numericDisplay;
     $scope.timer = [];
     $scope.viewMode = 'map';
+
+
     $scope.info = null;
-    $scope.chartModel = {
-      columns: ['x', 'series 1'],
-      rows: [
-        [1, 10],
-        [2, 20],
-        [3, 30],
-      ],
-      timestamp: new Date(),
-      settings: {
-        min: 0,
-        max: 5000
-      },
-      info: "",
-      disp: false
-    };
+
+
 
     $scope.chartData = [];
 
+
     function initChart() {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 2; i++) {
         $scope.chartData[i] = angular.copy($scope.chartModel);
       }
     }
 
     $scope.loadData = function() {
       var deferred = $q.defer();
-
-      $scope.request.dual_clustering = 0;
-      $scope.request.node = -1;
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+      httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
         globalApi.plotData(data, $scope.chartData[0]);
+      }, function(error) {
+        console.log("no data");
       });
-      $scope.request.dual_clustering = 1;
+      $scope.request.dual_clustering = 0;
       httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
+      }, function(error) {
+        console.log("no data");
       });
       deferred.resolve('done');
-
       return deferred.promise;
     };
+
     $scope.resetNode = function() {
       $scope.request.new_node = null;
     };
+
     $scope.loadDataSelected = function() {
       $scope.request.new_node = null;
       httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
@@ -54,13 +46,13 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       }, function(error) {
         console.log("no data");
       });
-      $scope.request.global_scale = false;
+
       httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
       }, function(error) {
         console.log("no data");
       });
-      $scope.request.global_scale = true;
+
     };
 
 
@@ -97,9 +89,10 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     $scope.init = function(mode = 1) {
       $scope.request = definitions.requestStructure();
-      $scope.chartModel = definitions.chartModel();
       $scope.mode = mode;
-      $scope.request.dual_clustering = 1;
+      $scope.request.dual_clustering = 0;
+      $scope.request.global_scale = false;
+      $scope.chartModel = definitions.chartModel();
       initChart();
       httpModule.getInfo().then(function(data) {
         $scope.info = data;

@@ -54,7 +54,7 @@ angular.module('app').controller('navigationCtrl', ['$scope',
           url: '#/monitor/model-view',
           icon: 'fa fa-play'
         },{
-          name: 'model view 1',
+          name: 'model view node',
           url: '#/monitor/model-view-one-node',
           icon: 'fa fa-play'
         },  {

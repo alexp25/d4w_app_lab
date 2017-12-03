@@ -235,8 +235,14 @@ def apiMachineLearningRaw():
 
         # (data, info) = variables.machine_learning.run_clustering()
         (data, info) = variables.machine_learning.get_raw_data(param["node"])
+
+        if param["node"] != -1:
+            info2 = variables.machine_learning.get_info(param["node"])
+        else:
+            info2 = None
+
         # print(data)
-        return json.dumps({"data": data, "info": info}, default=default_json)
+        return json.dumps({"data": data, "info": info, "extra": info2}, default=default_json)
     except:
         variables.print_exception("[routes][/api/machine-learning/raw]")
         result = Constants.RESULT_FAIL
@@ -251,7 +257,7 @@ def apiMachineLearningInit():
         variables.machine_learning.init()
         return json.dumps({"result": Constants.RESULT_FAIL})
     except:
-        variables.print_exception("[routes][/api/machine-learning/clusters]")
+        variables.print_exception("[routes][/api/machine-learning/init]")
         return json.dumps({"result": Constants.RESULT_FAIL})
 
 @app.route('/api/machine-learning/clusters')
@@ -273,10 +279,16 @@ def apiMachineLearningClusters():
         else:
             # get clusters from clusters from all nodes
             res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
+            variables.pathfinder.set_cluster_for_consumers(variables.machine_learning.get_info()["nodes"])
 
-        (data, info) = variables.machine_learning.get_display_data(res)
+        (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
 
-        return json.dumps({"data": data, "info": info}, default=default_json)
+        if param["node"] != -1:
+            info2 = variables.machine_learning.get_info(param["node"])
+        else:
+            info2 = None
+
+        return json.dumps({"data": data, "info": info, "extra": info2, "params": param}, default=default_json)
     except:
         variables.print_exception("[routes][/api/machine-learning/clusters]")
         result = Constants.RESULT_FAIL
@@ -285,17 +297,8 @@ def apiMachineLearningClusters():
 @app.route('/api/network/graph')
 def apiNetworkGraph():
     try:
-        param = request.args.get('param')
-        variables.log2("routes", '/api/network/graph ' + param)
-        param = json.loads(param)
-        # param['sid']
-        # params['n']
-        # print(param)
-
+        variables.log2("routes", '/api/network/graph ')
         data = json.dumps(variables.pathfinder.get_data_format())
-
-        # (data, info) = variables.machine_learning.get_raw_data(0)
-        # print(data)
         return json.dumps({"data": data}, default=default_json)
     except:
         variables.print_exception("[routes][/api/network/graph]")
@@ -439,12 +442,13 @@ if __name__ == '__main__':
 
         variables.pathfinder = FindPath()
         variables.pathfinder.load_data()
+        variables.pathfinder.format_data()
+
 
     variables.log2("main", " server started")
 
-    variables.pathfinder.get_data_format()
-
-    variables.machine_learning.run_clustering_on_node_id(0, 3)
+    variables.machine_learning.init()
+    variables.pathfinder.set_cluster_for_consumers(variables.machine_learning.get_info()["nodes"])
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)
     server.serve_forever()
