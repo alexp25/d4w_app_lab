@@ -32,7 +32,7 @@ class MachineLearningMain:
         self.min_final = None
         self.max_final = None
 
-        self.files = [f for f in listdir("data") if isfile(join("data", f))]
+        self.files = [f for f in listdir("data/sensors") if isfile(join("data/sensors", f))]
         print(self.files)
 
         self.n_nodes = len(self.files)
@@ -98,7 +98,7 @@ class MachineLearningMain:
         self.node_data = []
         for i, f in enumerate(self.files[0:self.n_nodes]):
             # print(str(i) + ". reading: " + f)
-            fdata = self.dc.read_data(join("data/", f))
+            fdata = self.dc.read_data(join("data/sensors/", f))
 
             data = copy.copy(fdata)
             self.data.append(data)

@@ -49,7 +49,7 @@ from modules.test.TCPServer import TCPServer
 
 from machine_learning_main import MachineLearningMain
 
-from modules.find_path import FindPath
+from modules.network import FindPath
 
 
 # app config
@@ -441,7 +441,7 @@ if __name__ == '__main__':
         variables.machine_learning.read_data()
 
         variables.pathfinder = FindPath()
-        variables.pathfinder.load_data()
+        variables.pathfinder.load_data_json()
         variables.pathfinder.format_data()
 
 
