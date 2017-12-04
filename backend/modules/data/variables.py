@@ -175,7 +175,7 @@ sensor_model = {}
 cnxn = None
 
 machine_learning = None
-pathfinder = None
+network = None
 
 python_version = sys.version_info[0]
 

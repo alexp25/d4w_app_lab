@@ -278,8 +278,10 @@ def apiMachineLearningClusters():
                 res = variables.machine_learning.run_clustering_on_node_range(0, param["new_node"], n_clusters)
         else:
             # get clusters from clusters from all nodes
+            # this will recalculate all clusters and reassign nodes
             res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
-            variables.pathfinder.set_cluster_for_consumers(variables.machine_learning.get_info()["nodes"])
+            variables.machine_learning.assign_class_to_nodes()
+            variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
 
         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
 
@@ -298,7 +300,7 @@ def apiMachineLearningClusters():
 def apiNetworkGraph():
     try:
         variables.log2("routes", '/api/network/graph ')
-        data = json.dumps(variables.pathfinder.get_data_format())
+        data = json.dumps(variables.network.get_data_format())
         return json.dumps({"data": data}, default=default_json)
     except:
         variables.print_exception("[routes][/api/network/graph]")
@@ -440,15 +442,17 @@ if __name__ == '__main__':
         variables.machine_learning = MachineLearningMain()
         variables.machine_learning.read_data()
 
-        variables.pathfinder = FindPath()
-        variables.pathfinder.load_data_json()
-        variables.pathfinder.format_data()
+        variables.network = FindPath()
+        variables.network.load_data_json()
+        variables.network.format_data()
 
 
     variables.log2("main", " server started")
 
     variables.machine_learning.init()
-    variables.pathfinder.set_cluster_for_consumers(variables.machine_learning.get_info()["nodes"])
+    variables.machine_learning.assign_class_to_nodes()
+    variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
+
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)
     server.serve_forever()

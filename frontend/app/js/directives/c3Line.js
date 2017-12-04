@@ -110,7 +110,8 @@ angular.module('app').directive('c3Line', function() {
           }
         },
         legend: {
-          show: false
+          show: true,
+          position: 'right'
         },
         tooltip: {
           show: true
@@ -186,12 +187,15 @@ angular.module('app').directive('c3Line', function() {
         // if (data.refresh) {
         //   chart.unload();
         // }
+        // console.log(data.columns);
+        if ((data.columns.length - 1) > 5) {
+          // chartdata.legend.show = false;
+          chart.legend.hide();
+        } else {
+          // chartdata.legend.show = true;
+          chart.legend.show();
+        }
 
-        // if (data.rows.length > 10) {
-        //   chartdata.legend.show = false;
-        // } else {
-        //   chartdata.legend.show = true;
-        // }
         // chart.unload();
 
         // if (!angular.equals(columns, chart.columns)) {

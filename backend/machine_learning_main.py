@@ -21,6 +21,8 @@ from os.path import isfile, join
 
 import copy
 
+from modules.data.constants import Constants
+
 
 class MachineLearningMain:
     def __init__(self):
@@ -28,32 +30,18 @@ class MachineLearningMain:
         self.data = []
         self.node_data = []
         self.assignments_series = []
-
         self.min_final = None
         self.max_final = None
-
         self.files = [f for f in listdir("data/sensors") if isfile(join("data/sensors", f))]
         print(self.files)
-
         self.n_nodes = len(self.files)
         self.n_series_disp = 10
         # self.i_run = int(self.n_nodes/2)
-
         self.i_run2 = 1
-        # self.n_nodes = 1
-
         # self.use_previous_cluster_data = False
-
         self.centroids = None
         self.final_centroids = None
-
-        # self.nodes = [None] * len(self.data)
-        # for i in range(0, len(self.data)):
-        #     self.nodes[i] = {
-        #         "node": i,
-        #         "series": [],
-        #         "class": None
-        #     }
+        self.clusters = []
 
 
     def init(self):
@@ -61,18 +49,26 @@ class MachineLearningMain:
         self.centroids = None
         self.read_data()
         self.run_dual_clustering_on_node_range(0, None, 3, 3)
-        self.assign_class_to_nodes()
+        # self.assign_class_to_nodes()
 
     def assign_class_to_nodes(self):
+        print("machine learning: assign class to nodes")
         assignment_index = 0
-        for (i_node, node) in enumerate(self.node_data):
+        node_id = 0
+        for node in self.node_data:
             cluster = 0
             # get average cluster index for node
-            n_series_node = len(self.data[i_node]["series"])
+
+            n_series_node = len(self.data[node_id]["series"])
             for i in range(n_series_node):
                 cluster += self.assignments_series[assignment_index]["cluster"]
                 assignment_index += 1
             node["class"] = int(cluster/n_series_node)
+            node["demand"] = int(self.clusters[node["class"]]["avg_demand"])
+            node["priority"] = int(self.clusters[node["class"]]["priority"])
+
+            # print(node)
+            node_id += 1
         return self.node_data
 
     def get_info(self, node_id=None):
@@ -99,15 +95,12 @@ class MachineLearningMain:
         for i, f in enumerate(self.files[0:self.n_nodes]):
             # print(str(i) + ". reading: " + f)
             fdata = self.dc.read_data(join("data/sensors/", f))
-
             data = copy.copy(fdata)
             self.data.append(data)
-            self.node_data.append(
-                {
-                    "node": i,
-                    "class": None
-                }
-            )
+            node = Constants.NODE_MODEL
+            node["id"] = i
+            self.node_data.append(copy.deepcopy(node))
+
 
 
     def get_raw_data(self, node=0):
@@ -242,7 +235,7 @@ class MachineLearningMain:
                     "min": min,
                     "max": max
                 },
-                "class": assignments_series}
+                "assignments": assignments_series}
 
         return centroids_np, info, data
 
@@ -294,7 +287,7 @@ class MachineLearningMain:
                     "min": min,
                     "max": max
                 },
-                "class": None}
+                "assignments": None}
 
         return centroids_np, info
 
@@ -341,16 +334,35 @@ class MachineLearningMain:
         # get assignments of time series to the final clusters
         assignments = self.get_assignments(res[1], raw_data_vect)
 
-        headers = []
-        for i in range(len(centroids_np)):
-            headers.append("cluster " + str(i))
+        n = len(centroids_np)
+        headers = [None] * n
+        self.clusters = []
+        demands = []
+        for i in range(n):
+            headers[i] = "cluster " + str(i)
+            cluster = Constants.CLUSTER_MODEL
+            cluster["id"] = assignments[i]
+            avg_demand = np.average(centroids_np[i])
+            cluster["avg_demand"] = avg_demand
+            demands.append(avg_demand)
+            cluster["centroid"] = centroids_np[i]
+            self.clusters.append(copy.deepcopy(cluster))
 
+        demands = np.array(demands)
+        temp = demands.argsort()
+        ranks = np.empty_like(temp)
+        ranks[temp] = np.arange(len(demands))
+
+        for i in range(n):
+            self.clusters[i]["priority"] = ranks[i]
+
+        # print(self.clusters)
         # the assignments of the data series to the clusters
         self.assignments_series = [None] * len(assignments)
         for (i, a) in enumerate(assignments):
             self.assignments_series[i] = {
                 "series": i,
-                "cluster": int(assignments[i])
+                "cluster": int(a)
             }
 
         t_end = time.time()
@@ -373,7 +385,7 @@ class MachineLearningMain:
                     "min": min,
                     "max": max
                 },
-                "class": self.assignments_series}
+                "assignments": self.assignments_series}
 
         return centroids_np, info
 
@@ -492,7 +504,7 @@ class MachineLearningMain:
                         "min": min,
                         "max": max
                     },
-                    "class": assignments_series}
+                    "assignments": assignments_series}
         except:
             info = "failed"
 

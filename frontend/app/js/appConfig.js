@@ -40,7 +40,7 @@ angular.module('app').config(['$stateProvider', '$urlRouterProvider', '$httpProv
       })
 
       // .backgroundPalette('grey', {
-      //   'default': 'A100'
+      //   'default': '100'
       // })
 
       .warnPalette('blue-grey');

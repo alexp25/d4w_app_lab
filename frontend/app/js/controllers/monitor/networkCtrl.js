@@ -14,46 +14,82 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
     $scope.chartData = [];
 
     $scope.showChart = false;
+    $scope.showGraph = true;
 
 
-    var nodes = new vis.DataSet([]);
+    function initGraph() {
+      // create a network
+      var container = document.getElementById('mynetwork');
+      $scope.graph_nodes = new vis.DataSet([]);
+      $scope.graph_edges = new vis.DataSet([]);
+      $scope.graph_data = {
+        nodes: $scope.graph_nodes,
+        edges: $scope.graph_edges
+      };
+      $scope.graph_options = {
+        physics: {
+          stabilization: true,
+        },
+        nodes: {
+          borderWidth: 4,
+          size: 100,
+          fixed: true,
+          // physics: false,
+          // color: {
+          //   border: '#222222',
+          //   background: '#666666'
+          // },
+          // font: {
+          //   color: '#000000'
+          // }
+        },
+        edges: {
+          color: 'lightgray'
+        },
+        layout: {
+          randomSeed: 0
+        }
+      };
 
-    // create an array with edges
-    var edges = new vis.DataSet([]);
+      var network = new vis.Network(container, $scope.graph_data, $scope.graph_options);
 
-    // create a network
-    var container = document.getElementById('mynetwork');
-    var data = {
-      nodes: nodes,
-      edges: edges
-    };
-    var options = {
-      physics: {
-        stabilization: true,
-      },
-      nodes: {
-        borderWidth: 4,
-        size: 100,
-        fixed: true,
-        // physics: false,
-        // color: {
-        //   border: '#222222',
-        //   background: '#666666'
-        // },
-        // font: {
-        //   color: '#000000'
-        // }
-      },
-      edges: {
-        color: 'lightgray'
-      },
-      layout: {
-        randomSeed: 0
-      }
-    };
+      network.on('click', function(properties) {
+        console.log(properties);
+        var ids = properties.nodes;
+        var clickedNodes = $scope.graph_nodes.get(ids);
+        var clickedNode = clickedNodes[0];
+        console.log('clicked node:', clickedNode);
+        if (clickedNode === undefined) {
+          return;
+        }
+        $scope.request.node = parseInt(clickedNode.id_consumer);
+        if ($scope.request.node === -1) {
+          return;
+        }
+        httpModule.getRawData($scope.request).then(function(data) {
+          globalApi.plotData(data, $scope.chartData[0]);
+        }).catch(function(data) {
+          console.log("no data");
+        });
+        $scope.request.dual_clustering = 0;
+        httpModule.getModelData($scope.request).then(function(data) {
+          globalApi.plotData(data, $scope.chartData[1]);
+        }).catch(function(data) {
+          console.log("no data");
+        });
+      });
+    }
 
 
-    var network = new vis.Network(container, data, options);
+    function updateGraph() {
+      // var newColor = '#' + Math.floor((Math.random() * 255 * 255 * 255)).toString(16);
+      $scope.graph_nodes.clear();
+      $scope.graph_edges.clear();
+      $scope.graph_nodes.add($scope.networkData.nodes);
+      $scope.graph_edges.add($scope.networkData.edges);
+    }
+
+
 
     function initChart() {
       for (let i = 0; i < 3; i++) {
@@ -61,38 +97,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       }
     }
 
-    network.on('click', function(properties) {
-      var ids = properties.nodes;
-      var clickedNodes = nodes.get(ids);
-      var clickedNode = clickedNodes[0];
-      console.log('clicked node:', clickedNode);
-      if (clickedNode === undefined) {
-        return;
-      }
-      $scope.request.node = parseInt(clickedNode.id_consumer);
-      if ($scope.request.node === -1) {
-        return;
-      }
-      httpModule.getRawData($scope.request).then(function(data) {
-        globalApi.plotData(data, $scope.chartData[0]);
-      }).catch(function(data) {
-        console.log("no data");
-      });
-      $scope.request.dual_clustering = 0;
-      httpModule.getModelData($scope.request).then(function(data) {
-        globalApi.plotData(data, $scope.chartData[1]);
-      }).catch(function(data) {
-        console.log("no data");
-      });
-    });
 
-    function updateNetwork() {
-      // var newColor = '#' + Math.floor((Math.random() * 255 * 255 * 255)).toString(16);
-      nodes.clear();
-      edges.clear();
-      nodes.add($scope.networkData.nodes);
-      edges.add($scope.networkData.edges);
-    }
 
     function getNetworkData() {
       return httpModule.httpGet('/api/network/graph');
@@ -103,13 +108,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
     };
 
     $scope.loadData = function() {
-      getNetworkData().then(function(data) {
-        $scope.networkData = angular.fromJson(data.data);
-        console.log($scope.networkData);
-        updateNetwork();
-      }, function(error) {
-        console.log("no data");
-      });
+
       $scope.resetML().then(function() {
         $scope.request.node = -1;
         $scope.request.dual_clustering = 1;
@@ -118,6 +117,22 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
           $scope.hasData = true;
           globalApi.plotData(data, $scope.chartData[2]);
+
+          $scope.showGraph = false;
+          getNetworkData().then(function(data) {
+            $scope.networkData = angular.fromJson(data.data);
+            console.log($scope.networkData);
+
+            $scope.showGraph = true;
+            $timeout(function() {
+              updateGraph();
+            }, 500);
+
+
+          }, function(error) {
+            console.log("no data");
+          });
+
         }, function(error) {
           console.log("no data");
         });
@@ -140,6 +155,10 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       $scope.request = globalApi.requestStructure();
       $scope.chartModel = definitions.chartModel();
       initChart();
+      $timeout(function() {
+        initGraph();
+      }, 500);
+
       $scope.loadData();
     };
 

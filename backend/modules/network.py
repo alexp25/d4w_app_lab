@@ -7,6 +7,7 @@ except:
 
 import networkx as nx
 from networkx.readwrite import json_graph
+import copy
 
 
 class FindPath:
@@ -23,7 +24,7 @@ class FindPath:
                 data = json_graph.node_link_data(self.G)
                 f.write(json.dumps(data, indent=2))
         except:
-            globals.print_exception("write data json")
+            variables.print_exception("write data json")
 
     def load_data_json(self, filename="data/network.json"):
         try:
@@ -75,18 +76,19 @@ class FindPath:
                         edge["color"] = {"color": "red"}
                         break
 
-    def set_cluster_for_consumers(self, node_data=None):
-        print("set cluster for consumers")
-        i_cons = 0
+    def set_class_for_consumers(self, node_data=None):
+        print("network: set cluster for consumers")
         for (i, node) in enumerate(self.graph_data["nodes"]):
             try:
-                if node["id_consumer"] != -1:
-                    node["cluster"] = 0
-                    node["label"] += " cluster"
+                if "id_consumer" in node:
+
+                    node["class"] = node_data[node["id_consumer"]]["class"]
+                    node["demand"] = node_data[node["id_consumer"]]["demand"]
+                    node["priority"] = node_data[node["id_consumer"]]["priority"]
+                    # print(node["id"], node["id_consumer"], node["class"])
                     if node_data is not None:
-                        node["label"] += ": " + str(node_data[node["id_consumer"]]["class"])
                         try:
-                            color = self.colors[node_data[node["id_consumer"]]["class"]]
+                            color = self.colors[node["priority"]]
                         except:
                             color = "black"
                         node["color"] = {"border": color}
@@ -94,13 +96,13 @@ class FindPath:
                 variables.print_exception("set_cluster_for_consumers")
                 break
 
+
     def add_labels(self):
         i_cons = 0
         nodes = self.graph_data["nodes"]
         edges = self.graph_data["links"]
         # add random weights to edges for test purpose, these weights will represent the priorities
         for (i, edge) in enumerate(edges):
-            edge["label"] += str(i)
             edge["weight"] = i
 
         for (i, node) in enumerate(nodes):
@@ -110,8 +112,6 @@ class FindPath:
                     isdemand = False
                     break
             if isdemand:
-                print("cons node " + str(i_cons))
-                node["label"] += " consumer: " + str(i_cons)
                 node["id_consumer"] = i_cons
                 i_cons += 1
 
@@ -119,9 +119,8 @@ class FindPath:
     def format_data(self):
         pos = self.pos
         for (i, node) in enumerate(self.graph_data["nodes"]):
-            node["id_consumer"] = -1
             node["color"] = {"border": "black"}
-            node["label"] = "node " + str(i)
+            node["label"] = "node " + str(node["id"])
             node["x"] = int(pos[node["id"]][0] * 500)
             node["y"] = int(pos[node["id"]][1] * 500)
         for (i, edge) in enumerate(self.graph_data["links"]):
@@ -133,14 +132,26 @@ class FindPath:
         self.add_labels()
         # mw_path = self.get_path()
         # self.draw_path(nodes, edges, mw_path)
-        # self.add_labels(nodes, edges)
-        # self.fdata["nodes"] = nodes
-        # self.fdata["edges"] = edges
+
 
     def get_data_format(self):
         print("network data: ")
-        ret = {"nodes": self.graph_data["nodes"], "edges": self.graph_data["links"]}
-        print(ret)
+        nodes = copy.deepcopy(self.graph_data["nodes"])
+        for node in nodes:
+            if "id_consumer" in node:
+                node["label"] += " - d" + str(node["id_consumer"]) + " "
+                if "class" in node:
+                    node["label"] += "class: " + str(node["class"]) + " "
+                if "demand" in node:
+                    node["label"] += " - " + str(node["demand"])
+                if "priority" in node:
+                    node["label"] += " priority: " + str(node["priority"])
+        ret = {"nodes": nodes, "edges": self.graph_data["links"]}
+
+        # for node in nodes:
+        #     if 'id_consumer' in node:
+        #         print(node["id"], node["id_consumer"], node["class"])
+        # print(json.dumps(nodes, indent=2))
         return ret
 
 if __name__ == '__main__':

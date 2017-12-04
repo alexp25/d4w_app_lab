@@ -19,5 +19,18 @@ class Constants:
     RESULT_OK = 0
     RESULT_FAIL = 1
 
+    CLUSTER_MODEL = {
+        "id": 0,
+        "priority": 0,
+        "centroid": [],
+        "demand": None
+    }
+    NODE_MODEL = {
+        "id": 0,
+        "class": None,
+        "demand": None,
+        "priority": None
+    }
+
 
 

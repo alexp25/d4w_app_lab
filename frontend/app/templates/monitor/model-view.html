@@ -15,7 +15,7 @@
             <c3-line ng-if="chart.disp" cid="$index" data="chart" options="{showPoint:false,ymin:chart.settings.min,ymax:chart.settings.max,height:200,xtype:'default',type:'line',format:'%d.%m - %H:%M'}"></c3-line>
           </div>
           <div flex layout="column" class="raspi-frame">
-            <!-- <my-table ng-if="chart.info.class !== undefined && chart.info.class.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.class"></my-table> -->
+            <!-- <my-table ng-if="chart.info.assignments !== undefined && chart.info.assignments.length > 0" options="{disp_mode: 2}" caption="classification" header="['series', 'cluster']" keys="['series', 'cluster']" data="chart.info.assignments"></my-table> -->
             <span ng-if="chart.info.details !== undefined">
               <!-- {{chart.info.details}} -->
                 <my-object-list caption="info" data="chart.info.details"></my-object-list>
