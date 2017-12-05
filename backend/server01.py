@@ -268,7 +268,7 @@ def apiMachineLearningClusters():
         param = json.loads(param)
         res = None
         n_clusters = 3
-        n_clusters_final = 3
+        n_clusters_final = 5
         if param["dual_clustering"] == 0:
             if param["node"] != -1:
                 # get clusters for the specified node
@@ -279,9 +279,18 @@ def apiMachineLearningClusters():
         else:
             # get clusters from clusters from all nodes
             # this will recalculate all clusters and reassign nodes
-            res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
-            variables.machine_learning.assign_class_to_nodes()
-            variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
+            try:
+                res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
+            except:
+                # different number of clusters
+                variables.print_exception("/api/machine-learning/clusters")
+                variables.machine_learning.init()
+                res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters,
+                                                                                   n_clusters_final)
+
+            if param["assign"]:
+                variables.machine_learning.assign_class_to_nodes()
+                variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
 
         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
 
@@ -450,6 +459,7 @@ if __name__ == '__main__':
     variables.log2("main", " server started")
 
     variables.machine_learning.init()
+    variables.machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
     variables.machine_learning.assign_class_to_nodes()
     variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
 

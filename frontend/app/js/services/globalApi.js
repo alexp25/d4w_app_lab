@@ -1,13 +1,5 @@
 angular.module("app").factory('globalApi', function($rootScope, $timeout) {
   return {
-    requestStructure: function() {
-      return {
-        node: -1,
-        dual_clustering: 0,
-        new_node: null,
-        global_scale: true
-      };
-    },
     plotData: function(data, chart) {
       let info = data.info;
       let tsdata = data.data;

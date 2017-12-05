@@ -21,7 +21,8 @@ angular.module("app").factory('definitions', function($rootScope, $timeout) {
         node: -1,
         dual_clustering: 0,
         new_node: null,
-        global_scale: true
+        global_scale: true,
+        assign: true
       };
     },
     chartModel: function(){

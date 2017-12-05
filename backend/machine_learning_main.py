@@ -48,7 +48,7 @@ class MachineLearningMain:
         self.final_centroids = None
         self.centroids = None
         self.read_data()
-        self.run_dual_clustering_on_node_range(0, None, 3, 3)
+
         # self.assign_class_to_nodes()
 
     def assign_class_to_nodes(self):
@@ -66,6 +66,8 @@ class MachineLearningMain:
             node["class"] = int(cluster/n_series_node)
             node["demand"] = int(self.clusters[node["class"]]["avg_demand"])
             node["priority"] = int(self.clusters[node["class"]]["priority"])
+            node["priority_min"] = 0
+            node["priority_max"] = len(self.clusters)
 
             # print(node)
             node_id += 1

@@ -1,4 +1,4 @@
-angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$timeout', '$http', '$q', 'globalApi', 'httpModule','definitions',
+angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$timeout', '$http', '$q', 'globalApi', 'httpModule', 'definitions',
   function($scope, socket, $timeout, $http, $q, globalApi, httpModule, definitions) {
     var numericDisplay;
     $scope.timer = [];
@@ -44,9 +44,15 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
       return deferred.promise;
     };
+    
     $scope.resetNode = function() {
       $scope.request.new_node = null;
     };
+
+    $scope.resetML = function() {
+      return httpModule.httpGet('/api/machine-learning/init');
+    };
+
     $scope.loadDataSelected = function() {
       $scope.request.new_node = null;
       httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
@@ -66,6 +72,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     function pollData(first, tm = 5000) {
       let tm1 = tm;
+      $scope.request.node = -1;
+
       if (first === true) {
         tm1 = 0;
         $scope.request.new_node = 5;
@@ -100,6 +108,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       $scope.chartModel = definitions.chartModel();
       $scope.mode = mode;
       $scope.request.dual_clustering = 1;
+      $scope.request.assign = false;
       initChart();
       httpModule.getInfo().then(function(data) {
         $scope.info = data;

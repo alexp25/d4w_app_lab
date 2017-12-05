@@ -7,7 +7,7 @@
 
     <md-input-container>
       <md-select ng-model="request.node" placeholder="Select a node" ng-change="loadDataSelected()">
-        <md-option ng-value="opt.node" ng-repeat="opt in info.nodes">{{ opt.node }}</md-option>
+        <md-option ng-value="opt.id" ng-repeat="opt in info.nodes">{{ opt.id }}</md-option>
       </md-select>
     </md-input-container>
   </div>

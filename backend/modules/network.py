@@ -9,6 +9,25 @@ import networkx as nx
 from networkx.readwrite import json_graph
 import copy
 
+class Colors(object):
+    @staticmethod
+    def convert_to_rgb(minimum, maximum, value):
+        minimum, maximum = float(minimum), float(maximum)
+        halfmax = (minimum + maximum) / 2
+        if minimum <= value <= halfmax:
+            r = 0
+            g = int(255. / (halfmax - minimum) * (value - minimum))
+            b = int(255. + -255. / (halfmax - minimum) * (value - minimum))
+            return (r, g, b)
+        elif halfmax < value <= maximum:
+            r = int(255. / (maximum - halfmax) * (value - halfmax))
+            g = int(255. + -255. / (maximum - halfmax) * (value - halfmax))
+            b = 0
+            return (r, g, b)
+
+    @staticmethod
+    def get_rgba(rgb):
+        return "rgba(" + str(rgb[0]) + "," + str(rgb[1]) + "," + str(rgb[2]) + ",0.5)"
 
 class FindPath:
     def __init__(self):
@@ -17,6 +36,7 @@ class FindPath:
         self.pos = []
         self.colors = ["blue", "green", "yellow", "red"]
         self.graph_data = {}
+
 
     def write_data_json(self, filename="data/network.json"):
         try:
@@ -33,7 +53,8 @@ class FindPath:
                 data = json.loads(data)
                 self.get_graph_data(data)
                 self.G = json_graph.node_link_graph(data)
-                self.pos = nx.circular_layout(self.G)
+                # self.pos = nx.circular_layout(self.G)
+                self.pos = nx.spring_layout(self.G)
         except:
             variables.print_exception("load data json")
 
@@ -78,20 +99,31 @@ class FindPath:
 
     def set_class_for_consumers(self, node_data=None):
         print("network: set cluster for consumers")
+
         for (i, node) in enumerate(self.graph_data["nodes"]):
             try:
-                if "id_consumer" in node:
 
-                    node["class"] = node_data[node["id_consumer"]]["class"]
-                    node["demand"] = node_data[node["id_consumer"]]["demand"]
-                    node["priority"] = node_data[node["id_consumer"]]["priority"]
+                # node["shape"] = "circle"
+                color = "rgba(0,0,0,0.5)"
+                # node["scaling"] = {"min": 30, "max": 100}
+                node["value"] = 0
+                if "id_consumer" in node:
+                    node_data1 = node_data[node["id_consumer"]]
+                    node["class"] = node_data1["class"]
+                    node["demand"] = node_data1["demand"]
+                    node["priority"] = node_data1["priority"]
+                    # value property is used for scaling
+                    node["value"] = node["priority"]
                     # print(node["id"], node["id_consumer"], node["class"])
                     if node_data is not None:
                         try:
-                            color = self.colors[node["priority"]]
+                            # color = self.colors[node["priority"]]
+                            color = Colors.convert_to_rgb(node_data1["priority_min"], node_data1["priority_max"], node["priority"])
+                            color = Colors.get_rgba(color)
                         except:
-                            color = "black"
-                        node["color"] = {"border": color}
+                            variables.print_exception("")
+
+                node["color"] = {"border": color, "background": color}
             except:
                 variables.print_exception("set_cluster_for_consumers")
                 break
@@ -139,11 +171,11 @@ class FindPath:
         nodes = copy.deepcopy(self.graph_data["nodes"])
         for node in nodes:
             if "id_consumer" in node:
-                node["label"] += " - d" + str(node["id_consumer"]) + " "
+                node["label"] += "/d" + str(node["id_consumer"]) + " "
                 if "class" in node:
                     node["label"] += "class: " + str(node["class"]) + " "
-                if "demand" in node:
-                    node["label"] += " - " + str(node["demand"])
+                # if "demand" in node:
+                #     node["label"] += " - " + str(node["demand"])
                 if "priority" in node:
                     node["label"] += " priority: " + str(node["priority"])
         ret = {"nodes": nodes, "edges": self.graph_data["links"]}
@@ -159,4 +191,3 @@ if __name__ == '__main__':
     fp.load_data_json("../data/network.json")
     fp.get_path()
     print(fp.get_data_format())
-    

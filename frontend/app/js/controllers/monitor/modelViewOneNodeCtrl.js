@@ -81,10 +81,8 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
     };
 
     $scope.stopLoop = function() {
-
       $timeout.cancel($scope.timer[2]);
       $scope.pendingRequest.resolve();
-
     };
 
     $scope.init = function(mode = 1) {
