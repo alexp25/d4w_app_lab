@@ -1,12 +1,13 @@
 <div layout="column" ng-init="init();">
 
 
-  <div layout-gt-md="row" layout="row" layout-align="space-between start">
+  <div layout-gt-md="row" layout="column" layout-align="space-between start">
+
     <div flex layout="column" class="raspi-frame">
       <md-button ng-click="loadData()">Reload</md-button>
-      <div  id="mynetwork" flex style="width: auto;
-        height: 500px;"></div>
-        <!-- ng-if="showGraph" -->
+      <md-button ng-click="fit()">Zoom to fit</md-button>
+      <div id="mynetwork" flex style="width: auto;height: 500px;"></div>
+      <my-table ng-if="networkData !== undefined" options="{disp_mode: 2}" caption="classification" header="['node id', 'consumer id', 'class', 'priority']" keys="['id', 'id_consumer', 'class', 'priority']" data="networkData.consumer_nodes"></my-table>
     </div>
 
     <div flex layout="column" class="raspi-frame">
@@ -20,6 +21,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
 </div>

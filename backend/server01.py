@@ -268,7 +268,7 @@ def apiMachineLearningClusters():
         param = json.loads(param)
         res = None
         n_clusters = 3
-        n_clusters_final = 5
+        n_clusters_final = 4
         if param["dual_clustering"] == 0:
             if param["node"] != -1:
                 # get clusters for the specified node
@@ -452,7 +452,7 @@ if __name__ == '__main__':
         variables.machine_learning.read_data()
 
         variables.network = FindPath()
-        variables.network.load_data_json()
+        variables.network.load_data_json("data/network_simple.json")
         variables.network.format_data()
 
 
@@ -462,6 +462,7 @@ if __name__ == '__main__':
     variables.machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
     variables.machine_learning.assign_class_to_nodes()
     variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
+    variables.network.calculate_class_for_intermediary_nodes()
 
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)

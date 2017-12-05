@@ -60,10 +60,18 @@ class MachineLearningMain:
             # get average cluster index for node
 
             n_series_node = len(self.data[node_id]["series"])
+
+            # get the assignments for the time series corresponding to the node
+            node_assignments = [None] * n_series_node
             for i in range(n_series_node):
-                cluster += self.assignments_series[assignment_index]["cluster"]
+                # cluster += self.assignments_series[assignment_index]["cluster"]
+                node_assignments[i] = self.assignments_series[assignment_index]["cluster"]
                 assignment_index += 1
-            node["class"] = int(cluster/n_series_node)
+
+            # node["class"] = int(cluster/n_series_node)
+            # get class with max number of occurences in list
+            node["class"] = max(node_assignments, key=node_assignments.count)
+
             node["demand"] = int(self.clusters[node["class"]]["avg_demand"])
             node["priority"] = int(self.clusters[node["class"]]["priority"])
             node["priority_min"] = 0

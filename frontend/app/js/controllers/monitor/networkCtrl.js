@@ -114,9 +114,9 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         }
       };
 
-      var network = new vis.Network(container, $scope.graph_data, $scope.graph_options);
+      $scope.network = new vis.Network(container, $scope.graph_data, $scope.graph_options);
 
-      network.on('click', function(properties) {
+      $scope.network.on('click', function(properties) {
         console.log(properties);
         var ids = properties.nodes;
         var clickedNodes = $scope.graph_nodes.get(ids);
@@ -150,7 +150,14 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       $scope.graph_edges.clear();
       $scope.graph_nodes.add($scope.networkData.nodes);
       $scope.graph_edges.add($scope.networkData.edges);
+
+      $scope.network.fit();
+
     }
+
+    $scope.fit = function(){
+      $scope.network.fit();
+    };
 
 
 
@@ -185,6 +192,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
           getNetworkData().then(function(data) {
             $scope.networkData = angular.fromJson(data.data);
             console.log($scope.networkData);
+            // console.log($scope.networkData.nodes);
 
             $scope.showGraph = true;
             $timeout(function() {
