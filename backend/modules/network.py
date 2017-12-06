@@ -11,6 +11,7 @@ from networkx.readwrite import json_graph
 import copy
 
 EPSILON = sys.float_info.epsilon
+colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0)]  # [BLUE, GREEN, RED]
 
 class Colors(object):
     @staticmethod
@@ -42,7 +43,6 @@ class FindPath:
         self.G = None
         self.consumer_nodes = []
         self.pos = []
-        self.colors = ["blue", "green", "yellow", "red"]
         self.graph_data = {}
 
 
@@ -147,17 +147,50 @@ class FindPath:
                             parent["priority"] = 0
                         parent["priority"] += child["priority"]
                         count += 1
-                # print(pair)
-                # print(parent)
-                # print(child)
             except:
                 variables.print_exception_now("")
 
+        minp = 0
+        maxp = 0
+        for pair in G_list:
+            try:
+                parent_id = pair[0]
+                child_id = pair[1]
+                parent = self.get_node_from_id(parent_id)
+                child = self.get_node_from_id(child_id)
+                # calculate class for adjacent edge
+                for edge in self.graph_data["links"]:
+                    if edge["source"] == parent_id and edge["target"] == child_id:
+                        p = (1.0 * parent["priority"] + 1.0 * child["priority"]) / 2
+                        if p > maxp:
+                            maxp = p
+                        # if p < minp:
+                        #     minp = p
+                        edge["priority"] = p
+                        edge["parent"] = str(parent["id"]) + ", " + str(parent["priority"])
+                        edge["child"] = str(child["id"]) + ", " + str(child["priority"])
+                        edge["value"] = p
+
+            except:
+                variables.print_exception_now("")
+
+            for edge in self.graph_data["links"]:
+                color = "rgba(0,0,0,0.5)"
+                if "priority" in edge and maxp != 0:
+                    color = Colors.convert_to_rgb(minp, maxp, edge["priority"], colors)
+                    color = Colors.get_rgba(color)
+                edge["color"] = {"color": color}
 
     def set_class_for_consumers(self, node_data=None):
         print("network: set cluster for consumers")
-        colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0)]  # [BLUE, GREEN, RED]
 
+        minp = 0
+        maxp = 0
+        for node in self.graph_data["nodes"]:
+            if "priority" in node and node["priority"] > maxp:
+                maxp = node["priority"]
+
+        # print("maxp: ", maxp)
         for (i, node) in enumerate(self.graph_data["nodes"]):
             try:
 
@@ -173,13 +206,12 @@ class FindPath:
                     # value property is used for scaling
                     node["value"] = node["priority"]
                     # print(node["id"], node["id_consumer"], node["class"])
-                    if node_data is not None:
+                    if node_data is not None and maxp != 0:
                         try:
 
                             # color = self.colors[node["priority"]]
                             # color = Colors.convert_to_rgb(node_data1["priority_min"], node_data1["priority_max"], node["priority"])
-                            color = Colors.convert_to_rgb(node_data1["priority_min"], node_data1["priority_max"],
-                                                          node["priority"] + 1, colors)
+                            color = Colors.convert_to_rgb(minp, maxp, node["priority"], colors)
                             color = Colors.get_rgba(color)
                         except:
                             variables.print_exception("")
@@ -220,7 +252,7 @@ class FindPath:
             edge["from"] = edge["source"]
             edge["to"] = edge["target"]
             edge["color"] = {"color": "blue"}
-            edge["label"] = str(i)
+            edge["label"] = "pipe " + str(i)
 
         self.add_labels()
         # mw_path = self.get_path()
@@ -230,6 +262,7 @@ class FindPath:
     def get_data_format(self):
         print("network data: ")
         nodes = copy.deepcopy(self.graph_data["nodes"])
+        edges = copy.deepcopy(self.graph_data["links"])
         consumer_nodes = []
         for node in nodes:
             if "id_consumer" in node:
@@ -242,12 +275,11 @@ class FindPath:
             if "priority" in node:
                 node["label"] += " priority: " + str(node["priority"])
 
-        ret = {"nodes": nodes, "edges": self.graph_data["links"], "consumer_nodes": consumer_nodes}
+        for edge in edges:
+            if "priority" in edge:
+                edge["label"] += " priority: " + str(edge["priority"])
 
-        # for node in nodes:
-        #     if 'id_consumer' in node:
-        #         print(node["id"], node["id_consumer"], node["class"])
-        # print(json.dumps(nodes, indent=2))
+        ret = {"nodes": nodes, "edges": edges, "consumer_nodes": consumer_nodes}
         return ret
 
 if __name__ == '__main__':

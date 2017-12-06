@@ -75,7 +75,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
             }
           },
           labelHighlightBold: true,
-          mass:1,
+          mass: 1,
           scaling: {
             min: 30,
             max: 100,
@@ -118,13 +118,25 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
       $scope.network.on('click', function(properties) {
         console.log(properties);
-        var ids = properties.nodes;
-        var clickedNodes = $scope.graph_nodes.get(ids);
+        var flagClickedNode = false;
+        var clickedNodes = $scope.graph_nodes.get(properties.nodes);
+        var clickedEdges = $scope.graph_edges.get(properties.edges);
         var clickedNode = clickedNodes[0];
-        console.log('clicked node:', clickedNode);
-        if (clickedNode === undefined) {
+        var clickedEdge = clickedEdges[0];
+
+        if (clickedNode !== undefined) {
+          console.log('clicked node:', clickedNode);
+          flagClickedNode = true;
+        } else if (clickedEdge !== undefined) {
+          console.log('clicked edge:', clickedEdge);
+        } else {
           return;
         }
+
+        if (!flagClickedNode){
+          return;
+        }
+
         $scope.request.node = parseInt(clickedNode.id_consumer);
         if ($scope.request.node === -1) {
           return;
@@ -155,7 +167,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
     }
 
-    $scope.fit = function(){
+    $scope.fit = function() {
       $scope.network.fit();
     };
 

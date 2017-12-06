@@ -74,6 +74,11 @@ def default_json(obj):
         return millis
     raise TypeError('Not sure how to serialize %s' % (obj,))
 
+def process_data():
+    variables.machine_learning.assign_class_to_nodes()
+    variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
+    variables.network.calculate_class_for_intermediary_nodes()
+
 socketio = SocketIO(app)
 
 @socketio.on('my_event')
@@ -229,12 +234,11 @@ def apiMachineLearningRaw():
         param = request.args.get('param')
         variables.log2("routes", '/api/machine-learning/raw ' + param)
         param = json.loads(param)
-        # param['sid']
-        # params['n']
-        # print(param)
 
-        # (data, info) = variables.machine_learning.run_clustering()
-        (data, info) = variables.machine_learning.get_raw_data(param["node"])
+        if param["node"] is not None:
+            (data, info) = variables.machine_learning.get_raw_data(param["node"])
+        else:
+            return json.dumps({"result": Constants.RESULT_FAIL})
 
         if param["node"] != -1:
             info2 = variables.machine_learning.get_info(param["node"])
@@ -245,8 +249,7 @@ def apiMachineLearningRaw():
         return json.dumps({"data": data, "info": info, "extra": info2}, default=default_json)
     except:
         variables.print_exception("[routes][/api/machine-learning/raw]")
-        result = Constants.RESULT_FAIL
-        return json.dumps({"result": result})
+        return json.dumps({"result": Constants.RESULT_FAIL})
 
 @app.route('/api/machine-learning/init')
 def apiMachineLearningInit():
@@ -272,7 +275,10 @@ def apiMachineLearningClusters():
         if param["dual_clustering"] == 0:
             if param["node"] != -1:
                 # get clusters for the specified node
-                res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
+                if param["node"] is not None:
+                    res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
+                else:
+                    return json.dumps({"result": Constants.RESULT_FAIL})
             else:
                 # get clusters from all nodes
                 res = variables.machine_learning.run_clustering_on_node_range(0, param["new_node"], n_clusters)
@@ -289,8 +295,7 @@ def apiMachineLearningClusters():
                                                                                    n_clusters_final)
 
             if param["assign"]:
-                variables.machine_learning.assign_class_to_nodes()
-                variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
+                process_data()
 
         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
 
@@ -460,9 +465,7 @@ if __name__ == '__main__':
 
     variables.machine_learning.init()
     variables.machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
-    variables.machine_learning.assign_class_to_nodes()
-    variables.network.set_class_for_consumers(variables.machine_learning.get_info()["nodes"])
-    variables.network.calculate_class_for_intermediary_nodes()
+    process_data()
 
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)

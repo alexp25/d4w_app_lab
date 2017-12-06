@@ -74,8 +74,6 @@ class MachineLearningMain:
 
             node["demand"] = int(self.clusters[node["class"]]["avg_demand"])
             node["priority"] = int(self.clusters[node["class"]]["priority"])
-            node["priority_min"] = 0
-            node["priority_max"] = len(self.clusters)
 
             # print(node)
             node_id += 1
