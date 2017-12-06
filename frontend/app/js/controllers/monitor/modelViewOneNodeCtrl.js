@@ -86,11 +86,11 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
     };
 
     $scope.init = function(mode = 1) {
-      $scope.request = definitions.requestStructure();
+      $scope.request = definitions.getRequestStructure();
       $scope.mode = mode;
       $scope.request.dual_clustering = 0;
       $scope.request.global_scale = false;
-      $scope.chartModel = definitions.chartModel();
+      $scope.chartModel = definitions.getChartModel();
       initChart();
       httpModule.getInfo().then(function(data) {
         $scope.info = data;

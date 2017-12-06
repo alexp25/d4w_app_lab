@@ -24,7 +24,7 @@ class Colors(object):
         return r, g, b
 
     @staticmethod
-    def convert_to_rgb(minval, maxval, val, colors):
+    def convert_to_rgb_custom(minval, maxval, val, colors):
         fi = float(val - minval) / float(maxval - minval) * (len(colors) - 1)
         i = int(fi)
         f = fi - i
@@ -174,12 +174,12 @@ class FindPath:
             except:
                 variables.print_exception_now("")
 
-            for edge in self.graph_data["links"]:
-                color = "rgba(0,0,0,0.5)"
-                if "priority" in edge and maxp != 0:
-                    color = Colors.convert_to_rgb(minp, maxp, edge["priority"], colors)
-                    color = Colors.get_rgba(color)
-                edge["color"] = {"color": color}
+        for edge in self.graph_data["links"]:
+            color = "rgba(0,0,0,0.5)"
+            if "priority" in edge and maxp != 0:
+                color = Colors.convert_to_rgb_custom(minp, maxp, edge["priority"], colors)
+                color = Colors.get_rgba(color)
+            edge["color"] = {"color": color}
 
     def set_class_for_consumers(self, node_data=None):
         print("network: set cluster for consumers")
@@ -211,7 +211,7 @@ class FindPath:
 
                             # color = self.colors[node["priority"]]
                             # color = Colors.convert_to_rgb(node_data1["priority_min"], node_data1["priority_max"], node["priority"])
-                            color = Colors.convert_to_rgb(minp, maxp, node["priority"], colors)
+                            color = Colors.convert_to_rgb_custom(minp, maxp, node["priority"], colors)
                             color = Colors.get_rgba(color)
                         except:
                             variables.print_exception("")

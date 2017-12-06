@@ -44,7 +44,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
       return deferred.promise;
     };
-    
+
     $scope.resetNode = function() {
       $scope.request.new_node = null;
     };
@@ -104,8 +104,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     };
 
     $scope.init = function(mode = 1) {
-      $scope.request = definitions.requestStructure();
-      $scope.chartModel = definitions.chartModel();
+      $scope.request = definitions.getRequestStructure();
+      $scope.chartModel = definitions.getChartModel();
       $scope.mode = mode;
       $scope.request.dual_clustering = 1;
       $scope.request.assign = false;
