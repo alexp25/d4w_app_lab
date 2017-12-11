@@ -270,7 +270,8 @@ def apiMachineLearningClusters():
         variables.log2("routes", '/api/machine-learning/clusters ' + param)
         param = json.loads(param)
         res = None
-        n_clusters = 3
+        # n_clusters = 3
+        n_clusters = None
         n_clusters_final = 4
         if param["dual_clustering"] == 0:
             if param["node"] != -1:
@@ -457,7 +458,7 @@ if __name__ == '__main__':
         variables.machine_learning.read_data()
 
         variables.network = FindPath()
-        variables.network.load_data_json("data/network_simple.json")
+        variables.network.load_data_json(Constants.NETWORK_FILE)
         variables.network.format_data()
 
 

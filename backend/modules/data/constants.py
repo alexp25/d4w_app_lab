@@ -32,5 +32,8 @@ class Constants:
         "priority": None
     }
 
+    # NETWORK_FILE = "data/network_simple.json"
+    NETWORK_FILE = "data/network.json"
+
 
 

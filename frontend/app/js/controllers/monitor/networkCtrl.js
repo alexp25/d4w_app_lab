@@ -105,6 +105,8 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
     $scope.loadData = function() {
 
+      $scope.display = false;
+
       $scope.resetML().then(function() {
         $scope.request.node = -1;
         $scope.request.dual_clustering = 1;

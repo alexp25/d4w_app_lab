@@ -8,6 +8,7 @@ from read_data import DataClass
 import scipy
 # from sklearn.metrics import classification_report
 from sklearn.metrics.pairwise import pairwise_distances_argmin
+from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.cluster import KMeans
 
 import numpy as np
@@ -183,11 +184,32 @@ class MachineLearningMain:
         else:
             return None
 
-    def get_centroids(self, data, nclusters, init=None):
-        if init is not None:
-            kmeans = KMeans(n_clusters=nclusters, init=init)
+    def get_centroids(self, data, n_clusters, init=None):
+        if n_clusters is not None:
+            if init is not None:
+                kmeans = KMeans(n_clusters=n_clusters, init=init)
+            else:
+                kmeans = KMeans(n_clusters=n_clusters)
         else:
-            kmeans = KMeans(n_clusters=nclusters)
+            n_clusters_range = range(2, 10)
+            max_silhouette_avg = [0] * len(n_clusters_range)
+            # data = np.array(data)
+            for (i, k) in enumerate(n_clusters_range):
+                kmeans = KMeans(n_clusters=k)
+                a = kmeans.fit_predict(data)
+                # print(data.shape)
+                # print(a)
+                # The silhouette_score gives the average value for all the samples.
+                # This gives a perspective into the density and separation of the formed
+                # clusters
+                silhouette_avg = silhouette_score(data, a)
+                # print("For n_clusters =", k,
+                #       "The average silhouette_score is :", silhouette_avg)
+                max_silhouette_avg[i] = silhouette_avg
+
+            n_clusters = n_clusters_range[max_silhouette_avg.index(max(max_silhouette_avg))]
+            kmeans = KMeans(n_clusters=n_clusters)
+
         a = kmeans.fit(data)
         centroids = a.cluster_centers_
         return centroids, a
