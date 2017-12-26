@@ -1,12 +1,14 @@
 angular.module("app").factory('httpModule', function($rootScope, $timeout, $http, $q) {
   return {
     httpGet: function(url, params) {
-      if (params === undefined){
+      if (params === undefined) {
         params = null;
       }
       var deferred = $q.defer();
       $http.get(url, {
-        params: params
+        params: {
+          param: params
+        }
       }).
       then(function(data) {
         var jsonObj = angular.fromJson(data.data);

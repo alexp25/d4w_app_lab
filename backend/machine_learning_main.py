@@ -66,8 +66,9 @@ class MachineLearningMain:
             node_assignments = [None] * n_series_node
             for i in range(n_series_node):
                 # cluster += self.assignments_series[assignment_index]["cluster"]
-                node_assignments[i] = self.assignments_series[assignment_index]["cluster"]
-                assignment_index += 1
+                if assignment_index < len(self.assignments_series):
+                    node_assignments[i] = self.assignments_series[assignment_index]["cluster"]
+                    assignment_index += 1
 
             # node["class"] = int(cluster/n_series_node)
             # get class with max number of occurences in list
@@ -269,7 +270,7 @@ class MachineLearningMain:
 
         return centroids_np, info, data
 
-    def run_clustering_on_node_range(self, start, end, nclusters):
+    def run_clustering_on_node_range(self, r, nclusters):
         """
         Run clustering on specified node range. The data from a node is an array of arrays
         (for each day there is an array of 24 values). The clusters are calculated
@@ -284,11 +285,11 @@ class MachineLearningMain:
         centroid_vect = []
         raw_data_vect = []
 
-        if end is None:
-            end = len(self.data)
+        if r is None:
+            r = list(range(0, len(self.data)))
 
         # run clustering for each node and save clusters into array
-        for node_id in range(start, end):
+        for node_id in r:
             res = self.run_clustering_on_node_id(node_id, nclusters)
             centroid_vect.append(res[0])
             raw_data_vect.append(res[2])
@@ -309,8 +310,7 @@ class MachineLearningMain:
                 "description": "Clusters from node range (single clustering)", "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
-                    "first_node": start,
-                    "last_node": end,
+                    "node_range": r,
                     "n_clusters": len(centroids_np),
                     "n_nodes": len(self.data),
                     "dt": int(dt * 1000),
@@ -321,7 +321,7 @@ class MachineLearningMain:
 
         return centroids_np, info
 
-    def run_dual_clustering_on_node_range(self, start, end, nclusters, nclusters_final):
+    def run_dual_clustering_on_node_range(self, r, nclusters, nclusters_final):
         """
          Run dual clustering on specified node range.
          The data from a node is an array of arrays
@@ -329,8 +329,7 @@ class MachineLearningMain:
         The clusters are calculated separately for each node and added to the cluster array.
         Then, there is another clustering on this cluster array which returns
         the final clusters for all the network (consumer types in the network)
-        :param start:
-        :param end:
+        :param r:
         :param nclusters:
         :param nclusters_final:
         :return:
@@ -339,11 +338,11 @@ class MachineLearningMain:
         centroid_vect = []
         raw_data_vect = []
 
-        if end is None:
-            end = len(self.data)
+        if r is None:
+            r = list(range(0, len(self.data)))
 
         # run clustering for each node and save clusters into array
-        for node_id in range(start, end):
+        for node_id in r:
             res = self.run_clustering_on_node_id(node_id, nclusters)
             centroid_vect.append(res[0])
             raw_data_vect.append(res[2])
@@ -407,8 +406,7 @@ class MachineLearningMain:
                 "description": "Clusters from node range (dual clustering)", "headers": headers,
                 "dt": t_end - t_start,
                 "details": {
-                    "first_node": start,
-                    "last_node": end,
+                    "node_range": r,
                     "n_clusters": nc,
                     "n_nodes": len(self.data),
                     "dt": int(dt * 1000),

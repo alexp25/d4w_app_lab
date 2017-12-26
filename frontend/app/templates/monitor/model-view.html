@@ -1,9 +1,27 @@
 <div layout="column" ng-init="init(1);">
-  <div class="raspi-frame" layout="column">
-    <md-button ng-click="resetML()">Reset ML</md-button>
-    <md-button ng-click="resetNode();loadData()">Reload</md-button>
-    <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
-    <md-button ng-click="stopLoop()">Stop</md-button>
+  <div class="raspi-frame" layout="row">
+    <div layout="column" flex>
+      <md-button ng-click="resetML()">Reset ML</md-button>
+      <md-button ng-click="resetNode();loadData()">Reload</md-button>
+      <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
+      <md-button ng-click="stopLoop()">Stop</md-button>
+
+    </div>
+    <div layout="column" flex ng-if="info">
+      <div>
+        <md-checkbox aria-label="Select All" ng-checked="isChecked()" md-indeterminate="isIndeterminate()" ng-click="toggleAll()">
+          <span ng-if="isChecked()">Un-</span>Select All
+        </md-checkbox>
+      </div>
+      <div class="my-scrollbar fade-element-in my-scrollable-3">
+        <div ng-repeat="item in info.nodes">
+          <md-checkbox ng-checked="exists(item, selected)" ng-click="toggle(item, selected)">
+            {{ item.id }}
+          </md-checkbox>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div layout="row">
 

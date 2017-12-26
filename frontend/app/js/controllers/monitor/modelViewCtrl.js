@@ -22,22 +22,79 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
 
     $scope.chartData = [];
 
+    $scope.request = {
+      new_node: 0
+    };
+
     function initChart() {
       for (let i = 0; i < 3; i++) {
         $scope.chartData[i] = angular.copy($scope.chartModel);
       }
     }
 
-    $scope.loadData = function() {
-      var deferred = $q.defer();
+    $scope.selected = [];
 
-      $scope.request.dual_clustering = 0;
-      $scope.request.node = -1;
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+    //checkboxes
+    $scope.toggle = function(item, list) {
+      var idx = list.indexOf(item);
+      if (idx > -1) {
+        list.splice(idx, 1);
+      } else {
+        list.push(item);
+      }
+    };
+
+    $scope.exists = function(item, list) {
+      return list.indexOf(item) > -1;
+    };
+
+
+    $scope.isIndeterminate = function() {
+      return ($scope.selected.length !== 0 &&
+        $scope.selected.length !== $scope.items.length);
+    };
+
+    $scope.isChecked = function() {
+      return $scope.selected.length === $scope.items.length;
+    };
+
+    $scope.toggleAll = function() {
+      if ($scope.selected.length === $scope.items.length) {
+        $scope.selected = [];
+      } else if ($scope.selected.length === 0 || $scope.selected.length > 0) {
+        $scope.selected = $scope.items.slice(0);
+      }
+    };
+
+    function getRange(start, end) {
+      var a = [];
+      for (var i = start; i <= end; i++) {
+        a.push(i);
+      }
+      return a;
+    }
+
+    function getIds(nodes) {
+      a = [];
+      for (var i = 0; i < nodes.length; i++) {
+        a.push(nodes[i].id);
+      }
+      return a;
+    }
+
+    $scope.loadData = function(request) {
+      var deferred = $q.defer();
+      if (request === undefined) {
+        request = {
+          range: getIds($scope.selected),
+          global_scale: false,
+          assign: false
+        };
+      }
+      httpModule.httpGet("/api/machine-learning/clusters/range/first-stage", request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[0]);
       });
-      $scope.request.dual_clustering = 1;
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+      httpModule.httpGet("/api/machine-learning/clusters/range/second-stage", request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
       });
       deferred.resolve('done');
@@ -46,29 +103,12 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     };
 
     $scope.resetNode = function() {
-      $scope.request.new_node = null;
+      $scope.request.new_node = 0;
     };
 
     $scope.resetML = function() {
       return httpModule.httpGet('/api/machine-learning/init');
     };
-
-    $scope.loadDataSelected = function() {
-      $scope.request.new_node = null;
-      httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
-        globalApi.plotData(data, $scope.chartData[0]);
-      }, function(error) {
-        console.log("no data");
-      });
-      $scope.request.global_scale = false;
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
-        globalApi.plotData(data, $scope.chartData[1]);
-      }, function(error) {
-        console.log("no data");
-      });
-      $scope.request.global_scale = true;
-    };
-
 
     function pollData(first, tm = 5000) {
       let tm1 = tm;
@@ -80,10 +120,14 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       }
       $scope.timer[2] = $timeout(function() {
         $scope.pendingRequest = $q.defer();
-        $scope.loadData().then(function() {
+        $scope.loadData({
+          new_node: $scope.request.new_node,
+          global_scale: false,
+          assign: false
+        }).then(function() {
           $scope.request.new_node += 1;
-          if ($scope.request.new_node > 21) {
-            $scope.request.new_node = null;
+          if ($scope.request.new_node > $scope.items[$scope.items.length - 1].id) {
+            $scope.request.new_node = 5;
             return;
           }
           // console.log(tm);
@@ -104,14 +148,15 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
     };
 
     $scope.init = function(mode = 1) {
-      $scope.request = definitions.getRequestStructure();
+      // $scope.request = definitions.getRequestStructure();
       $scope.chartModel = definitions.getChartModel();
       $scope.mode = mode;
-      $scope.request.dual_clustering = 1;
-      $scope.request.assign = false;
+
       initChart();
       httpModule.getInfo().then(function(data) {
         $scope.info = data;
+        $scope.items = data.nodes;
+        $scope.toggleAll();
         $scope.loadData();
       }, function() {
         console.log("no data");

@@ -263,53 +263,148 @@ def apiMachineLearningInit():
         variables.print_exception("[routes][/api/machine-learning/init]")
         return json.dumps({"result": Constants.RESULT_FAIL})
 
-@app.route('/api/machine-learning/clusters')
-def apiMachineLearningClusters():
+
+# @app.route('/api/machine-learning/clusters')
+# def apiMachineLearningClusters():
+#     try:
+#         param = request.args.get('param')
+#         variables.log2("routes", '/api/machine-learning/clusters ' + param)
+#         param = json.loads(param)
+#         res = None
+#         # n_clusters = 3
+#         n_clusters = None
+#         n_clusters_final = 4
+#         if param["dual_clustering"] == 0:
+#             if param["node"] != -1:
+#                 # get clusters for the specified node
+#                 if param["node"] is not None:
+#                     res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
+#                 else:
+#                     return json.dumps({"result": Constants.RESULT_FAIL})
+#             else:
+#                 # get clusters from all nodes
+#                 res = variables.machine_learning.run_clustering_on_node_range(0, param["new_node"], n_clusters)
+#         else:
+#             # get clusters from clusters from all nodes
+#             # this will recalculate all clusters and reassign nodes
+#             try:
+#                 res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
+#             except:
+#                 # different number of clusters
+#                 variables.print_exception("/api/machine-learning/clusters")
+#                 variables.machine_learning.init()
+#                 res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters,
+#                                                                                    n_clusters_final)
+#
+#             if param["assign"]:
+#                 process_data()
+#
+#         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
+#
+#         if param["node"] != -1:
+#             info2 = variables.machine_learning.get_info(param["node"])
+#         else:
+#             info2 = None
+#
+#         return json.dumps({"data": data, "info": info, "extra": info2, "params": param}, default=default_json)
+#     except:
+#         variables.print_exception("[routes][/api/machine-learning/clusters]")
+#         result = Constants.RESULT_FAIL
+#         return json.dumps({"result": result})
+
+
+@app.route('/api/machine-learning/clusters/node/first-stage')
+def apiMachineLearningClustersNodeFirstStage():
+    route = '/api/machine-learning/clusters/node/first-stage'
     try:
         param = request.args.get('param')
-        variables.log2("routes", '/api/machine-learning/clusters ' + param)
+        variables.log2("routes", '/api/machine-learning/clusters/first-stage')
+        param = json.loads(param)
+        res = None
+        # n_clusters = 3
+        n_clusters = None
+
+        res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
+        (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
+        info2 = variables.machine_learning.get_info(param["node"])
+
+        return json.dumps({"data": data, "info": info, "extra": info2, "params": param}, default=default_json)
+    except:
+        variables.print_exception(route)
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
+@app.route('/api/machine-learning/clusters/range/first-stage')
+def apiMachineLearningClustersRangeFirstStage():
+    route = '/api/machine-learning/clusters/range/first-stage'
+    try:
+        param = request.args.get('param')
+        variables.log2("routes", route)
+        param = json.loads(param)
+        res = None
+        # n_clusters = 3
+        n_clusters = None
+        if "range" in param and param["range"] is not None:
+            r = param["range"]
+        else:
+            r = list(range(0, param["new_node"]))
+
+        print(r)
+        # get clusters from all nodes
+        res = variables.machine_learning.run_clustering_on_node_range(r, n_clusters)
+        (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
+        info2 = None
+        return json.dumps({"data": data, "info": info, "extra": info2, "params": param}, default=default_json)
+    except:
+        variables.print_exception(route)
+        result = Constants.RESULT_FAIL
+        return json.dumps({"result": result})
+
+
+@app.route('/api/machine-learning/clusters/range/second-stage')
+def apiMachineLearningClustersNodeSecondStage():
+    route = '/api/machine-learning/clusters/range/second-stage'
+    try:
+        param = request.args.get('param')
+        variables.log2("routes", route)
         param = json.loads(param)
         res = None
         # n_clusters = 3
         n_clusters = None
         n_clusters_final = 4
-        if param["dual_clustering"] == 0:
-            if param["node"] != -1:
-                # get clusters for the specified node
-                if param["node"] is not None:
-                    res = variables.machine_learning.run_clustering_on_node_id(param["node"], n_clusters)
-                else:
-                    return json.dumps({"result": Constants.RESULT_FAIL})
-            else:
-                # get clusters from all nodes
-                res = variables.machine_learning.run_clustering_on_node_range(0, param["new_node"], n_clusters)
+        # get clusters from clusters from all nodes
+        # this will recalculate all clusters and reassign nodes
+        if "range" in param and param["range"] is not None:
+            r = param["range"]
         else:
-            # get clusters from clusters from all nodes
-            # this will recalculate all clusters and reassign nodes
-            try:
-                res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters, n_clusters_final)
-            except:
-                # different number of clusters
-                variables.print_exception("/api/machine-learning/clusters")
-                variables.machine_learning.init()
-                res = variables.machine_learning.run_dual_clustering_on_node_range(0, param["new_node"], n_clusters,
-                                                                                   n_clusters_final)
+            if "new_node" in param and param["new_node"] is not None:
+                r = list(range(0, param["new_node"]))
+            else:
+                r = None
 
-            if param["assign"]:
-                process_data()
+        print(r)
+
+        try:
+            res = variables.machine_learning.run_dual_clustering_on_node_range(r, n_clusters, n_clusters_final)
+        except:
+            # different number of final clusters
+            variables.print_exception(route)
+            variables.machine_learning.init()
+            res = variables.machine_learning.run_dual_clustering_on_node_range(r, n_clusters, n_clusters_final)
+
+        # get clusters from clusters from all nodes
+        # this will recalculate all clusters and reassign nodes
+        if "assign" in param and param["assign"]:
+            process_data()
 
         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
-
-        if param["node"] != -1:
-            info2 = variables.machine_learning.get_info(param["node"])
-        else:
-            info2 = None
-
+        info2 = None
         return json.dumps({"data": data, "info": info, "extra": info2, "params": param}, default=default_json)
     except:
-        variables.print_exception("[routes][/api/machine-learning/clusters]")
+        variables.print_exception(route)
         result = Constants.RESULT_FAIL
         return json.dumps({"result": result})
+
 
 @app.route('/api/network/graph')
 def apiNetworkGraph():
@@ -465,7 +560,7 @@ if __name__ == '__main__':
     variables.log2("main", " server started")
 
     variables.machine_learning.init()
-    variables.machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
+    variables.machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
     process_data()
 
 

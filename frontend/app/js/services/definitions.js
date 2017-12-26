@@ -120,7 +120,7 @@ angular.module("app").factory('definitions', function($rootScope, $timeout) {
       return {
         node: -1,
         dual_clustering: 0,
-        new_node: null,
+        new_node: 1,
         global_scale: true,
         assign: true
       };

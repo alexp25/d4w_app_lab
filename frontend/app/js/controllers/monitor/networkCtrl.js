@@ -10,6 +10,10 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       n: 10
     };
 
+    $scope.request = {
+      node: 0
+    };
+
 
     $scope.chartData = [];
 
@@ -47,7 +51,7 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
           return;
         }
 
-        if (!flagClickedNode){
+        if (!flagClickedNode) {
           return;
         }
 
@@ -55,13 +59,19 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
         if ($scope.request.node === -1) {
           return;
         }
-        httpModule.getRawData($scope.request).then(function(data) {
+
+        var request = {
+          node: $scope.request.node,
+          global_scale: true
+        };
+
+        httpModule.getRawData(request).then(function(data) {
           globalApi.plotData(data, $scope.chartData[0]);
         }).catch(function(data) {
           console.log("no data");
         });
-        $scope.request.dual_clustering = 0;
-        httpModule.getModelData($scope.request).then(function(data) {
+
+        httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function(data) {
           globalApi.plotData(data, $scope.chartData[1]);
         }).catch(function(data) {
           console.log("no data");
@@ -103,16 +113,18 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
       return httpModule.httpGet('/api/machine-learning/init');
     };
 
-    $scope.loadData = function() {
-
+    $scope.loadData = function(request) {
       $scope.display = false;
+      if (request === undefined) {
+        request = {
+          range: null,
+          global_scale: true,
+          assign: true
+        };
+      }
 
       $scope.resetML().then(function() {
-        $scope.request.node = -1;
-        $scope.request.dual_clustering = 1;
-        $scope.request.new_node = null;
-        $scope.request.global_scale = true;
-        httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+        httpModule.httpGet("/api/machine-learning/clusters/range/second-stage", request).then(function(data) {
           $scope.hasData = true;
           globalApi.plotData(data, $scope.chartData[2]);
 
@@ -139,34 +151,14 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
     };
 
-    function pollData(first, tm = 1000) {
-      let tm1 = tm;
-      if (first === true) {
-        tm1 = 0;
-      }
-      $scope.timer[2] = $timeout(function() {
-        $scope.loadData();
-        pollData(false, tm);
-      }, tm1);
-    }
 
     $scope.init = function() {
-      $scope.request = definitions.getRequestStructure();
       $scope.chartModel = definitions.getChartModel();
       initChart();
       $timeout(function() {
         initGraph();
       }, 500);
-
       $scope.loadData();
-    };
-
-    $scope.startLoop = function(tm) {
-      pollData(true, tm);
-    };
-
-    $scope.stopLoop = function() {
-      $timeout.cancel($scope.timer[2]);
     };
 
     var clearTimers = function() {

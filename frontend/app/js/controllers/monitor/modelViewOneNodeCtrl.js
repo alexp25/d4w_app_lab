@@ -3,14 +3,13 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
     var numericDisplay;
     $scope.timer = [];
     $scope.viewMode = 'map';
-
-
     $scope.info = null;
-
-
+    $scope.request = {
+      node: 0,
+      new_node: 0
+    };
 
     $scope.chartData = [];
-
 
     function initChart() {
       for (let i = 0; i < 2; i++) {
@@ -18,15 +17,22 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
       }
     }
 
-    $scope.loadData = function() {
+    $scope.loadData = function(request) {
+
+      if (request === undefined) {
+        request = {
+          node: $scope.request.node,
+          global_scale: false,
+          assign: false
+        };
+      }
       var deferred = $q.defer();
-      httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
+      httpModule.getRawData(request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[0]);
       }, function(error) {
         console.log("no data");
       });
-      $scope.request.dual_clustering = 0;
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
       }, function(error) {
         console.log("no data");
@@ -35,19 +41,21 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
       return deferred.promise;
     };
 
-    $scope.resetNode = function() {
-      $scope.request.new_node = null;
-    };
-
-    $scope.loadDataSelected = function() {
-      $scope.request.new_node = null;
+    $scope.loadDataSelected = function(request) {
+      if (request === undefined) {
+        request = {
+          node: $scope.request.node,
+          global_scale: false,
+          assign: false
+        };
+      }
       httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
         globalApi.plotData(data, $scope.chartData[0]);
       }, function(error) {
         console.log("no data");
       });
 
-      httpModule.getModelData(angular.copy($scope.request)).then(function(data) {
+      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
       }, function(error) {
         console.log("no data");
@@ -55,38 +63,8 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
 
     };
 
-
-    function pollData(first, tm = 5000) {
-      let tm1 = tm;
-      if (first === true) {
-        tm1 = 0;
-        $scope.request.new_node = 5;
-      }
-      $scope.timer[2] = $timeout(function() {
-        $scope.pendingRequest = $q.defer();
-        $scope.loadData().then(function() {
-          $scope.request.new_node += 1;
-          if ($scope.request.new_node > 21) {
-            $scope.request.new_node = null;
-            return;
-          }
-          // console.log(tm);
-          pollData(false, tm);
-        });
-      }, tm1);
-    }
-
-    $scope.startLoop = function(tm) {
-      pollData(true, tm);
-    };
-
-    $scope.stopLoop = function() {
-      $timeout.cancel($scope.timer[2]);
-      $scope.pendingRequest.resolve();
-    };
-
     $scope.init = function(mode = 1) {
-      $scope.request = definitions.getRequestStructure();
+
       $scope.mode = mode;
       $scope.request.dual_clustering = 0;
       $scope.request.global_scale = false;
