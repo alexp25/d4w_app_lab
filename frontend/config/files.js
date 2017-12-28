@@ -34,7 +34,8 @@ module.exports = function(lineman) {
 
         // 'vendor/bower_components/c3-angular/c3-angular.js',
 
-
+        'vendor/bower_components/angular-sanitize/angular-sanitize.js',
+        'vendor/bower_components/ng-csv/build/ng-csv.js',
 
         'vendor/bower_components/vis/dist/vis.js',
 

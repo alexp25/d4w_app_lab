@@ -26,6 +26,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       new_node: 0
     };
 
+    $scope.finalClusters = [];
+
     function initChart() {
       for (let i = 0; i < 3; i++) {
         $scope.chartData[i] = angular.copy($scope.chartModel);
@@ -96,6 +98,8 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
       });
       httpModule.httpGet("/api/machine-learning/clusters/range/second-stage", request).then(function(data) {
         globalApi.plotData(data, $scope.chartData[1]);
+        $scope.finalClusters = data.data;
+        console.log(data);
       });
       deferred.resolve('done');
 
@@ -157,7 +161,7 @@ angular.module('app').controller('monitorModelViewCtrl', ['$scope', 'socket', '$
         $scope.info = data;
         $scope.items = data.nodes;
         $scope.toggleAll();
-        $scope.loadData();
+        // $scope.loadData();
       }, function() {
         console.log("no data");
       });

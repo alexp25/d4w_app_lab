@@ -5,6 +5,7 @@
       <md-button ng-click="resetNode();loadData()">Reload</md-button>
       <md-button ng-click="startLoop(5000)">Reload Loop</md-button>
       <md-button ng-click="stopLoop()">Stop</md-button>
+      <md-button md-no-ink class="md-primary" filename="clusters.csv" ng-csv="finalClusters">Export</md-button>
 
     </div>
     <div layout="column" flex ng-if="info">

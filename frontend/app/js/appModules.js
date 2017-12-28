@@ -3,7 +3,10 @@ angular.module('app', [
   // 'ui.bootstrap',
   'ui.router',
   'ngMaterial',
-  'thatisuday.dropzone'
+  'thatisuday.dropzone',
+
+  'ngSanitize',
+  'ngCsv'
   // 'socket.io',
   // 'ngWebSocket',
   // 'esri.map'
