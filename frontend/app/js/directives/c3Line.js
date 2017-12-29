@@ -1,4 +1,4 @@
-angular.module('app').directive('c3Line', function() {
+angular.module('app').directive('c3Line', function () {
   return {
     restrict: 'E',
     templateUrl: 'templates/directives/c3-line.html',
@@ -7,7 +7,7 @@ angular.module('app').directive('c3Line', function() {
       options: '=?',
       cid: '=?'
     },
-    link: function(scope) {
+    link: function (scope) {
       if (scope.options === undefined) {
         scope.options = {
           cid: 1,
@@ -29,6 +29,8 @@ angular.module('app').directive('c3Line', function() {
       if (scope.cid !== undefined) {
         scope.options.cid = scope.cid;
       }
+
+      scope.columns = [];
 
       var containerid = "container-" + scope.options.cid.toString();
       $("#container").prop('id', containerid);
@@ -119,20 +121,8 @@ angular.module('app').directive('c3Line', function() {
         zoom: {
           enabled: true
         },
-        onresize: function() {
+        onresize: function () {
           console.log("resized");
-          // chart.resize();
-
-          // var size = {
-          //   height: $('#parentContainer')[0].offsetHeight - 10
-          // }
-          // chart.resize(size);
-          // var width = $('#' + containerid).width();
-          // console.log(width);
-          //
-          // chart.resize({
-          //   width: width
-          // });
         }
       };
 
@@ -167,23 +157,6 @@ angular.module('app').directive('c3Line', function() {
 
 
 
-        // var datay = data.rows.map(function(obj) {
-        //   return obj[1];
-        // });
-        //
-        // var min = Math.min.apply(null, datay),
-        //   max = Math.max.apply(null, datay);
-        //
-        // console.log('min: ' + min + ', max: ' + max);
-        // scope.options.ymin = min - scope.options.yminspan;
-        // scope.options.ymax = max + scope.options.yminspan;
-
-        // chartdata.axis.y.min = scope.options.ymin;
-        // chartdata.axis.y.max = scope.options.ymax;
-
-
-
-
         // if (data.refresh) {
         //   chart.unload();
         // }
@@ -198,25 +171,44 @@ angular.module('app').directive('c3Line', function() {
 
         // chart.unload();
 
-        // if (!angular.equals(columns, chart.columns)) {
-        //   // chart.disp = false;
-        //   chart.columns = columns;
-        // }
+        if (!angular.equals(data.columns, scope.columns)) {
+        // if (data.columns.length !== scope.columns.length) {
+          // chart.disp = false;
+          console.log('chart unload + load');
+          chart.unload({
+            done: function () {
+              chart.axis.min({
+                y: scope.options.ymin - 100
+              });
+              chart.axis.max({
+                y: scope.options.ymax + 100
+              });
+              scope.columns = data.columns;
+              chartdata.data.rows.unshift(data.columns);
+              chart.load({
+                rows: chartdata.data.rows
+              });
+            }
+          });
 
-        chart.unload({
-          done: function() {
-            chart.axis.min({
-              y: scope.options.ymin - 100
-            });
-            chart.axis.max({
-              y: scope.options.ymax + 100
-            });
-            chartdata.data.rows.unshift(data.columns);
-            chart.load({
-              rows: chartdata.data.rows
-            });
-          }
-        });
+        } else {
+          console.log("chart load");
+          // chart.load({
+          //   rows: chartdata.data.rows
+          // });
+          chart.axis.min({
+            y: scope.options.ymin - 100
+          });
+          chart.axis.max({
+            y: scope.options.ymax + 100
+          });
+          chartdata.data.rows.unshift(data.columns);
+          chart.load({
+            rows: chartdata.data.rows
+          });
+        }
+
+
 
         // chart.load({
         //   unload: true,
@@ -224,7 +216,7 @@ angular.module('app').directive('c3Line', function() {
         // });
       }
 
-      scope.$watch('data.timestamp', function() {
+      scope.$watch('data.timestamp', function () {
         if (chartdata !== undefined) {
           updateChart(scope.data);
         }

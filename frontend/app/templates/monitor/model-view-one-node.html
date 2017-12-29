@@ -2,17 +2,21 @@
   <!-- <md-button ng-click="loadData()">Load next node</md-button> -->
   <div class="raspi-frame" layout="column">
     <md-button ng-click="loadData()">Reload</md-button>
-    <!-- <md-button ng-click="startLoop(1000)">Loop</md-button> -->
-    <!-- <md-button ng-click="stopLoop()">Stop</md-button> -->
+    <md-button ng-click="loadPartialSample()">Load partial sample</md-button>
+    <md-button ng-click="startLoop(1000)">Loop load partial sample</md-button>
+    <md-button ng-click="stopLoop()">Stop loop</md-button>
 
     <md-input-container>
-      <md-select ng-model="request.node" placeholder="Select a node" ng-change="loadDataSelected()">
+        <!-- ng-change="loadDataSelected()" -->
+      <md-select ng-model="request.node" placeholder="Select a node" >
         <md-option ng-value="opt.id" ng-repeat="opt in info.nodes">{{ opt.id }}</md-option>
       </md-select>
     </md-input-container>
   </div>
 
   <div layout="row">
+
+    
 
     <div flex layout="column">
       <div ng-repeat="chart in chartData track by $index">

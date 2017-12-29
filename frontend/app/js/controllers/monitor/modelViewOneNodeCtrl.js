@@ -1,5 +1,5 @@
 angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'socket', '$timeout', '$http', '$q', 'globalApi', 'httpModule', 'definitions',
-  function($scope, socket, $timeout, $http, $q, globalApi, httpModule, definitions) {
+  function ($scope, socket, $timeout, $http, $q, globalApi, httpModule, definitions) {
     var numericDisplay;
     $scope.timer = [];
     $scope.viewMode = 'map';
@@ -17,7 +17,28 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
       }
     }
 
-    $scope.loadData = function(request) {
+
+    $scope.loadPartialSample = function (request) {
+      if (request === undefined) {
+        request = {
+          node: $scope.request.node,
+          sample: 0,
+          global_scale: false
+        };
+      }
+      var deferred = $q.defer();
+      httpModule.httpGet(" /api/machine-learning/clusters/node/partial-sample", request).then(function (data) {
+        globalApi.plotData(data, $scope.chartData[1]);
+      }, function (error) {
+        console.log("no data");
+      });
+      deferred.resolve('done');
+      return deferred.promise;
+    };
+
+
+
+    $scope.loadData = function (request) {
 
       if (request === undefined) {
         request = {
@@ -27,21 +48,22 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
         };
       }
       var deferred = $q.defer();
-      httpModule.getRawData(request).then(function(data) {
+      httpModule.getRawData(request).then(function (data) {
         globalApi.plotData(data, $scope.chartData[0]);
-      }, function(error) {
+      }, function (error) {
         console.log("no data");
       });
-      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function(data) {
+      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function (data) {
         globalApi.plotData(data, $scope.chartData[1]);
-      }, function(error) {
+      }, function (error) {
         console.log("no data");
       });
       deferred.resolve('done');
       return deferred.promise;
     };
 
-    $scope.loadDataSelected = function(request) {
+
+    $scope.loadDataSelected = function (request) {
       if (request === undefined) {
         request = {
           node: $scope.request.node,
@@ -49,43 +71,68 @@ angular.module('app').controller('monitorModelViewOneNodeCtrl', ['$scope', 'sock
           assign: false
         };
       }
-      httpModule.getRawData(angular.copy($scope.request)).then(function(data) {
+      httpModule.getRawData(angular.copy($scope.request)).then(function (data) {
         globalApi.plotData(data, $scope.chartData[0]);
-      }, function(error) {
+      }, function (error) {
         console.log("no data");
       });
 
-      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function(data) {
+      httpModule.httpGet("/api/machine-learning/clusters/node/first-stage", request).then(function (data) {
         globalApi.plotData(data, $scope.chartData[1]);
-      }, function(error) {
+      }, function (error) {
         console.log("no data");
       });
 
     };
 
-    $scope.init = function(mode = 1) {
+    $scope.init = function (mode = 1) {
 
       $scope.mode = mode;
       $scope.request.dual_clustering = 0;
       $scope.request.global_scale = false;
       $scope.chartModel = definitions.getChartModel();
       initChart();
-      httpModule.getInfo().then(function(data) {
+      httpModule.getInfo().then(function (data) {
         $scope.info = data;
         $scope.loadData();
-      }, function() {
+      }, function () {
         console.log("no data");
       });
     };
 
-    var clearTimers = function() {
+
+
+    function pollData(first, tm = 5000) {
+      let tm1 = tm;
+      if (first === true) {
+        tm1 = 0;
+      }
+      $scope.timer[2] = $timeout(function() {
+        $scope.pendingRequest = $q.defer();
+        $scope.loadPartialSample().then(function(){
+          pollData(false, tm);
+        });
+      }, tm1);
+    }
+
+    $scope.startLoop = function(tm) {
+      pollData(true, tm);
+    };
+
+    $scope.stopLoop = function() {
+      $timeout.cancel($scope.timer[2]);
+      $scope.pendingRequest.resolve();
+    };
+
+
+    var clearTimers = function () {
       $timeout.cancel($scope.timer[2]);
       for (var i = 0; i < $scope.timer.length; i++) {
         $timeout.cancel($scope.timer[i]);
       }
     };
 
-    $scope.$on("$destroy", function() {
+    $scope.$on("$destroy", function () {
       clearTimers();
       console.log('disconnect');
       // socket.emit('disconnect_request', '');

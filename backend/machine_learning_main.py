@@ -42,7 +42,10 @@ class MachineLearningMain:
         # self.use_previous_cluster_data = False
         self.centroids = None
         self.final_centroids = None
+        self.final_clusters = None
         self.clusters = []
+
+        self.partial_sample_index = 0
 
 
     def init(self):
@@ -169,8 +172,8 @@ class MachineLearningMain:
             # if end > self.n_series_disp - 1:
             #     end = self.n_series_disp - 1
 
-            # print("disp start: " + str(start) + ", disp end: " + str(end))
             ddata = ddata[start:end]
+
             if global_scale and self.min_final is not None:
                 # print("use global scale")
                 min = self.min_final
@@ -217,6 +220,71 @@ class MachineLearningMain:
 
     def get_assignments(self, a, data):
         return a.predict(data)
+
+    def assign_sample_to_cluster(self, node_id, sample_id):
+        data = self.data[node_id]["series"]
+        data1 = data[sample_id]
+        data1 = [data1]
+        print("data:")
+        print(data1)
+        assignments = self.get_assignments(self.final_clusters, data1)
+        return assignments[0]
+
+    def assign_partial_sample_to_cluster(self, node_id, sample_id, init=False):
+        data = list(self.data[node_id]["series"][sample_id])
+
+        if init:
+            self.partial_sample_index = 0
+
+        data1 = [0] * len(data)
+        partial_time_series = [0] * len(data)
+        # print(data1)
+        cluster_mean = list(np.mean(self.final_centroids, axis=0))
+        # print(cluster_mean)
+        # print(data)
+        for i in range(0, len(data)):
+            if i <= self.partial_sample_index:
+                data1[i] = data[i]
+                partial_time_series[i] = data[i]
+            elif i > self.partial_sample_index:
+                data1[i] = cluster_mean[i]
+
+        assignments = self.get_assignments(self.final_clusters, [data1])
+
+        if self.partial_sample_index < len(data1) - 1:
+            self.partial_sample_index += 1
+        else:
+            self.partial_sample_index = 0
+
+        # # get assignments of time series to the final clusters
+        partial_time_series = np.array(partial_time_series)
+        return assignments[0], partial_time_series
+
+    def run_clustering_on_partial_sample(self, node_id, sample_id, init=False):
+        assignment, partial_time_series = self.assign_partial_sample_to_cluster(node_id, sample_id, init)
+        min = int(np.min(partial_time_series))
+        max = int(np.max(partial_time_series))
+        info = {
+            "description": "Partial node data loading",
+            "headers": ["new sample"],
+            "dt": 0,
+            "details": {
+                "node_id": node_id,
+                "node_sample": sample_id,
+                "assignment": int(assignment),
+                "min": min,
+                "max": max
+            },
+            "assignments": None}
+
+        # print(partial_time_series)
+        partial_time_series = [list(partial_time_series)]
+        for (i, c) in enumerate(self.final_centroids):
+            partial_time_series.append(list(c))
+            info["headers"].append("cluster " + str(i))
+
+        partial_time_series = np.array(partial_time_series)
+        return partial_time_series, info
 
     def run_clustering_on_node_id(self, node_id, nclusters):
         """
@@ -321,6 +389,7 @@ class MachineLearningMain:
 
         return centroids_np, info
 
+
     def run_dual_clustering_on_node_range(self, r, nclusters, nclusters_final):
         """
          Run dual clustering on specified node range.
@@ -357,10 +426,12 @@ class MachineLearningMain:
         res = self.get_centroids(centroids_np, nclusters_final, self.final_centroids)
         centroids = res[0]
         self.final_centroids = res[0]
+        self.final_clusters = res[1]
         nc = len(centroids)
         centroids_np = np.array(centroids)
 
         # get assignments of time series to the final clusters
+
         assignments = self.get_assignments(res[1], raw_data_vect)
 
         n = len(centroids_np)
@@ -546,5 +617,14 @@ if __name__ == "__main__":
     print("machine learning test")
     machine_learning = MachineLearningMain()
     machine_learning.read_data()
-    res = machine_learning.run_dual_clustering_on_node_range(0, None, 3, 3)
+    res = machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
     print(machine_learning.assign_class_to_nodes())
+
+
+    res = machine_learning.assign_sample_to_cluster(1, 0)
+    print(res)
+
+    for i in range(24):
+        res = machine_learning.assign_partial_sample_to_cluster(1, 0)
+        print(res)
+

@@ -32,6 +32,7 @@ angular.module("app").factory('globalApi', function($rootScope, $timeout) {
         // chart.disp = false;
         chart.columns = columns;
       }
+
       chart.rows = rows;
       chart.timestamp = new Date();
 
