@@ -23,6 +23,7 @@ from os.path import isfile, join
 import copy
 
 from modules.data.constants import Constants
+from modules import machine_learning_functions as ml
 
 
 class MachineLearningMain:
@@ -231,6 +232,40 @@ class MachineLearningMain:
         return assignments[0]
 
     def assign_partial_sample_to_cluster(self, node_id, sample_id, init=False):
+        data = list(self.data[node_id]["series"][sample_id])
+
+        if init:
+            self.partial_sample_index = 0
+
+        index = self.partial_sample_index
+
+        min_dist = 0
+        min_index = 0
+        for (i, c) in enumerate(self.final_centroids):
+            d = ml.euclid_dist(data[0: index], c[0: index])
+            if i == 0:
+                min_dist = d
+            else:
+                if d < min_dist:
+                    min_dist = d
+                    min_index = i
+
+
+        partial_time_series = [0] * len(data)
+        partial_time_series[0: index] = data[0: index]
+
+        assignment = min_index
+
+        if self.partial_sample_index < len(data) - 1:
+            self.partial_sample_index += 1
+        else:
+            self.partial_sample_index = 0
+
+        # # get assignments of time series to the final clusters
+        partial_time_series = np.array(partial_time_series)
+        return assignment, partial_time_series
+
+    def assign_partial_sample_to_cluster_default(self, node_id, sample_id, init=False):
         data = list(self.data[node_id]["series"][sample_id])
 
         if init:
