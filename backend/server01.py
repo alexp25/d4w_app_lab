@@ -545,6 +545,9 @@ if __name__ == '__main__':
     variables.machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
     process_data()
 
+    #  test
+    # variables.machine_learning.set_lib(False)
+
 
     server = pywsgi.WSGIServer(('0.0.0.0', 8086), app, handler_class=WebSocketHandler)
     server.serve_forever()

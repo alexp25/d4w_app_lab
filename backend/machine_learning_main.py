@@ -24,10 +24,12 @@ import copy
 
 from modules.data.constants import Constants
 from modules import machine_learning_functions as ml
+from modules.dynamic_clustering import ClusteringClass
+dcluster = ClusteringClass()
 
 
 class MachineLearningMain:
-    def __init__(self):
+    def __init__(self, use_scikit=True):
         self.dc = DataClass()
         self.data = []
         self.node_data = []
@@ -48,7 +50,10 @@ class MachineLearningMain:
         self.node_centroids = []
 
         self.partial_sample_index = 0
+        self.use_scikit = use_scikit
 
+    def set_lib(self, use_scikit):
+        self.use_scikit = use_scikit
 
     def init(self):
         self.final_centroids = None
@@ -190,38 +195,51 @@ class MachineLearningMain:
         else:
             return None
 
-    def get_centroids(self, data, n_clusters, init=None):
-        if n_clusters is not None:
-            if init is not None:
-                kmeans = KMeans(n_clusters=n_clusters, init=init)
+    def get_centroids(self, data, n_clusters=8, init=None):
+        if self.use_scikit:
+            if n_clusters is not None:
+                if init is not None:
+                    kmeans = KMeans(n_clusters=n_clusters, init=init)
+                else:
+                    kmeans = KMeans(n_clusters=n_clusters)
             else:
+                n_clusters_range = range(2, 10)
+                max_silhouette_avg = [0] * len(n_clusters_range)
+                # data = np.array(data)
+                for (i, k) in enumerate(n_clusters_range):
+                    kmeans = KMeans(n_clusters=k)
+                    a = kmeans.fit_predict(data)
+                    # print(data.shape)
+                    # print(a)
+                    # The silhouette_score gives the average value for all the samples.
+                    # This gives a perspective into the density and separation of the formed
+                    # clusters
+                    silhouette_avg = silhouette_score(data, a)
+                    # print("For n_clusters =", k,
+                    #       "The average silhouette_score is :", silhouette_avg)
+                    max_silhouette_avg[i] = silhouette_avg
+
+                n_clusters = n_clusters_range[max_silhouette_avg.index(max(max_silhouette_avg))]
                 kmeans = KMeans(n_clusters=n_clusters)
+
+
+            a = kmeans.fit(data)
+            centroids = a.cluster_centers_
+            return centroids, a
         else:
-            n_clusters_range = range(2, 10)
-            max_silhouette_avg = [0] * len(n_clusters_range)
-            # data = np.array(data)
-            for (i, k) in enumerate(n_clusters_range):
-                kmeans = KMeans(n_clusters=k)
-                a = kmeans.fit_predict(data)
-                # print(data.shape)
-                # print(a)
-                # The silhouette_score gives the average value for all the samples.
-                # This gives a perspective into the density and separation of the formed
-                # clusters
-                silhouette_avg = silhouette_score(data, a)
-                # print("For n_clusters =", k,
-                #       "The average silhouette_score is :", silhouette_avg)
-                max_silhouette_avg[i] = silhouette_avg
-
-            n_clusters = n_clusters_range[max_silhouette_avg.index(max(max_silhouette_avg))]
-            kmeans = KMeans(n_clusters=n_clusters)
-
-        a = kmeans.fit(data)
-        centroids = a.cluster_centers_
-        return centroids, a
+            if n_clusters is None:
+                n_clusters = 3
+            dcluster.reinit(data, n_clusters)
+            # dcluster.add_new_data(data, n_clusters)
+            centroids, a = dcluster.k_means_clust_dynamic()
+            # print(centroids)
+            return centroids, a
 
     def get_assignments(self, a, data):
-        return a.predict(data)
+        if self.use_scikit:
+            return a.predict(data)
+        else:
+            return a
 
     def assign_sample_to_cluster(self, node_id, sample_id):
         data = self.data[node_id]["series"]
@@ -688,16 +706,98 @@ class MachineLearningMain:
 
 if __name__ == "__main__":
     print("machine learning test")
-    machine_learning = MachineLearningMain()
+    machine_learning = MachineLearningMain(use_scikit=False)
     machine_learning.read_data()
-    res = machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
-    print(machine_learning.assign_class_to_nodes())
+
+    # data = machine_learning.data[0]["series"].tolist()
+    data = machine_learning.data[10]["series"]
+    res = machine_learning.get_centroids(data, 2)
+    # print(data)
+    # print(np.linalg.norm(data))
+    # for i in range(10):
+    #     res = machine_learning.get_centroids(data, 2)
+    #     print(np.linalg.norm(res[0]))
+    #     print("")
+    # machine_learning.set_lib(False)
+    dcluster.reinit(data, 2)
+    res_standard,a = dcluster.k_means_clust_dynamic()
+
+    ls = len(data)
+    ls1 = int(ls/2)
+
+    # test partial update with whole series
+    dcluster.reinit(data[0:ls1], 2)
+    res_partial_whole, a = dcluster.k_means_clust_dynamic()
+
+    for i_data in range(ls+1, ls):
+        dcluster.add_new_data(data[i_data])
+        res_partial_whole,a = dcluster.k_means_clust_dynamic()
+
+    # test partial update with partial series
+    dcluster.reinit(data[0:ls1], 2)
+    res_partial, a = dcluster.k_means_clust_dynamic()
+
+    for i_data in range(ls1+1, ls):
+        for i_sample in range(1, 24):
+            dcluster.add_new_data(data[i_data])
+            res_partial = dcluster.k_means_clust_dynamic_partial_update(i_sample)
+
+    #
+    # print(res_standard-res_partial)
+    n_comp = len(res_standard)
+    comp = [0] * len(res_standard)
+
+    print("whole ts")
+    for icomp, ri in enumerate(res_standard):
+        comp[icomp] = dcluster.euclid_dist(ri, res_partial_whole[0])
+        for rj in res_partial_whole:
+            dist = dcluster.euclid_dist(ri, rj)
+            if dist < comp[icomp]:
+                comp[icomp] = dist
+    for comp1 in comp:
+        print(comp1)
+    comp_whole = copy.copy(comp)
+    print("partial ts")
+    for icomp, ri in enumerate(res_standard):
+        comp[icomp] = dcluster.euclid_dist(ri, res_partial[0])
+        for rj in res_partial:
+            dist = dcluster.euclid_dist(ri, rj)
+            if dist < comp[icomp]:
+                comp[icomp] = dist
+    for comp1 in comp:
+        print(comp1)
+    comp_partial = copy.copy(comp)
+
+    import matplotlib.pylab as plt
+
+    plt.subplot(311)
+    for ts in res_standard:
+        plt.plot(ts)
+    plt.gca().set_title("standard clustering")
+
+    plt.subplot(312)
+    for ts in res_partial_whole:
+        plt.plot(ts)
+    plt.gca().set_title("partial clustering with whole time series")
+    plt.legend(comp_whole)
+
+    plt.subplot(313)
+    for ts in reversed(res_partial):
+        plt.plot(ts)
+    plt.legend(comp_partial)
+    plt.gca().set_title("partial clustering with partial time series")
+    plt.show()
 
 
-    res = machine_learning.assign_sample_to_cluster(1, 0)
-    print(res)
-
-    for i in range(24):
-        res = machine_learning.assign_partial_sample_to_cluster(1, 0)
-        print(res)
+    # print(res)
+    # res = machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
+    # print(machine_learning.assign_class_to_nodes())
+    #
+    #
+    # res = machine_learning.assign_sample_to_cluster(1, 0)
+    # print(res)
+    #
+    # for i in range(24):
+    #     res = machine_learning.assign_partial_sample_to_cluster(1, 0)
+    #     print(res)
 
