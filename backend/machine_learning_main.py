@@ -45,6 +45,7 @@ class MachineLearningMain:
         self.final_centroids = None
         self.final_clusters = None
         self.clusters = []
+        self.node_centroids = []
 
         self.partial_sample_index = 0
 
@@ -300,7 +301,7 @@ class MachineLearningMain:
         min = int(np.min(partial_time_series))
         max = int(np.max(partial_time_series))
         info = {
-            "description": "Partial node data loading",
+            "description": "Partial node data loading vs global clusters",
             "headers": ["new sample"],
             "dt": 0,
             "details": {
@@ -320,6 +321,29 @@ class MachineLearningMain:
 
         partial_time_series = np.array(partial_time_series)
         return partial_time_series, info
+
+    def update_node_clusters_with_partial_sample(self, node_id, sample_id, init=False):
+        data = self.node_centroids[node_id]["centroids"]
+        info = {
+            "description": "Node clusters loading vs global clusters",
+            "headers": ["data"],
+            "dt": 0,
+            "details": {
+                "node_id": node_id,
+                "node_sample": sample_id,
+                "min": 0,
+                "max": 0
+            },
+            "assignments": None}
+
+        # print(partial_time_series)
+        # partial_time_series = [list(partial_time_series)]
+        # for (i, c) in enumerate(self.final_centroids):
+        #     partial_time_series.append(list(c))
+        #     info["headers"].append("cluster " + str(i))
+        #
+        # partial_time_series = np.array(partial_time_series)
+        return data, info
 
     def run_clustering_on_node_id(self, node_id, nclusters):
         """
@@ -357,6 +381,20 @@ class MachineLearningMain:
         dt = t_end - t_start
         min = int(np.min(centroids_np))
         max = int(np.max(centroids_np))
+
+        append = True
+        for n in self.node_centroids:
+            if n["id"] == node_id:
+                n["centroids"] = centroids_np
+                append = False
+                break
+
+        if append:
+            self.node_centroids.append({
+                "id": node_id,
+                "centroids": centroids_np
+            })
+
         info = {
                 "description": desc, "headers": headers,
                 "dt": t_end - t_start,

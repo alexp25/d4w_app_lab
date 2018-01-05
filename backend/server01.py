@@ -275,6 +275,11 @@ def apiMachineLearningRunClusteringAssignmentPartialSample():
         param = json.loads(param)
         res = None
 
+
+        # res = variables.machine_learning.update_node_clusters_with_partial_sample(param["node"], param["sample"])
+        # (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
+        # info2 = variables.machine_learning.get_info(param["node"])
+
         res = variables.machine_learning.run_clustering_on_partial_sample(param["node"], param["sample"])
         (data, info) = variables.machine_learning.get_display_data(res, global_scale=param["global_scale"])
         info2 = variables.machine_learning.get_info(param["node"])

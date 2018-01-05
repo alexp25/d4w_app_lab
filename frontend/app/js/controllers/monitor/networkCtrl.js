@@ -82,10 +82,23 @@ angular.module('app').controller('monitorNetworkCtrl', ['$scope', 'socket', '$ti
 
     function updateGraph() {
       // var newColor = '#' + Math.floor((Math.random() * 255 * 255 * 255)).toString(16);
+
+      let nodes = angular.copy($scope.networkData.nodes);
+      let edges = angular.copy($scope.networkData.edges);
+
+      if (!$scope.showLabels){
+          nodes.forEach(element => {
+            element.label = "";            
+          });
+          edges.forEach(element => {
+            element.label = "";
+          });
+      }
+
       $scope.graph_nodes.clear();
       $scope.graph_edges.clear();
-      $scope.graph_nodes.add($scope.networkData.nodes);
-      $scope.graph_edges.add($scope.networkData.edges);
+      $scope.graph_nodes.add(nodes);
+      $scope.graph_edges.add(edges);
 
       $scope.network.fit();
 

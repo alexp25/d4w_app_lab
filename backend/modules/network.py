@@ -150,6 +150,8 @@ class FindPath:
             except:
                 variables.print_exception_now("")
 
+        self.set_color_for_nodes()
+
         minp = 0
         maxp = 0
         for pair in G_list:
@@ -164,8 +166,6 @@ class FindPath:
                         p = (1.0 * parent["priority"] + 1.0 * child["priority"]) / 2
                         if p > maxp:
                             maxp = p
-                        # if p < minp:
-                        #     minp = p
                         edge["priority"] = p
                         edge["parent"] = str(parent["id"]) + ", " + str(parent["priority"])
                         edge["child"] = str(child["id"]) + ", " + str(child["priority"])
@@ -182,6 +182,10 @@ class FindPath:
             edge["color"] = {"color": color}
 
     def set_class_for_consumers(self, node_data=None):
+        """
+        this method should be run before calculating the priorities for inner nodes
+        :param node_data:
+        """
         print("network: set cluster for consumers")
 
         minp = 0
@@ -208,9 +212,6 @@ class FindPath:
                     # print(node["id"], node["id_consumer"], node["class"])
                     if node_data is not None and maxp != 0:
                         try:
-
-                            # color = self.colors[node["priority"]]
-                            # color = Colors.convert_to_rgb(node_data1["priority_min"], node_data1["priority_max"], node["priority"])
                             color = Colors.convert_to_rgb_custom(minp, maxp, node["priority"], colors)
                             color = Colors.get_rgba(color)
                         except:
@@ -221,6 +222,24 @@ class FindPath:
                 variables.print_exception("set_cluster_for_consumers")
                 break
 
+    def set_color_for_nodes(self):
+        minp = 0
+        maxp = 0
+        for node in self.graph_data["nodes"]:
+            if "priority" in node and node["priority"] > maxp:
+                maxp = node["priority"]
+        for (i, node) in enumerate(self.graph_data["nodes"]):
+            try:
+                p = node["priority"]
+                if p == -1:
+                    p = 0
+                color = Colors.convert_to_rgb_custom(minp, maxp, p, colors)
+                color = Colors.get_rgba(color)
+                node["color"] = {"border": color, "background": color}
+                # value property is used for scaling
+                node["value"] = p
+            except:
+                variables.print_exception("")
 
     def add_labels(self):
         i_cons = 0
@@ -274,6 +293,9 @@ class FindPath:
             #     node["label"] += " - " + str(node["demand"])
             if "priority" in node:
                 node["label"] += " priority: " + str(node["priority"])
+
+
+            # node["title"] = node["label"]
 
         for edge in edges:
             if "priority" in edge:
