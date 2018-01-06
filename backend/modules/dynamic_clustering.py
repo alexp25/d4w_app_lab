@@ -6,6 +6,7 @@ from math import sqrt
 import json
 
 import copy
+from modules.data import variables
 
 class ClusteringClass:
 
@@ -103,8 +104,11 @@ class ClusteringClass:
             for di, d in enumerate(ts1.tolist()):
                 centroid[di] += d
 
-            n_assignments = len(self.assignments[closest_clust])
-            self.centroids[closest_clust][0:len1] = (self.centroids[closest_clust][0:len1] * n_assignments + centroid)/(n_assignments+1)
+            try:
+                n_assignments = len(self.assignments[closest_clust])
+                self.centroids[closest_clust][0:len1] = (self.centroids[closest_clust][0:len1] * n_assignments + centroid)/(n_assignments+1)
+            except:
+                variables.print_exception("")
 
         return self.centroids
 

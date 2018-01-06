@@ -22,6 +22,14 @@ from os.path import isfile, join
 
 import copy
 
+
+
+
+import matplotlib.pylab as plt
+
+
+
+
 from modules.data.constants import Constants
 from modules import machine_learning_functions as ml
 from modules.dynamic_clustering import ClusteringClass
@@ -704,71 +712,118 @@ class MachineLearningMain:
         return np.ndarray.tolist(data[:self.n_series_disp]), info
 
 
-if __name__ == "__main__":
-    print("machine learning test")
-    machine_learning = MachineLearningMain(use_scikit=False)
-    machine_learning.read_data()
 
-    # data = machine_learning.data[0]["series"].tolist()
-    data = machine_learning.data[10]["series"]
-    res = machine_learning.get_centroids(data, 2)
-    # print(data)
-    # print(np.linalg.norm(data))
-    # for i in range(10):
-    #     res = machine_learning.get_centroids(data, 2)
-    #     print(np.linalg.norm(res[0]))
-    #     print("")
-    # machine_learning.set_lib(False)
-    dcluster.reinit(data, 2)
-    res_standard,a = dcluster.k_means_clust_dynamic()
+def get_comp(a1, a2):
+    comp = [0] * len(a1)
+    for icomp, ri in enumerate(a1):
+        comp[icomp] = dcluster.euclid_dist(ri, a2[0])
+        for rj in a2:
+            dist = dcluster.euclid_dist(ri, rj)
+            if dist < comp[icomp]:
+                comp[icomp] = dist
+    # for comp1 in comp:
+    #     print(comp1)
+    comp_avg = np.mean(comp)
+    return comp, comp_avg
 
+def test_partial_whole(data, ls1=None):
     ls = len(data)
-    ls1 = int(ls/2)
+    if ls1 is None:
+        ls1 = int(ls / 2)
 
     # test partial update with whole series
     dcluster.reinit(data[0:ls1], 2)
     res_partial_whole, a = dcluster.k_means_clust_dynamic()
 
-    for i_data in range(ls+1, ls):
+    for i_data in range(ls + 1, ls):
         dcluster.add_new_data(data[i_data])
-        res_partial_whole,a = dcluster.k_means_clust_dynamic()
+        res_partial_whole, a = dcluster.k_means_clust_dynamic()
 
+    return res_partial_whole
+
+def test_partial(data, ls1=None):
+    ls = len(data)
+    if ls1 is None:
+        ls1 = int(ls / 2)
     # test partial update with partial series
     dcluster.reinit(data[0:ls1], 2)
     res_partial, a = dcluster.k_means_clust_dynamic()
 
-    for i_data in range(ls1+1, ls):
+    for i_data in range(ls1 + 1, ls):
         for i_sample in range(1, 24):
             dcluster.add_new_data(data[i_data])
             res_partial = dcluster.k_means_clust_dynamic_partial_update(i_sample)
 
-    #
-    # print(res_standard-res_partial)
-    n_comp = len(res_standard)
-    comp = [0] * len(res_standard)
+    return res_partial
 
-    print("whole ts")
-    for icomp, ri in enumerate(res_standard):
-        comp[icomp] = dcluster.euclid_dist(ri, res_partial_whole[0])
-        for rj in res_partial_whole:
-            dist = dcluster.euclid_dist(ri, rj)
-            if dist < comp[icomp]:
-                comp[icomp] = dist
-    for comp1 in comp:
-        print(comp1)
-    comp_whole = copy.copy(comp)
-    print("partial ts")
-    for icomp, ri in enumerate(res_standard):
-        comp[icomp] = dcluster.euclid_dist(ri, res_partial[0])
-        for rj in res_partial:
-            dist = dcluster.euclid_dist(ri, rj)
-            if dist < comp[icomp]:
-                comp[icomp] = dist
-    for comp1 in comp:
-        print(comp1)
-    comp_partial = copy.copy(comp)
+def test_full(data):
+    dcluster.reinit(data, 2)
+    res_standard, a = dcluster.k_means_clust_dynamic()
+    return res_standard
 
-    import matplotlib.pylab as plt
+def save_mat(mat):
+    s = ""
+    # print('\n'.join(str(aa) for aa in mat))
+    for row in mat:
+        try:
+            row += 1
+        except:
+            for col in row:
+                s.join(str(col) + " ")
+            s.join("\n")
+
+    print(s)
+
+    # print('\n'.join([' '.join(str(col) for col in row) for row in mat]))
+    # with open("mat.txt", "wt") as f:
+    #     f.write('\n'.join([' '.join(str(aaa) for aaa in aa) for aa in mat]))
+
+if __name__ == "__main__":
+    print("machine learning test")
+    machine_learning = MachineLearningMain(use_scikit=False)
+    machine_learning.read_data()
+
+    n_nodes = 21
+
+
+    res_standard = []
+    res_partial_whole = []
+    res_partial = []
+    comp_whole = 0
+    comp_partial = 0
+
+    lim1 = 10
+    lim2 = 15
+    n_test = lim2 - lim1 + 1
+
+    comp_whole_vect = [0] * n_test
+    comp_partial_vect = [0] * n_test
+
+    for k in range(lim1, lim2):
+
+        comp_whole_vect[k-lim1] = [0] * n_nodes
+        comp_partial_vect[k-lim1] = [0] * n_nodes
+        for i in range(n_nodes):
+            print(str(k)+"."+str(i))
+            # data = machine_learning.data[0]["series"].tolist()
+            data = machine_learning.data[i]["series"]
+
+            res_standard = test_full(data)
+            # test partial update with whole series
+            res_partial_whole = test_partial_whole(data,k)
+
+            # test partial update with partial series
+            res_partial = test_partial(data,k)
+
+            # print("whole ts")
+            x, comp_whole = get_comp(res_standard, res_partial_whole)
+            comp_whole_vect[k-lim1][i] = comp_whole
+            # print("partial ts")
+            x, comp_partial = get_comp(res_standard, res_partial)
+            comp_partial_vect[k-lim1][i] = comp_partial
+
+    # print(comp_partial_vect)
+    save_mat(comp_partial_vect)
 
     plt.subplot(311)
     for ts in res_standard:
@@ -779,13 +834,37 @@ if __name__ == "__main__":
     for ts in res_partial_whole:
         plt.plot(ts)
     plt.gca().set_title("partial clustering with whole time series")
-    plt.legend(comp_whole)
+    plt.legend([comp_whole])
 
     plt.subplot(313)
     for ts in reversed(res_partial):
         plt.plot(ts)
-    plt.legend(comp_partial)
+    plt.legend([comp_partial])
     plt.gca().set_title("partial clustering with partial time series")
+
+    plt.figure()
+
+    ind = np.arange(n_nodes)
+
+    t1_ind = int((lim2+lim1)/2-lim1)
+    print(t1_ind)
+
+    width = 0.35  # the width of the bars
+    plt.bar(ind, comp_partial_vect[t1_ind], width)
+    plt.bar(ind + width, comp_whole_vect[t1_ind], width)
+
+
+
+    ratio_c1 = [comp_partial_vect[t1_ind][i]/comp_whole_vect[t1_ind][i] for i in range(len(comp_partial_vect[t1_ind]))]
+    print(ratio_c1)
+    print(np.mean(ratio_c1))
+
+    plt.legend(["method, avg: " + str(np.mean(comp_partial_vect[t1_ind])), "control, avg: " + str(np.mean(comp_whole_vect[t1_ind]))])
+    plt.gca().set_title("method deviation results")
+
+    plt.figure()
+    plt.plot(ratio_c1)
+
     plt.show()
 
 
