@@ -761,22 +761,22 @@ def test_full(data):
     res_standard, a = dcluster.k_means_clust_dynamic()
     return res_standard
 
+
 def save_mat(mat):
     s = ""
     # print('\n'.join(str(aa) for aa in mat))
     for row in mat:
-        try:
-            row += 1
-        except:
+        if hasattr(row, "__len__"):
+            # print(row)
             for col in row:
-                s.join(str(col) + " ")
-            s.join("\n")
-
+                # print(col)
+                s += str(col) + "\t"
+            s += "\n"
     print(s)
 
-    # print('\n'.join([' '.join(str(col) for col in row) for row in mat]))
-    # with open("mat.txt", "wt") as f:
-    #     f.write('\n'.join([' '.join(str(aaa) for aaa in aa) for aa in mat]))
+    with open("mat.txt", "wt") as f:
+        f.write(s)
+
 
 if __name__ == "__main__":
     print("machine learning test")
@@ -785,25 +785,26 @@ if __name__ == "__main__":
 
     n_nodes = 21
 
-
     res_standard = []
     res_partial_whole = []
     res_partial = []
     comp_whole = 0
     comp_partial = 0
 
-    lim1 = 10
-    lim2 = 15
-    n_test = lim2 - lim1 + 1
+    lim1 = 4
+    lim2 = 79
+    n_test = lim2 - lim1
 
     comp_whole_vect = [0] * n_test
     comp_partial_vect = [0] * n_test
+    comp_diff_vect = [0] * n_test
 
-    for k in range(lim1, lim2):
-
+    for (i, k) in enumerate(range(lim1, lim2)):
+        # for each test
         comp_whole_vect[k-lim1] = [0] * n_nodes
         comp_partial_vect[k-lim1] = [0] * n_nodes
         for i in range(n_nodes):
+            # for each node
             print(str(k)+"."+str(i))
             # data = machine_learning.data[0]["series"].tolist()
             data = machine_learning.data[i]["series"]
@@ -822,8 +823,15 @@ if __name__ == "__main__":
             x, comp_partial = get_comp(res_standard, res_partial)
             comp_partial_vect[k-lim1][i] = comp_partial
 
-    # print(comp_partial_vect)
-    save_mat(comp_partial_vect)
+        # all data from a test (for all nodes)
+        t1 = comp_partial_vect[k-lim1]
+        t2 = comp_whole_vect[k-lim1]
+        comp_diff_vect[k-lim1] = [abs(j - i) for i, j in zip(t1, t2)]
+
+    print(comp_whole_vect)
+    print(comp_partial_vect)
+    print(comp_diff_vect)
+    save_mat(comp_diff_vect)
 
     plt.subplot(311)
     for ts in res_standard:
@@ -845,15 +853,12 @@ if __name__ == "__main__":
     plt.figure()
 
     ind = np.arange(n_nodes)
-
     t1_ind = int((lim2+lim1)/2-lim1)
     print(t1_ind)
 
     width = 0.35  # the width of the bars
     plt.bar(ind, comp_partial_vect[t1_ind], width)
     plt.bar(ind + width, comp_whole_vect[t1_ind], width)
-
-
 
     ratio_c1 = [comp_partial_vect[t1_ind][i]/comp_whole_vect[t1_ind][i] for i in range(len(comp_partial_vect[t1_ind]))]
     print(ratio_c1)
@@ -864,6 +869,10 @@ if __name__ == "__main__":
 
     plt.figure()
     plt.plot(ratio_c1)
+
+    plt.figure()
+    ind = range(len(comp_diff_vect[t1_ind]))
+    plt.bar(ind, comp_diff_vect[t1_ind], width)
 
     plt.show()
 
