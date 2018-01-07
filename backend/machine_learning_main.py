@@ -489,6 +489,126 @@ class MachineLearningMain:
         return centroids_np, info
 
 
+
+    def run_single_clustering_on_node_range(self, r, nclusters):
+        """
+        Run clustering on specified node. The data from the node is an array of arrays
+        (for each day there is an array of 24 values)
+        The result is the consumer behaviour over the analyzed time frame
+        :param node_id:
+        :param nclusters:
+        :return:
+        """
+
+        if r is None:
+            r = list(range(0, len(self.data)))
+
+        t_start = time.time()
+        # print(self.data)
+        # data = self.data[node_id]["series"]
+        # data = [[series for series in node_series["series"]] for node_series in self.data]
+        # data = np.array(data)
+        # print(data.shape)
+        # data = np.array([])
+        data = []
+        for id in r:
+            for s in self.data[id]["series"]:
+                data.append(s)
+        data = np.array(data)
+        print(data.shape)
+
+        # print(self.data[0]["series"])
+        # print(data)
+        res = self.get_centroids(data, nclusters)
+        centroids = res[0]
+        nc = len(centroids)
+        centroids_np = np.array(centroids)
+        desc = "Clusters from all data from all nodes (single clustering)"
+        # assign each time series to a cluster
+        assignments = []
+
+        headers = []
+        for i in range(len(centroids_np)):
+            headers.append("cluster " + str(i))
+
+        # the assignments of the data series to the clusters
+        assignments_series = [None] * len(assignments)
+        for (i, a) in enumerate(assignments):
+            assignments_series[i] = {
+                "series": i,
+                "cluster": int(assignments[i])
+            }
+
+        t_end = time.time()
+        dt = t_end - t_start
+        min = int(np.min(centroids_np))
+        max = int(np.max(centroids_np))
+
+        info = {
+                "description": desc, "headers": headers,
+                "dt": t_end - t_start,
+                "details": {
+                    "n_clusters": nc,
+                    "n_nodes": len(self.data),
+                    "dt": int(dt * 1000),
+                    "min": min,
+                    "max": max
+                },
+                "assignments": assignments_series}
+
+        return centroids_np, info, data
+
+    # def run_single_clustering_on_node_range(self, r, nclusters):
+    #     """
+    #     Run clustering on specified node range. The data from a node is an array of arrays
+    #     (for each day there is an array of 24 values). The clusters are calculated
+    #     separately for each node and added to the cluster array (various consumer
+    #     behaviours in the network)
+    #     :param start:
+    #     :param end:
+    #     :param nclusters:
+    #     :return:
+    #     """
+    #     t_start = time.time()
+    #     centroid_vect = []
+    #     raw_data_vect = []
+    #
+    #     if r is None:
+    #         r = list(range(0, len(self.data)))
+    #
+    #     # run clustering for each node and save clusters into array
+    #     for node_id in r:
+    #         res = self.run_clustering_on_node_id(node_id, nclusters)
+    #         centroid_vect.append(res[0])
+    #         raw_data_vect.append(res[2])
+    #
+    #     centroid_vect = self.get_array_of_arrays(centroid_vect)
+    #     # raw_data_vect = self.get_array_of_arrays(raw_data_vect)
+    #     centroids_np = np.array(centroid_vect)
+    #
+    #     headers = []
+    #     for i in range(len(centroids_np)):
+    #         headers.append("cluster " + str(i))
+    #
+    #     t_end = time.time()
+    #     dt = t_end - t_start
+    #     min = int(np.min(centroids_np))
+    #     max = int(np.max(centroids_np))
+    #     info = {
+    #             "description": "Clusters from node range (single clustering)", "headers": headers,
+    #             "dt": t_end - t_start,
+    #             "details": {
+    #                 "node_range": r,
+    #                 "n_clusters": len(centroids_np),
+    #                 "n_nodes": len(self.data),
+    #                 "dt": int(dt * 1000),
+    #                 "min": min,
+    #                 "max": max
+    #             },
+    #             "assignments": None}
+    #
+    #     return centroids_np, info
+
     def run_dual_clustering_on_node_range(self, r, nclusters, nclusters_final):
         """
          Run dual clustering on specified node range.
@@ -713,18 +833,21 @@ class MachineLearningMain:
 
 
 
-def get_comp(a1, a2):
+def get_comp(a1, a2, get_diff=False):
     comp = [0] * len(a1)
+    diff = [0] * len(a1)
     for icomp, ri in enumerate(a1):
         comp[icomp] = dcluster.euclid_dist(ri, a2[0])
         for rj in a2:
             dist = dcluster.euclid_dist(ri, rj)
             if dist < comp[icomp]:
                 comp[icomp] = dist
+                if get_diff:
+                    diff[icomp] = ri - rj
     # for comp1 in comp:
     #     print(comp1)
     comp_avg = np.mean(comp)
-    return comp, comp_avg
+    return comp, comp_avg, diff
 
 def test_partial_whole(data, ls1=None):
     ls = len(data)
@@ -777,12 +900,15 @@ def save_mat(mat, filename="mat.txt"):
     with open(filename, "wt") as f:
         f.write(s)
 
+def plot_from_matrix(m,colors=None):
 
-if __name__ == "__main__":
-    print("machine learning test")
-    machine_learning = MachineLearningMain(use_scikit=False)
-    machine_learning.read_data()
+    for (i, ts) in enumerate(m):
+        if colors is not None and i < len(colors):
+            plt.plot(ts, colors[i])
+        else:
+            plt.plot(ts)
 
+def run_test_1():
     n_nodes = 21
 
     res_standard = []
@@ -801,32 +927,32 @@ if __name__ == "__main__":
 
     for (i, k) in enumerate(range(lim1, lim2)):
         # for each test
-        comp_whole_vect[k-lim1] = [0] * n_nodes
-        comp_partial_vect[k-lim1] = [0] * n_nodes
+        comp_whole_vect[k - lim1] = [0] * n_nodes
+        comp_partial_vect[k - lim1] = [0] * n_nodes
         for i in range(n_nodes):
             # for each node
-            print(str(k)+"."+str(i))
+            print(str(k) + "." + str(i))
             # data = machine_learning.data[0]["series"].tolist()
             data = machine_learning.data[i]["series"]
 
             res_standard = test_full(data)
             # test partial update with whole series
-            res_partial_whole = test_partial_whole(data,k)
+            res_partial_whole = test_partial_whole(data, k)
 
             # test partial update with partial series
-            res_partial = test_partial(data,k)
+            res_partial = test_partial(data, k)
 
             # print("whole ts")
             x, comp_whole = get_comp(res_standard, res_partial_whole)
-            comp_whole_vect[k-lim1][i] = comp_whole
+            comp_whole_vect[k - lim1][i] = comp_whole
             # print("partial ts")
             x, comp_partial = get_comp(res_standard, res_partial)
-            comp_partial_vect[k-lim1][i] = comp_partial
+            comp_partial_vect[k - lim1][i] = comp_partial
 
         # all data from a test (for all nodes)
-        t1 = comp_partial_vect[k-lim1]
-        t2 = comp_whole_vect[k-lim1]
-        comp_diff_vect[k-lim1] = [abs(j - i) for i, j in zip(t1, t2)]
+        t1 = comp_partial_vect[k - lim1]
+        t2 = comp_whole_vect[k - lim1]
+        comp_diff_vect[k - lim1] = [abs(j - i) for i, j in zip(t1, t2)]
 
     print(comp_whole_vect)
     print(comp_partial_vect)
@@ -856,18 +982,20 @@ if __name__ == "__main__":
     plt.figure()
 
     ind = np.arange(n_nodes)
-    t1_ind = int((lim2+lim1)/2-lim1)
+    t1_ind = int((lim2 + lim1) / 2 - lim1)
     print(t1_ind)
 
     width = 0.35  # the width of the bars
     plt.bar(ind, comp_partial_vect[t1_ind], width)
     plt.bar(ind + width, comp_whole_vect[t1_ind], width)
 
-    ratio_c1 = [comp_partial_vect[t1_ind][i]/comp_whole_vect[t1_ind][i] for i in range(len(comp_partial_vect[t1_ind]))]
+    ratio_c1 = [comp_partial_vect[t1_ind][i] / comp_whole_vect[t1_ind][i] for i in
+                range(len(comp_partial_vect[t1_ind]))]
     print(ratio_c1)
     print(np.mean(ratio_c1))
 
-    plt.legend(["method, avg: " + str(np.mean(comp_partial_vect[t1_ind])), "control, avg: " + str(np.mean(comp_whole_vect[t1_ind]))])
+    plt.legend(["method, avg: " + str(np.mean(comp_partial_vect[t1_ind])),
+                "control, avg: " + str(np.mean(comp_whole_vect[t1_ind]))])
     plt.gca().set_title("method deviation results")
 
     plt.figure()
@@ -880,8 +1008,58 @@ if __name__ == "__main__":
     plt.show()
 
 
-    # print(res)
-    # res = machine_learning.run_dual_clustering_on_node_range(None, 3, 3)
+def run_test_2():
+    machine_learning.set_lib(True)
+
+    # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
+    n_clusters_for_nodes = None
+    res_dual = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, 3)
+    res_dual = res_dual[0]
+    res_single = machine_learning.run_single_clustering_on_node_range(None, 3)
+    res_single = res_single[0]
+    # for ts in res_standard:
+    print(res_dual.shape)
+    print(res_single.shape)
+    res_all = np.concatenate((res_dual,res_single),axis=0)
+    print(res_all.shape)
+
+    comp,comp_avg,res_diff = get_comp(res_dual, res_single, True)
+
+    # res_diff = res_dual - res_single
+
+    # colors = ['r','g','b']
+    colors = ['b'] * 3
+    colors2 = ['black'] * 3
+    plot_from_matrix(res_dual, colors)
+    plt.figure()
+    plot_from_matrix(res_single, colors)
+    plt.figure()
+
+    plot_from_matrix(res_all, colors + colors2)
+
+    plt.legend(['c11','c12','c13','c21','c22','c23'])
+
+    if n_clusters_for_nodes is None:
+        n_clusters_for_nodes = "auto"
+    plt.title("number of clusters for nodes: " + str(n_clusters_for_nodes) + ", average deviation: " + str(int(comp_avg)))
+
+    plt.figure()
+    plot_from_matrix(res_diff, colors)
+
+    plt.show()
+
+if __name__ == "__main__":
+    print("machine learning test")
+    machine_learning = MachineLearningMain(use_scikit=False)
+    machine_learning.read_data()
+
+    run_test_2()
+
+
+
+
+    #
+    # plt.show()
     # print(machine_learning.assign_class_to_nodes())
     #
     #
