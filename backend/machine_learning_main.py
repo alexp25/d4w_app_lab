@@ -1013,9 +1013,10 @@ def run_test_2():
 
     # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
     n_clusters_for_nodes = None
-    res_dual = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, 3)
+    n_clusters = 3
+    res_dual = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, n_clusters)
     res_dual = res_dual[0]
-    res_single = machine_learning.run_single_clustering_on_node_range(None, 3)
+    res_single = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
     res_single = res_single[0]
     # for ts in res_standard:
     print(res_dual.shape)
@@ -1028,8 +1029,10 @@ def run_test_2():
     # res_diff = res_dual - res_single
 
     # colors = ['r','g','b']
-    colors = ['b'] * 3
-    colors2 = ['black'] * 3
+    colors = ['b'] * n_clusters
+    colors2 = ['black'] * n_clusters
+    cluster_labels1 = ["c1"+str(i+1) for i in range(n_clusters)]
+    cluster_labels2 = ["c2" + str(i + 1) for i in range(n_clusters)]
     plot_from_matrix(res_dual, colors)
     plt.figure()
     plot_from_matrix(res_single, colors)
@@ -1037,7 +1040,7 @@ def run_test_2():
 
     plot_from_matrix(res_all, colors + colors2)
 
-    plt.legend(['c11','c12','c13','c21','c22','c23'])
+    plt.legend(cluster_labels1+cluster_labels2)
 
     if n_clusters_for_nodes is None:
         n_clusters_for_nodes = "auto"
