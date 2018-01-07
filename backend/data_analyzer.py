@@ -15,10 +15,8 @@ if __name__ == "__main__":
     case_index = 10
     node_index = 15
 
-
-
-    lim1 = 4
-    lim2 = 79
+    lim1 = 2
+    lim2 = 81
 
     npmat = np.array(mat)
     print(npmat)
@@ -42,31 +40,31 @@ if __name__ == "__main__":
     plt.ylabel("average deviation")
 
 
-    plt.figure()
-
-    plt.pcolormesh(npmat)
-
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-
-    # Make data.
-    X = np.arange(-5, 5, 0.25)
-    Y = np.arange(-5, 5, 0.25)
-    X, Y = np.meshgrid(X, Y)
-    R = np.sqrt(X ** 2 + Y ** 2)
-    Z = np.sin(R)
-
-    # Plot the surface.
-    surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-
-    # Customize the z axis.
-    ax.set_zlim(-1.01, 1.01)
-    ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-
-    # Add a color bar which maps values to colors.
-    fig.colorbar(surf, shrink=0.5, aspect=5)
+    # plt.figure()
+    #
+    # plt.pcolormesh(npmat)
+    #
+    # fig = plt.figure()
+    # ax = fig.gca(projection='3d')
+    #
+    # # Make data.
+    # X = np.arange(-5, 5, 0.25)
+    # Y = np.arange(-5, 5, 0.25)
+    # X, Y = np.meshgrid(X, Y)
+    # R = np.sqrt(X ** 2 + Y ** 2)
+    # Z = np.sin(R)
+    #
+    # # Plot the surface.
+    # surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
+    #                        linewidth=0, antialiased=False)
+    #
+    # # Customize the z axis.
+    # ax.set_zlim(-1.01, 1.01)
+    # ax.zaxis.set_major_locator(LinearLocator(10))
+    # ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    #
+    # # Add a color bar which maps values to colors.
+    # fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.show()
 
 

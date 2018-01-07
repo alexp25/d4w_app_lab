@@ -762,7 +762,7 @@ def test_full(data):
     return res_standard
 
 
-def save_mat(mat):
+def save_mat(mat, filename="mat.txt"):
     s = ""
     # print('\n'.join(str(aa) for aa in mat))
     for row in mat:
@@ -774,7 +774,7 @@ def save_mat(mat):
             s += "\n"
     print(s)
 
-    with open("mat.txt", "wt") as f:
+    with open(filename, "wt") as f:
         f.write(s)
 
 
@@ -791,8 +791,8 @@ if __name__ == "__main__":
     comp_whole = 0
     comp_partial = 0
 
-    lim1 = 4
-    lim2 = 79
+    lim1 = 2
+    lim2 = 81
     n_test = lim2 - lim1
 
     comp_whole_vect = [0] * n_test
@@ -831,7 +831,10 @@ if __name__ == "__main__":
     print(comp_whole_vect)
     print(comp_partial_vect)
     print(comp_diff_vect)
-    save_mat(comp_diff_vect)
+    # save_mat(comp_diff_vect)
+    save_mat(comp_partial_vect, "mat_partial_comp.txt")
+    save_mat(comp_whole_vect, "mat_whole_comp.txt")
+    save_mat(comp_diff_vect, "mat_diff_comp.txt")
 
     plt.subplot(311)
     for ts in res_standard:
