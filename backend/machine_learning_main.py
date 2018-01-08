@@ -22,7 +22,7 @@ from os.path import isfile, join
 
 import copy
 
-
+import itertools
 
 
 import matplotlib.pylab as plt
@@ -1012,26 +1012,31 @@ def run_test_2():
     machine_learning.set_lib(True)
 
     # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
-    n_clusters_for_nodes = None
     n_clusters = 3
-    res_dual = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, n_clusters)
-    res_dual = res_dual[0]
-    res_single = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
-    res_single = res_single[0]
-    # for ts in res_standard:
-    print(res_dual.shape)
-    print(res_single.shape)
-    res_all = np.concatenate((res_dual,res_single),axis=0)
-    print(res_all.shape)
+    n_clusters_for_nodes_range = [None] + list(range(2, 25))
+    comp_avg_vect = [0] * len(n_clusters_for_nodes_range)
+    test_index = 0
 
-    comp,comp_avg,res_diff = get_comp(res_dual, res_single, True)
+    for (i, k) in enumerate(n_clusters_for_nodes_range):
+        n_clusters_for_nodes = k
+        print("n_clusters_for_nodes: " + str(k))
+        res_dual1 = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, n_clusters)
+        res_dual1 = res_dual1[0]
+        res_single1 = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
+        res_single1 = res_single1[0]
+        res_all1 = np.concatenate((res_dual1, res_single1), axis=0)
+        comp, comp_avg, res_diff = get_comp(res_dual1, res_single1, True)
+        comp_avg_vect[i] = comp_avg
+        print("comp_avg: " + str(comp_avg))
 
-    # res_diff = res_dual - res_single
+        if i == test_index:
+            res_all = res_all1
+            res_dual = res_dual1
+            res_single = res_single1
 
-    # colors = ['r','g','b']
     colors = ['b'] * n_clusters
     colors2 = ['black'] * n_clusters
-    cluster_labels1 = ["c1"+str(i+1) for i in range(n_clusters)]
+    cluster_labels1 = ["c1" + str(i + 1) for i in range(n_clusters)]
     cluster_labels2 = ["c2" + str(i + 1) for i in range(n_clusters)]
     plot_from_matrix(res_dual, colors)
     plt.figure()
@@ -1048,6 +1053,66 @@ def run_test_2():
 
     plt.figure()
     plot_from_matrix(res_diff, colors)
+
+
+    plt.figure()
+
+    comp_avg_dynamic = comp_avg_vect[0]
+    comp_avg_vect = comp_avg_vect[1:]
+    n_clusters_for_nodes_range = n_clusters_for_nodes_range[1:]
+
+    print("comp_avg_trim")
+    print(comp_avg_vect)
+    print("comp_dynamic")
+    print(comp_avg_dynamic)
+
+    result_obj = [0] * len(n_clusters_for_nodes_range)
+    for (i, nc) in enumerate(n_clusters_for_nodes_range):
+        result_obj[i] = {
+            "nc": nc,
+            "val": comp_avg_vect[i]
+        }
+
+    result_b_obj = {
+        "nc": None,
+        "val": comp_avg_dynamic
+    }
+
+    print(result_obj)
+
+    index_avg_dynamic = n_clusters_for_nodes_range[0]
+    len_comp = len(comp_avg_vect)
+
+    vmax = max(node["val"] for node in result_obj)
+    vmin = min(node["val"] for node in result_obj)
+    imin = result_obj[0]["nc"]
+    imax = result_obj[0]["nc"]
+    # ncmax = result_obj
+
+    for obj in result_obj:
+        if obj["val"] == vmax:
+            imax = obj["nc"]
+        if obj["val"] == vmin:
+            imin = obj["nc"]
+
+    if result_b_obj["val"] < vmin:
+        result_b_obj["nc"] = imin
+    if result_b_obj["val"] > vmax:
+        result_b_obj["nc"] = imax
+    for (i, res) in enumerate(result_obj):
+        if i < len(result_obj) - 1:
+            if (result_obj[i]["val"] <= result_b_obj["val"] and result_b_obj["val"] <= result_obj[i + 1]["val"]) or (result_obj[i]["val"] >= result_b_obj["val"] and result_b_obj["val"] >= result_obj[i + 1]["val"]):
+                result_b_obj["nc"] = result_obj[i]["nc"]
+                break
+
+    print(result_b_obj)
+    # return True
+    width = 0.35  # the width of the bars
+    plt.bar(n_clusters_for_nodes_range, comp_avg_vect, width)
+    plt.bar(result_b_obj["nc"]-width, result_b_obj["val"], width)
+    plt.xlabel("number of clusters for nodes")
+    plt.ylabel("average deviation from single clustering")
+
 
     plt.show()
 
