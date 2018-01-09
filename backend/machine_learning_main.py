@@ -383,6 +383,9 @@ class MachineLearningMain:
         t_start = time.time()
         # print(self.data)
         data = self.data[node_id]["series"]
+        if nclusters is not None and nclusters > len(data):
+            print("node " + str(node_id) + "nclusters > len(data): " + str(nclusters) + "," + str(len(data)))
+            return [], None, data
         res = self.get_centroids(data, nclusters)
         centroids = res[0]
         nc = len(centroids)
@@ -461,6 +464,7 @@ class MachineLearningMain:
             centroid_vect.append(res[0])
             raw_data_vect.append(res[2])
 
+
         centroid_vect = self.get_array_of_arrays(centroid_vect)
         # raw_data_vect = self.get_array_of_arrays(raw_data_vect)
         centroids_np = np.array(centroid_vect)
@@ -490,11 +494,12 @@ class MachineLearningMain:
 
 
 
-    def run_single_clustering_on_node_range(self, r, nclusters):
+    def run_single_clustering_on_node_range(self, r, nclusters, n_data=None):
         """
         Run clustering on specified node. The data from the node is an array of arrays
         (for each day there is an array of 24 values)
         The result is the consumer behaviour over the analyzed time frame
+        :param n_data: the number of samples to be used from the data
         :param node_id:
         :param nclusters:
         :return:
@@ -512,8 +517,12 @@ class MachineLearningMain:
         # data = np.array([])
         data = []
         for id in r:
-            for s in self.data[id]["series"]:
-                data.append(s)
+            for (i, s) in enumerate(self.data[id]["series"]):
+                if n_data is not None:
+                    if i < n_data:
+                        data.append(s)
+                else:
+                    data.append(s)
         data = np.array(data)
         print(data.shape)
 
@@ -1013,31 +1022,44 @@ def run_test_2():
 
     # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
     n_clusters = 3
-    n_clusters_for_nodes_range = [None] + list(range(2, 25))
+
+    nc_max = 82
+    n_data = nc_max
+
+    r1 = list(range(2, nc_max))
+    # r1 = [2, 10, 82]
+    n_clusters_for_nodes_range = [None] + r1
     comp_avg_vect = [0] * len(n_clusters_for_nodes_range)
     test_index = 0
 
+    test_index = len(n_clusters_for_nodes_range) - 1
+
+
+
     for (i, k) in enumerate(n_clusters_for_nodes_range):
-        n_clusters_for_nodes = k
+        ncn = k
         print("n_clusters_for_nodes: " + str(k))
-        res_dual1 = machine_learning.run_dual_clustering_on_node_range(None, n_clusters_for_nodes, n_clusters)
+        res_dual1 = machine_learning.run_dual_clustering_on_node_range(None, ncn, n_clusters)
         res_dual1 = res_dual1[0]
-        res_single1 = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
+        res_single1 = machine_learning.run_single_clustering_on_node_range(None, n_clusters, n_data)
         res_single1 = res_single1[0]
         res_all1 = np.concatenate((res_dual1, res_single1), axis=0)
-        comp, comp_avg, res_diff = get_comp(res_dual1, res_single1, True)
-        comp_avg_vect[i] = comp_avg
-        print("comp_avg: " + str(comp_avg))
+        comp, ca, rd = get_comp(res_dual1, res_single1, True)
+        comp_avg_vect[i] = ca
+        print("comp_avg: " + str(ca))
 
         if i == test_index:
-            res_all = res_all1
-            res_dual = res_dual1
-            res_single = res_single1
+            res_all = copy.copy(res_all1)
+            res_dual = copy.copy(res_dual1)
+            res_single = copy.copy(res_single1)
+            n_clusters_for_nodes = k
+            comp_avg = ca
+            res_diff = rd
 
     colors = ['b'] * n_clusters
     colors2 = ['black'] * n_clusters
-    cluster_labels1 = ["c1" + str(i + 1) for i in range(n_clusters)]
-    cluster_labels2 = ["c2" + str(i + 1) for i in range(n_clusters)]
+    cluster_labels1 = ["cd" + str(i + 1) for i in range(n_clusters)]
+    cluster_labels2 = ["cs" + str(i + 1) for i in range(n_clusters)]
     plot_from_matrix(res_dual, colors)
     plt.figure()
     plot_from_matrix(res_single, colors)
