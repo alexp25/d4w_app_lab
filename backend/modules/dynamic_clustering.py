@@ -20,18 +20,26 @@ class ClusteringClass:
         self.assignments = {}
 
 
-    def reinit(self, data, num_clust=8, num_iter=10):
+    def reinit(self, data, num_clust=8, num_iter=5, centroids=None):
         self.num_clust = num_clust
         self.num_iter = num_iter
-        self.centroids = np.array(random.sample(data.tolist(), self.num_clust))
-        self.data = data
+        d = copy.deepcopy(data)
+        if centroids is None:
+            self.centroids = np.array(random.sample(d.tolist(), self.num_clust))
+        else:
+            self.centroids = copy.deepcopy(centroids)
+        self.data = None
+        self.data = d
         self.assignments = {}
+        # print(self.data)
+        # print(len(self.data))
+        return self.centroids
 
     def add_new_data(self, data, num_clust=8):
         if self.centroids is None:
             self.reinit(data, num_clust)
         else:
-            self.data = data
+            self.data = copy.deepcopy(data)
 
     def euclid_dist(self, t1, t2):
         return sqrt(sum((t1 - t2) ** 2))
@@ -77,7 +85,7 @@ class ClusteringClass:
                 LB_sum = LB_sum + (i - lower_bound) ** 2
         return sqrt(LB_sum)
 
-    def k_means_clust_dynamic_partial_update(self, nsamp):
+    def k_means_clust_dynamic_partial_update(self, nsamp, data=None):
         """
         self.data should be only the current time series (partial)
         :param nsamp:
@@ -88,27 +96,65 @@ class ClusteringClass:
         # ni = 1
         for n in range(1):
             # assign data points to clusters
-            ts1 = self.data
-            ts1 = ts1[0:nsamp]
+            if data is None:
+                ts1 = self.data
+            else:
+                ts1 = data
+
+            ts1_partial = ts1[0:nsamp]
+            # print(ts1_partial)
             min_dist = float('inf')
             closest_clust = None
             for c_ind, ts2 in enumerate(self.centroids):
                 # compare the partial time series to the partial centroid
-                cur_dist = self.euclid_dist(ts1, ts2[0:len(ts1)])
+                ts2_partial = ts2[0:nsamp]
+                # print(ts2_partial)
+                # print(ts1_partial.shape)
+                # print(ts2_partial.shape)
+                cur_dist = self.euclid_dist(ts1_partial, ts2_partial)
                 if cur_dist < min_dist:
                     min_dist = cur_dist
                     closest_clust = c_ind
 
-            len1 = len(ts1)
-            centroid = [0] * len1
+            centroid = [0] * nsamp
             for di, d in enumerate(ts1.tolist()):
                 centroid[di] += d
-
             try:
                 n_assignments = len(self.assignments[closest_clust])
                 self.centroids[closest_clust][0:len1] = (self.centroids[closest_clust][0:len1] * n_assignments + centroid)/(n_assignments+1)
             except:
                 variables.print_exception("")
+
+        return self.centroids
+
+    def k_means_clust_dynamic_partial_update_whole(self, data):
+        """
+        adding sample to data and updating the clusters
+        there should be already clusters
+        and new data is only added to the cluster
+        :param nsamp:
+        :return:
+        """
+        for n in range(self.num_iter):
+            # assign data points to clusters
+            # print(ts1_partial)
+            min_dist = float('inf')
+            closest_clust = None
+            for c_ind, ts2 in enumerate(self.centroids):
+                # compare the data to each cluster centroids
+                cur_dist = self.euclid_dist(data, ts2)
+                if cur_dist < min_dist:
+                    min_dist = cur_dist
+                    closest_clust = c_ind
+
+            try:
+                n_assignments = len(self.assignments[closest_clust])
+                self.centroids[closest_clust] = (self.centroids[closest_clust] * n_assignments + data)/(n_assignments+1)
+                # self.centroids[closest_clust] = (self.centroids[closest_clust] + data) / 2
+            except:
+                print("exception")
+                variables.print_exception("")
+        # print(np.average(self.centroids))
 
         return self.centroids
 

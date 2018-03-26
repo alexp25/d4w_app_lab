@@ -253,8 +253,6 @@ class MachineLearningMain:
         data = self.data[node_id]["series"]
         data1 = data[sample_id]
         data1 = [data1]
-        print("data:")
-        print(data1)
         assignments = self.get_assignments(self.final_clusters, data1)
         return assignments[0]
 
@@ -371,7 +369,7 @@ class MachineLearningMain:
         # partial_time_series = np.array(partial_time_series)
         return data, info
 
-    def run_clustering_on_node_id(self, node_id, nclusters):
+    def run_clustering_on_node_id(self, node_id, nclusters, partial_sample_until_id=None, add_deviation_value=None):
         """
         Run clustering on specified node. The data from the node is an array of arrays
         (for each day there is an array of 24 values)
@@ -382,7 +380,12 @@ class MachineLearningMain:
         """
         t_start = time.time()
         # print(self.data)
-        data = self.data[node_id]["series"]
+        data = copy.deepcopy(self.data[node_id]["series"])
+        if partial_sample_until_id is not None:
+            data = data[0:partial_sample_until_id]
+            if add_deviation_value is not None:
+                data[partial_sample_until_id]+=add_deviation_value
+
         if nclusters is not None and nclusters > len(data):
             print("node " + str(node_id) + "nclusters > len(data): " + str(nclusters) + "," + str(len(data)))
             return [], None, data
@@ -524,7 +527,7 @@ class MachineLearningMain:
                 else:
                     data.append(s)
         data = np.array(data)
-        print(data.shape)
+        # print(data.shape)
 
         # print(self.data[0]["series"])
         # print(data)
@@ -631,12 +634,15 @@ class MachineLearningMain:
         :param nclusters_final:
         :return:
         """
+
         t_start = time.time()
         centroid_vect = []
         raw_data_vect = []
 
         if r is None:
             r = list(range(0, len(self.data)))
+
+        print("node range: ", r)
 
         # run clustering for each node and save clusters into array
         for node_id in r:
@@ -842,23 +848,44 @@ class MachineLearningMain:
 
 
 
-def get_comp(a1, a2, get_diff=False):
-    comp = [0] * len(a1)
-    diff = [0] * len(a1)
+def get_comp(a1, a2):
+    """
+    compares two cluster sets
+    each cluster set is an array of arrays
+    the clusters can be scrambles
+    so the comparison should check which are the closest clusters
+    and then return the difference
+    :param a1:
+    :param a2:
+    :param get_diff:
+    :return:
+    """
+    comp_euclid_dist = [0] * len(a1)
+    comp_array = [0] * len(a1)
     for icomp, ri in enumerate(a1):
-        comp[icomp] = dcluster.euclid_dist(ri, a2[0])
-        for rj in a2:
+        # take average distance as distance to the first centroid from the second data set
+        comp_euclid_dist[icomp] = dcluster.euclid_dist(ri, a2[0])
+        comp_array[icomp] = ri - a2[0]
+        for jcomp, rj in enumerate(a2):
             dist = dcluster.euclid_dist(ri, rj)
-            if dist < comp[icomp]:
-                comp[icomp] = dist
-                if get_diff:
-                    diff[icomp] = ri - rj
+            # check if there is another centroid that is closer and use that to calculate the difference
+            if dist < comp_euclid_dist[icomp]:
+                comp_euclid_dist[icomp] = dist
+                comp_array[icomp] = ri - rj
     # for comp1 in comp:
     #     print(comp1)
-    comp_avg = np.mean(comp)
-    return comp, comp_avg, diff
+    comp_avg = np.sqrt(np.mean(comp_euclid_dist))
+    return comp_euclid_dist, comp_avg, comp_array
 
 def test_partial_whole(data, ls1=None):
+    """
+    running clustering for partial data
+    i.e. adding new daily measurements (for all nodes at a time) to the data set
+    and updating the clusters at each iteration
+    :param data:
+    :param ls1:
+    :return:
+    """
     ls = len(data)
     if ls1 is None:
         ls1 = int(ls / 2)
@@ -867,13 +894,24 @@ def test_partial_whole(data, ls1=None):
     dcluster.reinit(data[0:ls1], 2)
     res_partial_whole, a = dcluster.k_means_clust_dynamic()
 
-    for i_data in range(ls + 1, ls):
-        dcluster.add_new_data(data[i_data])
+    for i_data in range(ls1+1, ls):
+        # print("add new data")
+        # print(data[i_data])
+        dcluster.add_new_data(data[0:i_data],2)
+        # dcluster.reinit(data[0:i_data], 2)
         res_partial_whole, a = dcluster.k_means_clust_dynamic()
 
     return res_partial_whole
 
 def test_partial(data, ls1=None):
+    """
+    running clustering for partial data with partial samples
+    i.e. adding new daily measurements, a single measurement at a time to the data set
+    and partially updating the clusters at each iteration
+    :param data:
+    :param ls1:
+    :return:
+    """
     ls = len(data)
     if ls1 is None:
         ls1 = int(ls / 2)
@@ -889,6 +927,11 @@ def test_partial(data, ls1=None):
     return res_partial
 
 def test_full(data):
+    """
+    get clusters from the entire data set
+    :param data:
+    :return:
+    """
     dcluster.reinit(data, 2)
     res_standard, a = dcluster.k_means_clust_dynamic()
     return res_standard
@@ -917,8 +960,75 @@ def plot_from_matrix(m,colors=None):
         else:
             plt.plot(ts)
 
+def run_test_adding_consumers_vs_whole_data_at_once():
+    """
+    test by comparing the clusters that are obtained using the whole data set
+    to the clusters that are obtained by adding consumers to the clusters one by one
+    :return:
+    """
+    nc1 = 5
+    nc2 = 3
+    start = 5
+    end = 21
+    # (centroids_np, info) = machine_learning.run_dual_clustering_on_node_range([0,5],5,3)
+
+    # all at once
+    (centroids_np, info) = machine_learning.run_dual_clustering_on_node_range(None, nc1, nc2)
+
+    centroids_vect = [None]*(end-start)
+    centroids_avg = [None]*nc2
+    deviation_vect = [None]*(end-start)
+    # actually we run the cluster on increasing number of consumers
+    # and we average the results and then we compare to the results obtained by having all the data at once
+    # normally it should be partial updating the consumer clusters and the overall clusters as well !!!
+    for i, d in enumerate(range(start, end)):
+        (centroids_np_1, info2) = machine_learning.run_dual_clustering_on_node_range(range(0, d), nc1, nc2)
+        centroids_vect[i] = centroids_np_1
+        # print("centroids")
+        # print(centroids_np_1[0])
+        if i == 0:
+            for j in range(nc2):
+                centroids_avg[j] = centroids_np_1[j]
+        else:
+            for j in range(nc2):
+                # print(j)
+                # print(centroids_avg[j])
+                centroids_avg[j] = np.sum([centroids_avg[j], centroids_np_1[j]], axis=0)
+
+        plt.clf()
+        for ts in centroids_np_1:
+            plt.plot(ts)
+        plt.gca().set_title("clustering")
+        # plt.show()
+        plt.pause(0.2)
+
+    for j in range(nc2):
+        centroids_avg[j]/=(end-start)
+    # for i, d in enumerate(range(start, end)):
+    #     for j in range(nc2):
+    #         centroids_avg[j]
+
+    plt.figure()
+    for ts in centroids_np:
+        plt.plot(ts)
+    plt.gca().set_title("standard clustering")
+
+    plt.figure()
+    for ts in centroids_avg:
+        plt.plot(ts)
+    plt.gca().set_title("average clustering test")
+
+    plt.show()
+
+
+
+
 def run_test_1():
-    n_nodes = 21
+    """
+    test with partial clustering in increments
+    comparing with full data set clustering
+    """
+    n_nodes = 2
 
     res_standard = []
     res_partial_whole = []
@@ -927,7 +1037,7 @@ def run_test_1():
     comp_partial = 0
 
     lim1 = 2
-    lim2 = 81
+    lim2 = 10
     n_test = lim2 - lim1
 
     comp_whole_vect = [0] * n_test
@@ -952,10 +1062,10 @@ def run_test_1():
             res_partial = test_partial(data, k)
 
             # print("whole ts")
-            x, comp_whole = get_comp(res_standard, res_partial_whole)
+            x, comp_whole,y = get_comp(res_standard, res_partial_whole)
             comp_whole_vect[k - lim1][i] = comp_whole
             # print("partial ts")
-            x, comp_partial = get_comp(res_standard, res_partial)
+            x, comp_partial,y = get_comp(res_standard, res_partial)
             comp_partial_vect[k - lim1][i] = comp_partial
 
         # all data from a test (for all nodes)
@@ -1017,7 +1127,12 @@ def run_test_1():
     plt.show()
 
 
+
 def run_test_2():
+    """
+    test with different number of clusters for stage 2 (2 stage clustering)
+    comparing the deviation from single stage clustering
+    """
     machine_learning.set_lib(True)
 
     # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
@@ -1138,13 +1253,97 @@ def run_test_2():
 
     plt.show()
 
+def run_test_3():
+    """
+    adding an anomaly at a certain point (constant additional demand)
+    comparing the evolution of clusters (with partial clustering) to the normal evolution of clusters
+    observing the velocity of change that gives the time until steady state error
+    """
+
+    # node_id = 0
+    # nclusters = 3
+    # partial_sample_until_id = 3
+    # # partial_sample_until_id = None
+    # add_deviation_value = None
+    # (centroids_np, info, data) = machine_learning.run_clustering_on_node_id(node_id, nclusters, partial_sample_until_id, add_deviation_value)
+    # print(centroids_np)
+    day_start_deviation = 10
+    day_end = 20
+    deviation = 200
+    # iterations = day_end - day_start_deviation
+    iterations = day_end
+    deviation_element_vect = [None]*iterations
+    deviation_total_vect = [None]*iterations
+    res_partial_whole_vect = [None]*iterations
+    res_partial_whole_anomaly_vect = [None]*iterations
+
+    data = copy.deepcopy(machine_learning.data[0]["series"])
+    data_with_constant_anomaly = copy.deepcopy(machine_learning.data[0]["series"])
+
+
+    # add constant deviation (anomaly) to the second data set
+    # starting with day_start_deviation (index for the day of the start of the anomaly)
+    for i,d in enumerate(range(day_start_deviation, day_end)):
+        for j in range(len(data_with_constant_anomaly[d])):
+            data_with_constant_anomaly[d][j] += deviation
+
+    centroids_init = dcluster.reinit(data[0:day_start_deviation-1], 2, 5)
+    res_partial_whole, a = dcluster.k_means_clust_dynamic()
+
+    # for i, d in enumerate(range(day_start_deviation, day_end)):
+    for i,d in enumerate(range(day_end)):
+        print(str(i)+","+str(d))
+        res_partial_whole_vect[i] = copy.deepcopy(dcluster.k_means_clust_dynamic_partial_update_whole(data[d]))
+
+    # run clustering update for second data set with anomalies
+    dcluster.reinit(data_with_constant_anomaly[0:day_start_deviation-1], 2, 5, centroids_init)
+    res_partial_whole_anomaly, a = dcluster.k_means_clust_dynamic()
+
+    # for i,d in enumerate(range(day_start_deviation, day_end)):
+    for i, d in enumerate(range(day_end)):
+        print(str(i) + "," + str(d))
+        res_partial_whole_anomaly_vect[i] = copy.deepcopy(dcluster.k_means_clust_dynamic_partial_update_whole(data_with_constant_anomaly[d]))
+
+    # plot the results (deviation between the 2 data sets)
+    for i,d in enumerate(range(day_end)):
+        total_deviation, average_deviation, deviation = get_comp(res_partial_whole_anomaly_vect[i], res_partial_whole_vect[i])
+        print(average_deviation)
+        deviation_total_vect[i] = average_deviation
+        deviation_element_vect[i] = deviation
+
+        plt.clf()
+        for ts in res_partial_whole_vect[i]:
+            plt.plot(ts)
+        for ts in res_partial_whole_anomaly_vect[i]:
+            plt.plot(ts)
+
+        plt.gca().set_title("deviation " + str(d) + ", with anomaly from day " + str(day_start_deviation))
+        plt.pause(0.2)
+
+
+    print(deviation_total_vect)
+
+    plt.clf()
+    # plt.subplot(212)
+    plt.plot(deviation_total_vect)
+    # plt.ylim([-100, 100])
+    plt.gca().set_title("anomaly transient effect on cluster centroids")
+    plt.xlabel("time (days)")
+    plt.ylabel("standard deviation")
+    plt.show()
+
+
+
+
+
 if __name__ == "__main__":
     print("machine learning test")
     machine_learning = MachineLearningMain(use_scikit=False)
     machine_learning.read_data()
 
-    run_test_2()
-
+    # run_test_3()
+    # run_test_1()
+    run_test_adding_consumers_vs_whole_data_at_once()
 
 
 
