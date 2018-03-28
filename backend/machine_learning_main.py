@@ -31,9 +31,10 @@ import matplotlib.pylab as plt
 
 
 from modules.data.constants import Constants
-from modules import machine_learning_functions as ml
+from modules import aux_fn as ml
 from modules.dynamic_clustering import ClusteringClass
 dcluster = ClusteringClass()
+dcluster2 = ClusteringClass()
 
 
 class MachineLearningMain:
@@ -570,57 +571,6 @@ class MachineLearningMain:
 
         return centroids_np, info, data
 
-    # def run_single_clustering_on_node_range(self, r, nclusters):
-    #     """
-    #     Run clustering on specified node range. The data from a node is an array of arrays
-    #     (for each day there is an array of 24 values). The clusters are calculated
-    #     separately for each node and added to the cluster array (various consumer
-    #     behaviours in the network)
-    #     :param start:
-    #     :param end:
-    #     :param nclusters:
-    #     :return:
-    #     """
-    #     t_start = time.time()
-    #     centroid_vect = []
-    #     raw_data_vect = []
-    #
-    #     if r is None:
-    #         r = list(range(0, len(self.data)))
-    #
-    #     # run clustering for each node and save clusters into array
-    #     for node_id in r:
-    #         res = self.run_clustering_on_node_id(node_id, nclusters)
-    #         centroid_vect.append(res[0])
-    #         raw_data_vect.append(res[2])
-    #
-    #     centroid_vect = self.get_array_of_arrays(centroid_vect)
-    #     # raw_data_vect = self.get_array_of_arrays(raw_data_vect)
-    #     centroids_np = np.array(centroid_vect)
-    #
-    #     headers = []
-    #     for i in range(len(centroids_np)):
-    #         headers.append("cluster " + str(i))
-    #
-    #     t_end = time.time()
-    #     dt = t_end - t_start
-    #     min = int(np.min(centroids_np))
-    #     max = int(np.max(centroids_np))
-    #     info = {
-    #             "description": "Clusters from node range (single clustering)", "headers": headers,
-    #             "dt": t_end - t_start,
-    #             "details": {
-    #                 "node_range": r,
-    #                 "n_clusters": len(centroids_np),
-    #                 "n_nodes": len(self.data),
-    #                 "dt": int(dt * 1000),
-    #                 "min": min,
-    #                 "max": max
-    #             },
-    #             "assignments": None}
-    #
-    #     return centroids_np, info
-
     def run_dual_clustering_on_node_range(self, r, nclusters, nclusters_final):
         """
          Run dual clustering on specified node range.
@@ -960,68 +910,6 @@ def plot_from_matrix(m,colors=None):
         else:
             plt.plot(ts)
 
-def run_test_adding_consumers_vs_whole_data_at_once():
-    """
-    test by comparing the clusters that are obtained using the whole data set
-    to the clusters that are obtained by adding consumers to the clusters one by one
-    :return:
-    """
-    nc1 = 5
-    nc2 = 3
-    start = 5
-    end = 21
-    # (centroids_np, info) = machine_learning.run_dual_clustering_on_node_range([0,5],5,3)
-
-    # all at once
-    (centroids_np, info) = machine_learning.run_dual_clustering_on_node_range(None, nc1, nc2)
-
-    centroids_vect = [None]*(end-start)
-    centroids_avg = [None]*nc2
-    deviation_vect = [None]*(end-start)
-    # actually we run the cluster on increasing number of consumers
-    # and we average the results and then we compare to the results obtained by having all the data at once
-    # normally it should be partial updating the consumer clusters and the overall clusters as well !!!
-    for i, d in enumerate(range(start, end)):
-        (centroids_np_1, info2) = machine_learning.run_dual_clustering_on_node_range(range(0, d), nc1, nc2)
-        centroids_vect[i] = centroids_np_1
-        # print("centroids")
-        # print(centroids_np_1[0])
-        if i == 0:
-            for j in range(nc2):
-                centroids_avg[j] = centroids_np_1[j]
-        else:
-            for j in range(nc2):
-                # print(j)
-                # print(centroids_avg[j])
-                centroids_avg[j] = np.sum([centroids_avg[j], centroids_np_1[j]], axis=0)
-
-        plt.clf()
-        for ts in centroids_np_1:
-            plt.plot(ts)
-        plt.gca().set_title("clustering")
-        # plt.show()
-        plt.pause(0.2)
-
-    for j in range(nc2):
-        centroids_avg[j]/=(end-start)
-    # for i, d in enumerate(range(start, end)):
-    #     for j in range(nc2):
-    #         centroids_avg[j]
-
-    plt.figure()
-    for ts in centroids_np:
-        plt.plot(ts)
-    plt.gca().set_title("standard clustering")
-
-    plt.figure()
-    for ts in centroids_avg:
-        plt.plot(ts)
-    plt.gca().set_title("average clustering test")
-
-    plt.show()
-
-
-
 
 def run_test_1():
     """
@@ -1341,9 +1229,8 @@ if __name__ == "__main__":
     machine_learning = MachineLearningMain(use_scikit=False)
     machine_learning.read_data()
 
-    # run_test_3()
+    run_test_3()
     # run_test_1()
-    run_test_adding_consumers_vs_whole_data_at_once()
 
 
 
