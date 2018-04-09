@@ -24,5 +24,18 @@ class DataClass:
 
         return self.data
 
+    def write_data(self, file, data, dim):
+        with open(file, 'w', newline="") as dest_f:
+            cw = csv.writer(dest_f,
+                       delimiter=',',
+                       quotechar='"')
+
+            if dim==1:
+                cw.writerow(data)
+            elif dim==2:
+                for row in data:
+                    cw.writerow(row)
+
+
 
 

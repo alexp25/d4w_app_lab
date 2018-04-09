@@ -4,7 +4,7 @@ import json
 import numpy as np
 import time
 
-from read_data import DataClass
+from data_class import DataClass
 import scipy
 # from sklearn.metrics import classification_report
 from sklearn.metrics.pairwise import pairwise_distances_argmin
