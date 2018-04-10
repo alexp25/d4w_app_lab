@@ -37,7 +37,7 @@ dcluster = ClusteringClass()
 dcluster2 = ClusteringClass()
 
 
-class MachineLearningMain:
+class ML_clustering:
     def __init__(self, use_scikit=True):
         self.dc = DataClass()
         self.data = []
@@ -45,9 +45,9 @@ class MachineLearningMain:
         self.assignments_series = []
         self.min_final = None
         self.max_final = None
-        self.files = [f for f in listdir("data/sensors") if isfile(join("data/sensors", f))]
-        print(self.files)
-        self.n_nodes = len(self.files)
+        self.files = []
+        self.n_nodes = 0
+
         self.n_series_disp = 10
         # self.i_run = int(self.n_nodes/2)
         self.i_run2 = 1
@@ -112,7 +112,7 @@ class MachineLearningMain:
 
 
 
-    def read_data(self):
+    def read_data(self, folder="sensors"):
         """
             read data from files
             each file has the data for a measurement node
@@ -121,16 +121,24 @@ class MachineLearningMain:
         """
         self.data = []
         self.node_data = []
+
+        self.files = [f for f in listdir("data/"+folder) if isfile(join("data/"+folder, f))]
+        print(self.files)
+        self.n_nodes = len(self.files)
+
         for i, f in enumerate(self.files[0:self.n_nodes]):
             # print(str(i) + ". reading: " + f)
-            fdata = self.dc.read_data(join("data/sensors/", f))
+            fdata = self.dc.read_data(join("data/"+folder+"/", f))
             data = copy.copy(fdata)
             self.data.append(data)
             node = Constants.NODE_MODEL
             node["id"] = i
             self.node_data.append(copy.deepcopy(node))
 
-
+        # print('first')
+        # print(self.data[0])
+        # print('second')
+        # print(self.data[1])
 
     def get_raw_data(self, node=0):
         t_start = time.time()
@@ -470,6 +478,7 @@ class MachineLearningMain:
 
 
         centroid_vect = self.get_array_of_arrays(centroid_vect)
+
         # raw_data_vect = self.get_array_of_arrays(raw_data_vect)
         centroids_np = np.array(centroid_vect)
 
@@ -479,6 +488,8 @@ class MachineLearningMain:
 
         t_end = time.time()
         dt = t_end - t_start
+
+
         min = int(np.min(centroids_np))
         max = int(np.max(centroids_np))
         info = {
@@ -673,565 +684,122 @@ class MachineLearningMain:
         return centroids_np, info
 
 
-    def run_clustering_twice(self, node=None):
-        """
-        NOTE: DEPRECATED
-        node == None => run clustering for all nodes and then run clustering again on all clusters
-        node > 0 => run clustering for the selected node
-        :param plot:
-        :return:
-        :param node:
-        :return:
-        """
-        t_start = time.time()
-        nclusters = 2
-        nclusters_final = 3
-        centroids = []
-        data = []
-        desc = ""
-        assignments = []
-        data_array_for_all = []
-        try:
-            if node is None:
-                # print("consumer nodes: " + str(len(self.data)))
+    def reinit(self):
+        self.final_centroids = None
+        self.final_clusters = None
 
-                # for i in range(0, len(self.data)):
-                for i in range(0, self.i_run2):
-                    data_array = self.data[i]["series"]
-                    # data_array_for_all.append([d.tolist() for d in data_array])
-                    for data_array1 in data_array:
-                        data_array_for_all.append(data_array1)
-                    # data_array has multiple time series from the same consumer
-                    len_data = len(data_array)
-                    data_array1 = data_array
-                    # data_array1 = data_array[0:int(len_data / 2)]
-                    # if self.centroids is None:
-                    #     kmeans = KMeans(n_clusters=nclusters)
-                    # else:
-                    #     kmeans = KMeans(n_clusters=nclusters, init=self.centroids[i])
-
-                    kmeans = KMeans(n_clusters=nclusters)
-                    # print kmeans
-                    # Compute cluster centers and predict cluster index for each sample.
-                    a = kmeans.fit(data_array1)
-                    # print a.cluster_centers_
-                    assignments = a.predict(data_array1)
-
-                    centroid = a.cluster_centers_
-                    # print(centroid)
-                    centroids.append(centroid)
-
-                self.centroids = centroids
-                centroids_all = []
-                for centroid_group in centroids:
-                    for centroid in centroid_group:
-                        centroids_all.append(centroid)
-
-                n_clusters_total = len(centroids_all)
-                centroids_np = centroids_all
-                centroids_np = np.array(centroids_np)
-
-                desc = "Final clusters (double clustering)"
-
-                if self.final_centroids is None:
-                    kmeans = KMeans(n_clusters=nclusters_final)
-                else:
-                    kmeans = KMeans(n_clusters=nclusters_final, init=self.final_centroids)
-                # kmeans = KMeans(n_clusters=nclusters_final)
-                # print kmeans
-                # Compute cluster centers and predict cluster index for each sample.
-                a = kmeans.fit(centroids_np)
-                assignments = a.predict(data_array_for_all)
-                self.final_centroids = a.cluster_centers_
-                data = self.final_centroids
-
-            else:
-                desc = "Clusters from all data (single clustering)"
-                data_array = self.data[node]["series"]
-                kmeans = KMeans(n_clusters=nclusters_final)
-                # print kmeans
-                # Compute cluster centers and predict cluster index for each sample.
-                a = kmeans.fit(data_array)
-                # print a.cluster_centers_
-                assignments = a.predict(data_array)
-                centroids = a.cluster_centers_
-
-                n_clusters_total = len(centroids)
-                data = centroids
-
-            headers = []
-            for i in range(len(data)):
-                headers.append("cluster " + str(i))
-
-            assignments_series = [None] * len(assignments)
-            for (i, a) in enumerate(assignments):
-                assignments_series[i] = {
-                    "series": i,
-                    "cluster": int(assignments[i])
-                }
-
-            t_end = time.time()
-            dt = t_end - t_start
-            min = np.min(data)
-            max = np.max(data)
-            # print("min: " + str(np.min(data)))
-            info = {
-                    "description": desc, "headers": headers,
-                    "dt": t_end - t_start,
-                    "details": {
-                        "node": node,
-                        "new_node": self.i_run2,
-                        "n_clusters": n_clusters_total,
-                        "n_nodes": len(self.data),
-                        "dt": int(dt*1000),
-                        "min": min,
-                        "max": max
-                    },
-                    "assignments": assignments_series}
-        except:
-            info = "failed"
-
-        self.i_run2 += 1
-        if self.i_run2 >= self.n_nodes:
-            self.i_run2 = 1
-        return np.ndarray.tolist(data[:self.n_series_disp]), info
-
-
-
-def get_comp(a1, a2):
+def run_dual_clustering(plot=True):
     """
-    compares two cluster sets
-    each cluster set is an array of arrays
-    the clusters can be scrambles
-    so the comparison should check which are the closest clusters
-    and then return the difference
-    :param a1:
-    :param a2:
-    :param get_diff:
-    :return:
-    """
-    comp_euclid_dist = [0] * len(a1)
-    comp_array = [0] * len(a1)
-    for icomp, ri in enumerate(a1):
-        # take average distance as distance to the first centroid from the second data set
-        comp_euclid_dist[icomp] = dcluster.euclid_dist(ri, a2[0])
-        comp_array[icomp] = ri - a2[0]
-        for jcomp, rj in enumerate(a2):
-            dist = dcluster.euclid_dist(ri, rj)
-            # check if there is another centroid that is closer and use that to calculate the difference
-            if dist < comp_euclid_dist[icomp]:
-                comp_euclid_dist[icomp] = dist
-                comp_array[icomp] = ri - rj
-    # for comp1 in comp:
-    #     print(comp1)
-    comp_avg = np.sqrt(np.mean(comp_euclid_dist))
-    return comp_euclid_dist, comp_avg, comp_array
-
-def test_partial_whole(data, ls1=None):
-    """
-    running clustering for partial data
-    i.e. adding new daily measurements (for all nodes at a time) to the data set
-    and updating the clusters at each iteration
-    :param data:
-    :param ls1:
-    :return:
-    """
-    ls = len(data)
-    if ls1 is None:
-        ls1 = int(ls / 2)
-
-    # test partial update with whole series
-    dcluster.reinit(data[0:ls1], 2)
-    res_partial_whole, a = dcluster.k_means_clust_dynamic()
-
-    for i_data in range(ls1+1, ls):
-        # print("add new data")
-        # print(data[i_data])
-        dcluster.add_new_data(data[0:i_data],2)
-        # dcluster.reinit(data[0:i_data], 2)
-        res_partial_whole, a = dcluster.k_means_clust_dynamic()
-
-    return res_partial_whole
-
-def test_partial(data, ls1=None):
-    """
-    running clustering for partial data with partial samples
-    i.e. adding new daily measurements, a single measurement at a time to the data set
-    and partially updating the clusters at each iteration
-    :param data:
-    :param ls1:
-    :return:
-    """
-    ls = len(data)
-    if ls1 is None:
-        ls1 = int(ls / 2)
-    # test partial update with partial series
-    dcluster.reinit(data[0:ls1], 2)
-    res_partial, a = dcluster.k_means_clust_dynamic()
-
-    for i_data in range(ls1 + 1, ls):
-        for i_sample in range(1, 24):
-            dcluster.add_new_data(data[i_data])
-            # dcluster.reinit(data[i_data])
-            res_partial = dcluster.k_means_clust_dynamic_partial_update(i_sample)
-
-    return res_partial
-
-def test_full(data):
-    """
-    get clusters from the entire data set
-    :param data:
-    :return:
-    """
-    dcluster.reinit(data, 2)
-    res_standard, a = dcluster.k_means_clust_dynamic()
-    return res_standard
-
-
-def save_mat(mat, filename="mat.txt"):
-    s = ""
-    # print('\n'.join(str(aa) for aa in mat))
-    for row in mat:
-        if hasattr(row, "__len__"):
-            # print(row)
-            for col in row:
-                # print(col)
-                s += str(col) + "\t"
-            s += "\n"
-    print(s)
-
-    with open(filename, "wt") as f:
-        f.write(s)
-
-def plot_from_matrix(m,colors=None):
-
-    for (i, ts) in enumerate(m):
-        if colors is not None and i < len(colors):
-            plt.plot(ts, colors[i])
-        else:
-            plt.plot(ts)
-
-
-def run_test_1():
-    """
-    test with partial clustering in increments
-    comparing with full data set clustering
-    """
-    n_nodes = 2
-
-    res_standard = []
-    res_partial_whole = []
-    res_partial = []
-    comp_whole = 0
-    comp_partial = 0
-
-    lim1 = 2
-    lim2 = 10
-    n_test = lim2 - lim1
-
-    comp_whole_vect = [0] * n_test
-    comp_partial_vect = [0] * n_test
-    comp_diff_vect = [0] * n_test
-
-    for (i, k) in enumerate(range(lim1, lim2)):
-        # for each test
-        comp_whole_vect[k - lim1] = [0] * n_nodes
-        comp_partial_vect[k - lim1] = [0] * n_nodes
-        for i in range(n_nodes):
-            # for each node
-            print(str(k) + "." + str(i))
-            # data = machine_learning.data[0]["series"].tolist()
-            data = machine_learning.data[i]["series"]
-
-            res_standard = test_full(data)
-            # test partial update with whole series
-            res_partial_whole = test_partial_whole(data, k)
-
-            # test partial update with partial series
-            res_partial = test_partial(data, k)
-
-            # print("whole ts")
-            x, comp_whole,y = get_comp(res_standard, res_partial_whole)
-            comp_whole_vect[k - lim1][i] = comp_whole
-            # print("partial ts")
-            x, comp_partial,y = get_comp(res_standard, res_partial)
-            comp_partial_vect[k - lim1][i] = comp_partial
-
-        # all data from a test (for all nodes)
-        t1 = comp_partial_vect[k - lim1]
-        t2 = comp_whole_vect[k - lim1]
-        comp_diff_vect[k - lim1] = [abs(j - i) for i, j in zip(t1, t2)]
-
-    print(comp_whole_vect)
-    print(comp_partial_vect)
-    print(comp_diff_vect)
-    # save_mat(comp_diff_vect)
-    save_mat(comp_partial_vect, "mat_partial_comp.txt")
-    save_mat(comp_whole_vect, "mat_whole_comp.txt")
-    save_mat(comp_diff_vect, "mat_diff_comp.txt")
-
-    plt.subplot(311)
-    for ts in res_standard:
-        plt.plot(ts)
-    plt.gca().set_title("standard clustering")
-
-    plt.subplot(312)
-    for ts in res_partial_whole:
-        plt.plot(ts)
-    plt.gca().set_title("partial clustering with whole time series")
-    plt.legend([comp_whole])
-
-    plt.subplot(313)
-    for ts in reversed(res_partial):
-        plt.plot(ts)
-    plt.legend([comp_partial])
-    plt.gca().set_title("partial clustering with partial time series")
-
-    plt.figure()
-
-    ind = np.arange(n_nodes)
-    t1_ind = int((lim2 + lim1) / 2 - lim1)
-    print(t1_ind)
-
-    width = 0.35  # the width of the bars
-    plt.bar(ind, comp_partial_vect[t1_ind], width)
-    plt.bar(ind + width, comp_whole_vect[t1_ind], width)
-
-    ratio_c1 = [comp_partial_vect[t1_ind][i] / comp_whole_vect[t1_ind][i] for i in
-                range(len(comp_partial_vect[t1_ind]))]
-    print(ratio_c1)
-    print(np.mean(ratio_c1))
-
-    plt.legend(["method, avg: " + str(np.mean(comp_partial_vect[t1_ind])),
-                "control, avg: " + str(np.mean(comp_whole_vect[t1_ind]))])
-    plt.gca().set_title("method deviation results")
-
-    plt.figure()
-    plt.plot(ratio_c1)
-
-    plt.figure()
-    ind = range(len(comp_diff_vect[t1_ind]))
-    plt.bar(ind, comp_diff_vect[t1_ind], width)
-
-    plt.show()
-
-
-
-def run_test_2():
-    """
-    test with different number of clusters for stage 2 (2 stage clustering)
-    comparing the deviation from single stage clustering
+    dual clustering
     """
     machine_learning.set_lib(True)
 
     # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
     n_clusters = 3
 
-    nc_max = 82
-    n_data = nc_max
+    ncn = 3
+    print("start")
+    res_dual = machine_learning.run_dual_clustering_on_node_range(None, ncn, n_clusters)
+    res_dual = res_dual[0]
 
-    r1 = list(range(2, nc_max))
-    # r1 = [2, 10, 82]
-    n_clusters_for_nodes_range = [None] + r1
-    comp_avg_vect = [0] * len(n_clusters_for_nodes_range)
-    test_index = 0
+    if plot:
+        for ts in res_dual:
+            plt.plot(ts)
+        plt.gca().set_title("dual clustering")
+        plt.xlabel("time (h)")
+        plt.ylabel("flow")
 
-    test_index = len(n_clusters_for_nodes_range) - 1
+        plt.show()
+    return res_dual
 
 
+def run_single_clustering_combined(plot=True):
 
-    for (i, k) in enumerate(n_clusters_for_nodes_range):
-        ncn = k
-        print("n_clusters_for_nodes: " + str(k))
-        res_dual1 = machine_learning.run_dual_clustering_on_node_range(None, ncn, n_clusters)
-        res_dual1 = res_dual1[0]
-        res_single1 = machine_learning.run_single_clustering_on_node_range(None, n_clusters, n_data)
-        res_single1 = res_single1[0]
-        res_all1 = np.concatenate((res_dual1, res_single1), axis=0)
-        comp, ca, rd = get_comp(res_dual1, res_single1, True)
-        comp_avg_vect[i] = ca
-        print("comp_avg: " + str(ca))
+    machine_learning.set_lib(True)
 
-        if i == test_index:
-            res_all = copy.copy(res_all1)
-            res_dual = copy.copy(res_dual1)
-            res_single = copy.copy(res_single1)
-            n_clusters_for_nodes = k
-            comp_avg = ca
-            res_diff = rd
+    n_clusters = 3
 
-    colors = ['b'] * n_clusters
-    colors2 = ['black'] * n_clusters
-    cluster_labels1 = ["cd" + str(i + 1) for i in range(n_clusters)]
-    cluster_labels2 = ["cs" + str(i + 1) for i in range(n_clusters)]
-    plot_from_matrix(res_dual, colors)
+    print("start")
+    res_single = machine_learning.run_clustering_on_node_range(None, n_clusters)
+    print("done")
+    res_single = res_single[0]
+
+    if plot:
+        for ts in res_single:
+            plt.plot(ts)
+        plt.gca().set_title("single clustering")
+        plt.xlabel("time (h)")
+        plt.ylabel("flow")
+
+        plt.show()
+    return res_single
+
+
+def compare_node_data():
+    machine_learning.read_data("simulated")
+
+    machine_learning.read_data("simulated_leak_step_day1")
+    # def get_centroids(self, data, n_clusters=8, init=None):
+    #     if self.use_scikit:
+
+
+def compare_data_sets():
+    # machine_learning = ML_clustering(use_scikit=False)
+    dual = True
+
+    machine_learning.read_data("simulated")
+
+    if dual:
+        res_1 = run_dual_clustering(False)
+    else:
+        res_1 = run_single_clustering_combined(False)
+
+    machine_learning.reinit()
+
+    machine_learning.read_data("simulated_leak_step_day1")
+
+    if dual:
+        res_2 = run_dual_clustering(False)
+    else:
+        res_2 = run_single_clustering_combined(False)
+
+    machine_learning.reinit()
+
+    comp_euclid_dist, comp_avg, comp_array = ml.get_comp(res_1, res_2)
+    # print(comp_array)
+
+
+    for ts in res_1:
+        plt.plot(ts)
+    plt.gca().set_title("cluster 1")
+    plt.xlabel("time (h)")
+    plt.ylabel("flow")
+
     plt.figure()
-    plot_from_matrix(res_single, colors)
-    plt.figure()
 
-    plot_from_matrix(res_all, colors + colors2)
-
-    plt.legend(cluster_labels1+cluster_labels2)
-
-    if n_clusters_for_nodes is None:
-        n_clusters_for_nodes = "auto"
-    plt.title("number of clusters for nodes: " + str(n_clusters_for_nodes) + ", average deviation: " + str(int(comp_avg)))
-
-    plt.figure()
-    plot_from_matrix(res_diff, colors)
-
+    for ts in res_2:
+        plt.plot(ts)
+    plt.gca().set_title("cluster 2")
+    plt.xlabel("time (h)")
+    plt.ylabel("flow")
 
     plt.figure()
 
-    comp_avg_dynamic = comp_avg_vect[0]
-    comp_avg_vect = comp_avg_vect[1:]
-    n_clusters_for_nodes_range = n_clusters_for_nodes_range[1:]
-
-    print("comp_avg_trim")
-    print(comp_avg_vect)
-    print("comp_dynamic")
-    print(comp_avg_dynamic)
-
-    result_obj = [0] * len(n_clusters_for_nodes_range)
-    for (i, nc) in enumerate(n_clusters_for_nodes_range):
-        result_obj[i] = {
-            "nc": nc,
-            "val": comp_avg_vect[i]
-        }
-
-    result_b_obj = {
-        "nc": None,
-        "val": comp_avg_dynamic
-    }
-
-    print(result_obj)
-
-    index_avg_dynamic = n_clusters_for_nodes_range[0]
-    len_comp = len(comp_avg_vect)
-
-    vmax = max(node["val"] for node in result_obj)
-    vmin = min(node["val"] for node in result_obj)
-    imin = result_obj[0]["nc"]
-    imax = result_obj[0]["nc"]
-    # ncmax = result_obj
-
-    for obj in result_obj:
-        if obj["val"] == vmax:
-            imax = obj["nc"]
-        if obj["val"] == vmin:
-            imin = obj["nc"]
-
-    if result_b_obj["val"] < vmin:
-        result_b_obj["nc"] = imin
-    if result_b_obj["val"] > vmax:
-        result_b_obj["nc"] = imax
-    for (i, res) in enumerate(result_obj):
-        if i < len(result_obj) - 1:
-            if (result_obj[i]["val"] <= result_b_obj["val"] and result_b_obj["val"] <= result_obj[i + 1]["val"]) or (result_obj[i]["val"] >= result_b_obj["val"] and result_b_obj["val"] >= result_obj[i + 1]["val"]):
-                result_b_obj["nc"] = result_obj[i]["nc"]
-                break
-
-    print(result_b_obj)
-    # return True
-    width = 0.35  # the width of the bars
-    plt.bar(n_clusters_for_nodes_range, comp_avg_vect, width)
-    plt.bar(result_b_obj["nc"]-width, result_b_obj["val"], width)
-    plt.xlabel("number of clusters for nodes")
-    plt.ylabel("average deviation from single clustering")
-
+    for ts in comp_array:
+        plt.plot(ts)
+    plt.gca().set_title("cluster difference")
+    plt.xlabel("time (h)")
+    plt.ylabel("flow")
 
     plt.show()
-
-def run_test_3():
-    """
-    adding an anomaly at a certain point (constant additional demand)
-    comparing the evolution of clusters (with partial clustering) to the normal evolution of clusters
-    observing the velocity of change that gives the time until steady state error
-    """
-
-    # node_id = 0
-    # nclusters = 3
-    # partial_sample_until_id = 3
-    # # partial_sample_until_id = None
-    # add_deviation_value = None
-    # (centroids_np, info, data) = machine_learning.run_clustering_on_node_id(node_id, nclusters, partial_sample_until_id, add_deviation_value)
-    # print(centroids_np)
-    day_start_deviation = 10
-    day_end = 20
-    deviation = 200
-    # iterations = day_end - day_start_deviation
-    iterations = day_end
-    deviation_element_vect = [None]*iterations
-    deviation_total_vect = [None]*iterations
-    res_partial_whole_vect = [None]*iterations
-    res_partial_whole_anomaly_vect = [None]*iterations
-
-    data = copy.deepcopy(machine_learning.data[0]["series"])
-    data_with_constant_anomaly = copy.deepcopy(machine_learning.data[0]["series"])
-
-
-    # add constant deviation (anomaly) to the second data set
-    # starting with day_start_deviation (index for the day of the start of the anomaly)
-    for i,d in enumerate(range(day_start_deviation, day_end)):
-        for j in range(len(data_with_constant_anomaly[d])):
-            data_with_constant_anomaly[d][j] += deviation
-
-    centroids_init = dcluster.reinit(data[0:day_start_deviation-1], 2, 5)
-    res_partial_whole, a = dcluster.k_means_clust_dynamic()
-
-    # for i, d in enumerate(range(day_start_deviation, day_end)):
-    for i,d in enumerate(range(day_end)):
-        print(str(i)+","+str(d))
-        res_partial_whole_vect[i] = copy.deepcopy(dcluster.k_means_clust_dynamic_partial_update_whole(data[d]))
-
-    # run clustering update for second data set with anomalies
-    dcluster.reinit(data_with_constant_anomaly[0:day_start_deviation-1], 2, 5, centroids_init)
-    res_partial_whole_anomaly, a = dcluster.k_means_clust_dynamic()
-
-    # for i,d in enumerate(range(day_start_deviation, day_end)):
-    for i, d in enumerate(range(day_end)):
-        print(str(i) + "," + str(d))
-        res_partial_whole_anomaly_vect[i] = copy.deepcopy(dcluster.k_means_clust_dynamic_partial_update_whole(data_with_constant_anomaly[d]))
-
-    # plot the results (deviation between the 2 data sets)
-    for i,d in enumerate(range(day_end)):
-        total_deviation, average_deviation, deviation = get_comp(res_partial_whole_anomaly_vect[i], res_partial_whole_vect[i])
-        print(average_deviation)
-        deviation_total_vect[i] = average_deviation
-        deviation_element_vect[i] = deviation
-
-        plt.clf()
-        for ts in res_partial_whole_vect[i]:
-            plt.plot(ts)
-        for ts in res_partial_whole_anomaly_vect[i]:
-            plt.plot(ts)
-
-        plt.gca().set_title("deviation " + str(d) + ", with anomaly from day " + str(day_start_deviation))
-        plt.pause(0.2)
-
-
-    print(deviation_total_vect)
-
-    plt.clf()
-    # plt.subplot(212)
-    plt.plot(deviation_total_vect)
-    # plt.ylim([-100, 100])
-    plt.gca().set_title("anomaly transient effect on cluster centroids")
-    plt.xlabel("time (days)")
-    plt.ylabel("standard deviation")
-    plt.show()
-
-
-
-
 
 if __name__ == "__main__":
     print("machine learning test")
-    machine_learning = MachineLearningMain(use_scikit=False)
-    machine_learning.read_data()
+    machine_learning = ML_clustering(use_scikit=False)
+    # machine_learning.read_data()
 
-    # machine_learning.run_dual_clustering_on_node_range(r, n_clusters, n_clusters_final)
-    # run_test_3()
-    run_test_1()
+    compare_data_sets()
+
+    # run_single_clustering_combined()
 
 

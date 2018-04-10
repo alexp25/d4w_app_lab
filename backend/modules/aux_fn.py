@@ -11,7 +11,7 @@ def get_comp(a1, a2):
     """
     compares two cluster sets
     each cluster set is an array of arrays
-    the clusters can be scrambles
+    the clusters can be scrambled
     so the comparison should check which are the closest clusters
     and then return the difference
     :param a1:
@@ -21,28 +21,24 @@ def get_comp(a1, a2):
     """
     comp_euclid_dist = [0] * len(a1)
 
-    comp_array = [0] * len(a1)
-    for icomp, ri in enumerate(a1):
+    diff_array = [0] * len(a1)
+    for i_comp, ri in enumerate(a1):
         # take average distance as distance to the first centroid from the second data set
-        comp_euclid_dist[icomp] = euclid_dist(ri, a2[0])
-        comp_array[icomp] = ri - a2[0]
-        for jcomp, rj in enumerate(a2):
+        comp_euclid_dist[i_comp] = euclid_dist(ri, a2[0])
+        diff_array[i_comp] = ri - a2[0]
+        for j_comp, rj in enumerate(a2):
             dist = euclid_dist(ri, rj)
             # check if there is another centroid that is closer and use that to calculate the difference
-            if dist < comp_euclid_dist[icomp]:
-                comp_euclid_dist[icomp] = dist
+            if dist < comp_euclid_dist[i_comp]:
+                comp_euclid_dist[i_comp] = dist
+                diff_array[i_comp] = ri - rj
 
-                comp_array[icomp] = ri - rj
-    # for comp1 in comp:
-    #     print(comp1)
-    # comp_avg = np.sqrt(np.mean(comp_euclid_dist))
-    # comp_avg = np.mean(comp_euclid_dist)
-    comp_avg = 0
+    comp_euclid_dist_average = 0
     for c in comp_euclid_dist:
-        comp_avg = comp_avg + c*c
-    comp_avg = np.sqrt(comp_avg)
+        comp_euclid_dist_average = comp_euclid_dist_average + c*c
+    comp_euclid_dist_average = np.sqrt(comp_euclid_dist_average)
     # comp_avg = np.std(comp_euclid_dist)
-    return comp_euclid_dist, comp_avg, comp_array
+    return comp_euclid_dist, comp_euclid_dist_average, diff_array
 
 
 

@@ -117,7 +117,9 @@ class ClusteringClass:
                     closest_clust = c_ind
 
             centroid = [0] * nsamp
+            # print(nsamp)
             for di, d in enumerate(ts1.tolist()):
+                # print(di)
                 centroid[di] += d
             try:
                 n_assignments = len(self.assignments[closest_clust])
