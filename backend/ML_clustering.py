@@ -121,6 +121,7 @@ class ML_clustering:
         """
         self.data = []
         self.node_data = []
+        print(folder)
 
         self.files = [f for f in listdir("data/"+folder) if isfile(join("data/"+folder, f))]
         print(self.files)
@@ -378,6 +379,7 @@ class ML_clustering:
         # partial_time_series = np.array(partial_time_series)
         return data, info
 
+
     def run_clustering_on_node_id(self, node_id, nclusters, partial_sample_until_id=None, add_deviation_value=None):
         """
         Run clustering on specified node. The data from the node is an array of arrays
@@ -539,7 +541,7 @@ class ML_clustering:
                 else:
                     data.append(s)
         data = np.array(data)
-        # print(data.shape)
+
 
         # print(self.data[0]["series"])
         # print(data)
@@ -713,14 +715,15 @@ def run_dual_clustering(plot=True):
     return res_dual
 
 
-def run_single_clustering_combined(plot=True):
-
+def run_single_clustering(plot=True):
+    # machine_learning.read_data("simulated")
+    machine_learning.read_data("simulated_leak_ramp_each_day_diff")
     machine_learning.set_lib(True)
 
     n_clusters = 3
 
     print("start")
-    res_single = machine_learning.run_clustering_on_node_range(None, n_clusters)
+    res_single = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
     print("done")
     res_single = res_single[0]
 
@@ -732,6 +735,28 @@ def run_single_clustering_combined(plot=True):
         plt.ylabel("flow")
 
         plt.show()
+    return res_single
+
+def run_single_clustering_combined(plot=True):
+    machine_learning.read_data("simulated_leak_ramp_each_day_dynamic_diff")
+
+    n_clusters = 3
+
+    print("start")
+    res_single = machine_learning.run_clustering_on_node_range(None, n_clusters)
+    print("done")
+    res_single = res_single[0]
+    print(res_single.shape)
+    if plot:
+        for ts in res_single:
+            plt.plot(ts)
+        plt.gca().set_title("single clustering combined")
+        plt.xlabel("time (h)")
+        plt.ylabel("flow")
+
+        plt.show()
+
+
     return res_single
 
 
@@ -798,8 +823,9 @@ if __name__ == "__main__":
     machine_learning = ML_clustering(use_scikit=False)
     # machine_learning.read_data()
 
-    compare_data_sets()
+    # compare_data_sets()
 
-    # run_single_clustering_combined()
+    run_single_clustering_combined(True)
+    # run_single_clustering(True)
 
 
