@@ -690,34 +690,29 @@ class ML_clustering:
         self.final_centroids = None
         self.final_clusters = None
 
-def run_dual_clustering(plot=True):
-    """
-    dual clustering
-    """
+
+def run_dual_clustering(plot, folder):
+    # machine_learning.read_data("simulated")
+    machine_learning.read_data(folder)
     machine_learning.set_lib(True)
-
-    # res_dual = machine_learning.run_dual_clustering_on_node_range(None, None, 3)
     n_clusters = 3
-
-    ncn = 3
     print("start")
-    res_dual = machine_learning.run_dual_clustering_on_node_range(None, ncn, n_clusters)
+    res_dual = machine_learning.run_single_clustering_on_node_range(None, n_clusters)
+    print("done")
     res_dual = res_dual[0]
-
     if plot:
         for ts in res_dual:
             plt.plot(ts)
         plt.gca().set_title("dual clustering")
         plt.xlabel("time (h)")
         plt.ylabel("flow")
-
         plt.show()
     return res_dual
 
 
-def run_single_clustering(plot=True):
+def run_single_clustering(plot, file):
     # machine_learning.read_data("simulated")
-    machine_learning.read_data("simulated_leak_ramp_each_day_diff")
+    machine_learning.read_data(file)
     machine_learning.set_lib(True)
 
     n_clusters = 3
@@ -737,11 +732,9 @@ def run_single_clustering(plot=True):
         plt.show()
     return res_single
 
-def run_single_clustering_combined(plot=True):
-    machine_learning.read_data("simulated_leak_ramp_each_day_dynamic_diff")
-
+def run_single_clustering_combined(plot, folder):
+    machine_learning.read_data(folder)
     n_clusters = 3
-
     print("start")
     res_single = machine_learning.run_clustering_on_node_range(None, n_clusters)
     print("done")
@@ -755,77 +748,20 @@ def run_single_clustering_combined(plot=True):
         plt.ylabel("flow")
 
         plt.show()
-
-
     return res_single
 
-
-def compare_node_data():
-    machine_learning.read_data("simulated")
-
-    machine_learning.read_data("simulated_leak_step_day1")
-    # def get_centroids(self, data, n_clusters=8, init=None):
-    #     if self.use_scikit:
-
-
-def compare_data_sets():
-    # machine_learning = ML_clustering(use_scikit=False)
-    dual = True
-
-    machine_learning.read_data("simulated")
-
-    if dual:
-        res_1 = run_dual_clustering(False)
-    else:
-        res_1 = run_single_clustering_combined(False)
-
-    machine_learning.reinit()
-
-    machine_learning.read_data("simulated_leak_step_day1")
-
-    if dual:
-        res_2 = run_dual_clustering(False)
-    else:
-        res_2 = run_single_clustering_combined(False)
-
-    machine_learning.reinit()
-
-    comp_euclid_dist, comp_avg, comp_array = ml.get_comp(res_1, res_2)
-    # print(comp_array)
-
-
-    for ts in res_1:
-        plt.plot(ts)
-    plt.gca().set_title("cluster 1")
-    plt.xlabel("time (h)")
-    plt.ylabel("flow")
-
-    plt.figure()
-
-    for ts in res_2:
-        plt.plot(ts)
-    plt.gca().set_title("cluster 2")
-    plt.xlabel("time (h)")
-    plt.ylabel("flow")
-
-    plt.figure()
-
-    for ts in comp_array:
-        plt.plot(ts)
-    plt.gca().set_title("cluster difference")
-    plt.xlabel("time (h)")
-    plt.ylabel("flow")
-
-    plt.show()
 
 if __name__ == "__main__":
     print("machine learning test")
     machine_learning = ML_clustering(use_scikit=False)
     # machine_learning.read_data()
 
-    # compare_data_sets()
+    folder="simulated_leak_ramp_each_day_dynamic_diff"
+    # folder="simulated_leak_step_each_day_dynamic_diff"
 
-    run_single_clustering_combined(True)
+    # run_single_clustering_combined(True, folder)
+    run_dual_clustering(True, folder)
+
     # run_single_clustering(True)
 
 
