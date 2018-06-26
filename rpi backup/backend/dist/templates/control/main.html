@@ -1,0 +1,87 @@
+<div layout="column" ng-init="init();">
+  <div class="raspi-frame" layout="column">
+
+    <!-- <div layout="column" ng-if="jsondata!==undefined">
+      {{jsondata.info}}
+    </div> -->
+
+    <div layout="row">
+      <div layout="column" flex>
+        <md-input-container>
+          <label class="raspi-label-s">Pump command</label>
+          <input class="raspi-padding" max="255" min="0" ng-change="" ng-model="control.pump" type="number">
+        </md-input-container>
+        <md-slider aria-label="a" flex ng-model="control.pump" step="1" min="0" max="255" ng-change="send({'type': 'dev', 'id': 1, 'value': control.pump});"></md-slider>
+
+        <md-input-container>
+          <label class="raspi-label-s">Flow setpoint</label>
+          <input class="raspi-padding" min="0" ng-change="" ng-model="control.ref" type="number">
+        </md-input-container>
+        <md-slider aria-label="a" flex ng-model="control.ref" step="1" min="0" max="1000" ng-change="send({'type': 'app', 'id': 1, 'value': control.ref});"></md-slider>
+
+        <!-- <md-input-container>
+          <label class="raspi-label-s">Sensor output</label>
+          <input class="raspi-padding" max="700" min="0" ng-change="" ng-model="jsondata.info.yk" type="number">
+        </md-input-container>
+        <md-slider aria-label="a" flex ng-model="jsondata.info.yk" step="1" min="0" max="700"></md-slider> -->
+      </div>
+      <div layout="column" flex>
+        <c3-gauge cid="1" data="jsondata.info.yk" options="{caption:'Sensor output',unit:'L/h',height:200,width:200,ymin:0,ymax:1000}"></c3-gauge>
+
+        <c3-line-1 ng-if="showChart" class="chart-style" cid="2" timestamp="control.timestamp" data="[control.pump, control.ref, jsondata.info.yk]" options="{caption: ['Pump command','Flow setpoint','Sensor output'], ymin:0,ymax:1000,width:600,height:200,xtype:'timeseries',type:'line'}"></c3-line-1>
+        <md-button ng-if="!showChart"ng-click="toggleChart()">Show Chart</md-button>
+        <md-button ng-if="showChart"ng-click="toggleChart()">Hide Chart</md-button>
+      </div>
+    </div>
+    <md-divider class="raspi-margin"></md-divider>
+    <div layout="row">
+      <div flex layout="column">
+        <label class="raspi-label-s">Log</label>
+        <md-radio-group ng-model="control.log" ng-change="send({'type': 'app', 'id': 10, 'value': control.log});">
+          <md-radio-button value="1">enabled</md-radio-button>
+          <md-radio-button value="0">disabled</md-radio-button>
+        </md-radio-group>
+        <!-- <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': true});">Start log</md-button>
+        <md-button class="md-primary" ng-click="send({'type': 'app', 'id': 10, 'value': false});">Stop log</md-button> -->
+        <!-- ng-click="downloadServerLog('/api/download/log');" -->
+        <md-button class="md-primary" href="/api/download/log" download>Download log</md-button>
+      </div>
+      <div flex layout="column">
+        <label class="raspi-label-s">Mode</label>
+        <md-radio-group ng-model="control.mode" ng-change="send({'type': 'app', 'id': 20, 'value': control.mode});">
+          <md-radio-button value="0">Manual</md-radio-button>
+          <md-radio-button value="1">Auto</md-radio-button>
+          <md-radio-button value="2">Ident/ramp</md-radio-button>
+          <md-radio-button value="3">Ident/step</md-radio-button>
+          <md-radio-button value="4">Ident/spab</md-radio-button>
+          <md-radio-button value="5">Auto/step</md-radio-button>
+        </md-radio-group>
+      </div>
+
+      <div flex layout="column" ng-if="jsondata.controllers!==undefined">
+        <label class="raspi-label-s">Control type</label>
+        <md-radio-group ng-if="!jsondata.info.multi" ng-model="control.controller_selection" ng-change="send({'type': 'app', 'id': 31, 'value': control.controller_selection});">
+          <md-radio-button ng-repeat="option in jsondata.controller_names" ng-value="$index" required>
+            {{$index}}. {{ option }}
+          </md-radio-button>
+        </md-radio-group>
+        <md-radio-group ng-if="jsondata.info.multi" ng-model="jsondata.info.controller_id">
+          <md-radio-button ng-repeat="option in jsondata.controller_names" ng-value="$index" required>
+            {{$index}}. {{ option }}
+          </md-radio-button>
+        </md-radio-group>
+      </div>
+
+      <div flex layout="column">
+        <label class="raspi-label-s">Controller setup</label>
+        <md-radio-group ng-model="control.supervisor" ng-change="send({'type': 'app', 'id': 30, 'value': control.supervisor});">
+          <md-radio-button value="0">Simple</md-radio-button>
+          <md-radio-button value="1">Adaptive</md-radio-button>
+        </md-radio-group>
+        <!-- 'multi' -->
+      </div>
+
+    </div>
+  </div>
+
+</div>

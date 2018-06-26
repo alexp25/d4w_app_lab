@@ -1,0 +1,255 @@
+{ 
+  "db_info": {
+	  	"db_for_upb": {
+	    "username": "alex", 
+	    "database": "WaterNetworkTest", 
+	    "password": "alexupb", 
+	    "driver": "{ODBC Driver 13 for SQL Server}", 
+	    "server": "DESKTOP-OBL3M97\\SQLEXPRESS"
+	  }, 
+	  
+	  "db_for_upb_server": {
+	    "username": "sa", 
+	    "database": "WaterNetworkTest", 
+	    "password": "alexupb", 
+	    "driver": "{ODBC Driver 13 for SQL Server}", 
+	    "server": "L604_PRECIS\\SQLEXPRESS"
+	  },
+	  	"db_for_home": {
+	    "username": "alex", 
+	    "database": "WaterNetworkTest", 
+	    "password": "25coto93", 
+	    "driver": "{ODBC Driver 13 for SQL Server}", 
+	    "server": "DESKTOP-RBS0PB5\\SQLEXPRESS"
+	  }
+  },
+  
+  "app":{
+	"db_selection": "db_for_upb_server", 
+  	"db_logging": false, 
+  	"use_mqtt": true,
+  	"log_file_stdout": "stdout_log.txt" 	
+  },
+  "params":{
+  	"t_log": 5, 
+  	"ts": 0.5, 
+  	"ts_control": 0.1, 
+  	"ts_ramp": 5, 
+  	"ts_step": 10, 
+  	"ts_disp": 0.05, 
+  	"du_spab": 30, 	
+  	"um_spab": 200, 
+  	"du_ramp": 10,
+  	"u_min": 120, 
+	"ts_spab": 0.1, 
+	"y_index": 8 
+  },
+
+  "sensor_model": [
+    {
+      "data": [
+        {
+          "node_id": 1, 
+          "type": 1, 
+          "pos": 1
+        }, 
+        {
+          "node_id": 2, 
+          "type": 1, 
+          "pos": 2
+        }, 
+        {
+          "node_id": 3, 
+          "type": 1, 
+          "pos": 3
+        }, 
+        {
+          "node_id": 5, 
+          "type": 1, 
+          "pos": 4
+        }, 
+        {
+          "node_id": 6, 
+          "type": 1, 
+          "pos": 5
+        }, 
+        {
+          "node_id": 7, 
+          "type": 1, 
+          "pos": 6
+        }, 
+        {
+          "node_id": 8, 
+          "type": 1, 
+          "pos": 7
+        }, 
+        {
+          "node_id": 9, 
+          "type": 1, 
+          "pos": 8
+        }, 
+        {
+          "node_id": 10, 
+          "type": 1, 
+          "pos": 9
+        }, 
+        {
+          "node_id": 11, 
+          "type": 1, 
+          "pos": 10
+        }, 
+        {
+          "node_id": 1, 
+          "type": 2, 
+          "pos": 11
+        }
+      ], 
+      "id": 1
+    }
+  ], 
+  
+  "devices1": [
+    {
+      "ip": "192.168.240.1", 
+      "port": 80
+    }
+  ], 
+
+  "models": [
+    {
+      "u_min": 100, 
+      "num": [
+        0.3625
+      ], 
+      "y_min": 0, 
+      "den": [
+        1, 
+        0.8187
+      ]
+    }, 
+    {
+      "u_min": 100, 
+      "num": [
+        0.2097
+      ], 
+      "y_min": 0, 
+      "den": [
+        1, 
+        0.7903
+      ]
+    }, 
+    {
+      "u_min": 100, 
+      "num": [
+        0.2212
+      ], 
+      "y_min": 0, 
+      "den": [
+        1, 
+        0.7788
+      ]
+    }
+  ], 
+
+  "controller_names": [
+    "no_leak", 
+    "leak_s5", 
+    "leak_s11"
+  ], 
+  
+  "ref_step_sequence": [
+    200, 
+    300
+  ], 
+  "step_sequence": [
+    200, 
+    225, 
+    250
+  ], 
+  
+  "devices": [
+    {
+      "info": {
+        "type": 0, 
+        "id": 0
+      }, 
+      "ip": "127.0.0.1", 
+      "enable": true, 
+	  "source": 0, 
+      "port": 9001
+    }, 
+    {
+      "info": {
+        "type": 1, 
+        "id": 1
+      }, 
+      "ip": "192.168.25.10", 
+      "enable": true, 
+	  "source": 0, 
+      "port": 23
+    }, 
+    {
+      "info": {
+        "type": 101, 
+        "id": 2
+      }, 
+      "ip": "192.168.25.11", 
+	  "source": 0, 
+      "enable": true, 
+      "port": 23
+    }, 
+    {
+      "info": {
+        "type": 101, 
+        "id": 3
+      }, 
+      "ip": "127.0.0.1", 
+	  "source": 0, 
+      "enable": false, 
+      "port": 9002
+    }, 
+    {
+      "info": {
+        "type": 1, 
+        "id": 1
+      }, 
+      "ip": "127.0.0.1", 
+	  "source": 0, 
+      "enable": false, 
+      "port": 9003
+    },
+	{
+      "info": {
+        "type": 101, 
+        "id": 4
+      }, 
+      "ip": "", 
+	  "source": 1, 
+      "enable": false, 
+      "port": 0
+    }
+  ], 
+  "controllers": [
+    {
+      "tf": 0, 
+      "ki": 0.05, 
+      "kp": 0.1, 
+      "id": 1, 
+      "kd": 0
+    }, 
+    {
+      "tf": 0, 
+      "ki": 0.4, 
+      "kp": 0.17, 
+      "id": 2, 
+      "kd": 0
+    }, 
+    {
+      "tf": 0, 
+      "ki": 0.4, 
+      "kp": 0.16, 
+      "id": 3, 
+      "kd": 0
+    }
+  ]
+}

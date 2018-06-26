@@ -1,0 +1,77 @@
+<!-- {% raw %} -->
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+  <title>AngularJS Esri Quick Start</title>
+  <base href="/dist/">
+
+  <!-- <link href="//js.arcgis.com/4.2/esri/css/main.css" rel="stylesheet"> -->
+
+  <!-- light (default)
+  dark
+  light-blue
+  dark-blue
+  light-green
+  dark-green
+  light-purple
+  dark-purple
+  light-red
+  dark-red -->
+
+  <link rel="stylesheet" href="css/app.css">
+  <script src="js/app.js"></script>
+
+</head>
+
+<body ng-controller="navigationCtrl" ng-init="init();" class="my-scrollbar my-texture-bg">
+  <!-- <md-content class="my-scrollbar" layout="column">
+    <div id="nav">
+      <md-tabs flex class="md-primary" id="tab-lvl1" md-autoselect="false" md-border-bottom md-center-tabs="false" md-dynamic-height md-selected="tabSelection.lvl1">
+        <md-tab ng-repeat="section in menuList">
+          <md-tab-label>{{section.name}}
+            <i class="{{section.icon}}"></i>
+          </md-tab-label>
+        </md-tab>
+      </md-tabs>
+      <div ng-if="!menuList[tabSelection.lvl1].url && menuList[tabSelection.lvl1].hasOwnProperty('subSections')">
+        <md-tabs id="tab-lvl2" class="md-accent" md-autoselect="false" md-border-bottom md-center-tabs="false" md-dynamic-height md-selected="tabSelection.lvl2">
+          <md-tab ng-disabled="!authenticated" ng-repeat="subSection in menuList[tabSelection.lvl1].subSections">
+            <md-tab-label>{{subSection.name}}
+              <i class="{{subSection.icon}}"></i>
+              <i ng-class="{'fa fa-lock':!authenticated}"></i>
+            </md-tab-label>
+          </md-tab>
+        </md-tabs>
+      </div>
+    </div>
+    <div ui-view="content" class="my-texture-bg"></div>
+  </md-content> -->
+  <md-content layout="column" class="md-primary view-container view-scroll">
+    <md-tabs class="md-primary" md-stretch-tabs="auto" id="tab-lvl1" md-autoselect="false" md-border-bottom md-center-tabs="false" md-dynamic-height md-selected="tabSelection.lvl1">
+      <md-tab ng-repeat="section in menuList">
+        <md-tab-label>{{section.name}}
+          <i class="{{section.icon}} fa-rotate-hover" ng-class="{'fa-rotate-prog': tabSelection.lvl1==$index, 'fa-spin': tabSelection.lvl1==$index && section.animate}"></i>
+        </md-tab-label>
+      </md-tab>
+    </md-tabs>
+    <div ng-if="menuList[tabSelection.lvl1].hasOwnProperty('subSections')">
+      <md-tabs id="tab-lvl2" md-stretch-tabs="auto" class="md-accent" md-autoselect="false" md-border-bottom md-center-tabs="false" md-dynamic-height md-selected="tabSelection.lvl2">
+        <md-tab ng-repeat="subSection in menuList[tabSelection.lvl1].subSections">
+          <md-tab-label>{{subSection.name}}
+            <i class="{{subSection.icon}} fa-rotate-hover" ng-class="{'fa-rotate-prog': tabSelection.lvl2==$index, 'fa-spin': tabSelection.lvl2==$index && subSection.animate}"></i>
+          </md-tab-label>
+        </md-tab>
+      </md-tabs>
+    </div>
+    <!-- my-texture-bg -->
+    <div class="md-primary view-scroll my-texture-bg" flex ui-view="content"></div>
+    </div>
+  </md-content>
+
+</body>
+
+</html>
+<!-- {% endraw %} -->
