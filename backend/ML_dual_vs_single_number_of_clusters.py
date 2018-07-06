@@ -91,7 +91,53 @@ class ML_dualVsSingleNumberOfClusters:
             node["id"] = i
             self.node_data.append(copy.deepcopy(node))
 
-    def test(self):
+
+    def test_single_scenario(self):
+        """
+        test with different number of clusters for stage 2 (2 stage clustering)
+        comparing the deviation from single stage clustering
+        """
+        self.set_lib(True)
+
+        # res_dual = self.run_dual_clustering_on_node_range(None, None, 3)
+        # n_data = len(self.data[0])
+        n_data = 81
+        n_clusters = 3
+        # n_clusters_for_nodes = 80
+        n_clusters_for_nodes = None
+
+        print("n_data: ", n_data)
+        print("n_clusters_for_nodes: ", n_clusters_for_nodes)
+        res_dual1 = run_dual_clustering_on_node_range(self.data, None, n_clusters_for_nodes, n_clusters)
+        res_single1 = run_clustering_for_all_nodes_at_once(self.data, None, n_clusters, n_data)
+        res_all1 = np.concatenate((res_dual1, res_single1), axis=0)
+        comp, ca, rd = get_comp(res_dual1, res_single1)
+        print("comp_avg: " + str(ca))
+
+        res_all = copy.copy(res_all1)
+        res_dual = copy.copy(res_dual1)
+        res_single = copy.copy(res_single1)
+        comp_avg = ca
+        res_diff = rd
+
+        colors = ['b'] * n_clusters
+        colors2 = ['g:'] * n_clusters
+        cluster_labels1 = ["cd" + str(i + 1) for i in range(n_clusters)]
+        cluster_labels2 = ["cs" + str(i + 1) for i in range(n_clusters)]
+
+        plot_from_matrix(res_all, colors + colors2)
+        plt.legend(cluster_labels1 + cluster_labels2)
+
+        if n_clusters_for_nodes is None:
+            n_clusters_for_nodes = "auto"
+
+        plt.title("number of clusters for nodes: " + str(n_clusters_for_nodes) + ", average deviation: " + str(int(comp_avg)))
+        plt.xlabel("Time of day (hours)")
+        plt.ylabel("Value of cluster centroids ($m^3 / s$)")
+        plt.show()
+
+
+    def test_full_range(self):
         """
         test with different number of clusters for stage 2 (2 stage clustering)
         comparing the deviation from single stage clustering
@@ -142,6 +188,7 @@ class ML_dualVsSingleNumberOfClusters:
             n_clusters_for_nodes = "auto"
 
         plt.title("number of clusters for nodes: " + str(n_clusters_for_nodes) + ", average deviation: " + str(int(comp_avg)))
+
         plt.figure()
 
         comp_avg_dynamic = comp_avg_vect[0]
@@ -205,4 +252,5 @@ if __name__ == "__main__":
     print("machine learning test")
     machine_learning = ML_dualVsSingleNumberOfClusters(use_scikit=False)
     machine_learning.read_data()
-    machine_learning.test()
+    # machine_learning.test_full_range()
+    machine_learning.test_single_scenario()
